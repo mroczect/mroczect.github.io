@@ -1,0 +1,19 @@
+title: "Muhammad Riduwan Khafidi"
+desc: "My Personal Web Page - Library & Systems Engineer"
+author: "mroczect"
+repo_url: "https://github.com/mroczect/mroczect.github.io.git"
+license: "GPL-3.0"
+site_name: "Muhammad Riduwan Khafidi"
+base_url: "https://mroczect.github.io/"
+content_dir: "content"
+output_dir: "dist"
+navbar:
+  - label: Home
+    url: index.html
+  - label: Project
+    url: project.html
+sidebar:
+  - label: Home
+    url: index.html
+  - label: Project
+    url: project.html
