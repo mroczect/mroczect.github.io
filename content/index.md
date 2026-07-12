@@ -18,7 +18,6 @@ My work centers on libraries, frameworks, and developer tools. I care about buil
 - Reusable
 - Easy to integrate without unnecessary complexity
 
-> [!NOTE]
 > **Principles**
 >
 > - Minimal and explicit APIs
