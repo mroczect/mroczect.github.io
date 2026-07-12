@@ -1,8 +1,9 @@
-name: Docs
+name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]  # ubah dari master ke main
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -11,48 +12,44 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      # Install jq untuk parsing JSON
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      # Download RawSSG binary
-      - name: Get latest RawSSG release
-        id: rawssg
+      - name: Download RawSSG
         run: |
-          REPO="mroczect/rawssg"
-          TAG=$(curl -s "https://api.github.com/repos/${REPO}/releases/latest" | jq -r .tag_name)
-          echo "Latest RawSSG release: $TAG"
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-
-      - name: Download RawSSG binary (Linux)
-        run: |
-          curl -fsSL "https://github.com/mroczect/rawssg/releases/download/${{ steps.rawssg.outputs.tag }}/rawssg-ubuntu-latest.tar.gz" -o rawssg.tar.gz
+          TAG=$(curl -s https://api.github.com/repos/mroczect/rawssg/releases/latest | jq -r .tag_name)
+          curl -fsSL "https://github.com/mroczect/rawssg/releases/download/$TAG/rawssg-ubuntu-latest.tar.gz" -o rawssg.tar.gz
           tar -xzf rawssg.tar.gz
           chmod +x rawssg
           sudo mv rawssg /usr/local/bin/
 
-      # Build dengan RawSSG (config.yaml di root)
-      - name: Compile site with RawSSG
+      - name: Build site
         run: rawssg compile
 
-      # Upload artifact dari folder dist (root)
+      - name: List dist contents (debug)
+        run: ls -la dist/
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

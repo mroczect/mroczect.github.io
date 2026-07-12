@@ -7,6 +7,9 @@ site_name: "Muhammad Riduwan Khafidi"
 base_url: "https://mroczect.github.io/"
 content_dir: "content"
 output_dir: "dist"
+pages:
+  - index.md
+  - project.md
 navbar:
   - label: Home
     url: index.html
