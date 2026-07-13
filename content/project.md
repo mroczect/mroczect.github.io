@@ -57,3 +57,11 @@ A portable, pure C library for date arithmetic, parsing, formatting, and timezon
 
 > **Topics**: `datetime`, `implementation`, `purec`, `clibrary`  
 > **License**: GNU General Public License v3.0
+
+### [snapcat](https://github.com/mroczect/snapcat)
+
+Capture your project’s structure, content, and fingerprint in an instant.
+
+> **Topics**: `tree`, `cat`, `lib`, `cli`, `tools`  
+> **License**: GNU General Public License v3.0
+
