@@ -1,0 +1,22 @@
+base_url = "https://mrozect.biz.id/"
+title = "mroczect"
+description = "I write code, mostly in Zig and Rust."
+default_language = "en"
+compile_sass = true
+build_search_index = false
+generate_feeds = true
+feed_filenames = ["rss.xml"]
+
+[markdown.highlighting]
+light_theme = "github-light"
+dark_theme = "github-dark"
+style = "inline"
+
+[markdown]
+smart_punctuation = true
+
+[extra]
+author = "mroczect"
+email = "mroczect@proton.me"
+github = "https://github.com/mroczect"
+codeberg = "https://codeberg.org/mroczect"

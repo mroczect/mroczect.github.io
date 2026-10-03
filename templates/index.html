@@ -1,0 +1,25 @@
+{% extends "base.html" %} {% block content %} {{ section.content | safe }} {%
+set blog = get_section(path="blog/_index.md", required=false) %} {% if blog and
+blog.pages %}
+<hr />
+<h2>Blog</h2>
+<ul class="post-list">
+	{% for page in blog.pages %}
+	<li>
+		{% if page.date %}<span class="date">{{ page.date }}</span>{% endif %}
+		<a href="{{ page.permalink }}">{{ page.title }}</a>
+	</li>
+	{% endfor %}
+</ul>
+{% endif %} {% if section.pages %}
+<hr />
+<h2>Pages</h2>
+<ul class="post-list">
+	{% for page in section.pages %}
+	<li>
+		{% if page.date %}<span class="date">{{ page.date }}</span>{% endif %}
+		<a href="{{ page.permalink }}">{{ page.title }}</a>
+	</li>
+	{% endfor %}
+</ul>
+{% endif %} {% endblock %}

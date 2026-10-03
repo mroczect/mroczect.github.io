@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="{{ config.default_language }}">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>{% block title %}{{ config.title }}{% endblock %}</title>
+		<meta name="description" content="{{ config.description }}" />
+		<meta name="color-scheme" content="light" />
+		<link
+			rel="alternate"
+			type="application/rss+xml"
+			title="{{ config.title }}"
+			href="{{ get_url(path='rss.xml') }}"
+		/>
+		<link rel="icon" href="data:," />
+		<style>
+			{{ load_data(path="public/style.css") | safe }}
+		</style>
+	</head>
+	<body>
+		<div id="layout">
+			<nav id="navigation">
+				<h2>{{ config.title }}</h2>
+				<ul>
+					<li>
+						<a href="{{ get_url(path='@/_index.md') }}">Home</a>
+					</li>
+					{% set blog_meta = get_section(path="blog/_index.md",
+					required=false, metadata_only=true) %} {% if blog_meta %}
+					<li><a href="{{ blog_meta.permalink }}">Blog</a></li>
+					{% endif %}
+				</ul>
+
+				{% set blog = get_section(path="blog/_index.md", required=false)
+				%} {% if blog and blog.pages %}
+				<h2>Recent</h2>
+				<ul>
+					{% for page in blog.pages %} {% if loop.index <= 6 %}
+					<li><a href="{{ page.permalink }}">{{ page.title }}</a></li>
+					{% endif %} {% endfor %}
+				</ul>
+				{% endif %}
+
+				<h2>Links</h2>
+				<ul>
+					<li><a href="{{ config.extra.github }}">GitHub</a></li>
+					<li><a href="{{ config.extra.codeberg }}">Codeberg</a></li>
+					<li><a href="{{ get_url(path='rss.xml') }}">RSS</a></li>
+				</ul>
+			</nav>
+
+			<main id="contents">{% block content %}{% endblock %}</main>
+		</div>
+	</body>
+</html>

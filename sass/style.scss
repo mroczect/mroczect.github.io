@@ -1,0 +1,333 @@
+$bg:      #c0c0c0;
+$panel:   #fff;
+$hl:      #fff;
+$sh:      #808080;
+$sh2:     #000;
+$code-bg: #dfdfdf;
+$link:    #0000ee;
+$visited: #551a8b;
+$muted:   #575757;
+$navy:    #000080;
+$navy2:   #1084d0;
+
+* { box-sizing: border-box; }
+
+html, body {
+  background: $bg;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font: 13px/1.5 "MS Sans Serif", "Microsoft Sans Serif", Tahoma, Verdana, -apple-system, sans-serif;
+  color: #000;
+}
+
+a { color: $link; text-decoration: underline; }
+a:visited { color: $visited; }
+a:hover { color: #ee0000; }
+a:focus { outline: 1px dotted #000; outline-offset: 1px; }
+
+#layout {
+  max-width: 66em;
+  margin: 2em auto;
+  padding: 0 1em;
+  display: grid;
+  grid-template-columns: 15em 1fr;
+  gap: 1.2em;
+  align-items: start;
+}
+
+/* --- sidebar panel --- */
+#navigation {
+  font-size: 12px;
+  background: $bg;
+  border: 2px solid;
+  border-color: $hl $sh2 $sh2 $hl;
+  box-shadow: inset 1px 1px 0 $code-bg, inset -1px -1px 0 $sh;
+  padding: 10px;
+  position: sticky;
+  top: 2em;
+}
+
+#navigation h2 {
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #fff;
+  background: $navy;
+  margin: 12px -10px 4px;
+  padding: 2px 10px;
+  border-top: 1px solid $hl;
+  border-bottom: 1px solid $sh2;
+}
+
+#navigation h2:first-child { margin-top: -10px; }
+
+#navigation ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#navigation li { margin: 0; }
+
+#navigation a {
+  display: block;
+  padding: 2px 6px;
+  text-decoration: none;
+  color: #000;
+  border: 1px dotted transparent;
+}
+
+#navigation a:hover,
+#navigation a:focus {
+  background: $navy;
+  color: #fff;
+  border: 1px dotted $hl;
+  outline: none;
+}
+
+/* --- main window --- */
+#contents {
+  background: $panel;
+  border: 2px solid;
+  border-color: $sh $hl $hl $sh;
+  box-shadow: inset 1px 1px 0 $sh2;
+  padding: 1.5em 2em;
+  min-width: 0;
+}
+
+#contents > :first-child { margin-top: 0; }
+
+h1 {
+  font-size: 1.4em;
+  margin: 0 0 1em;
+  padding: 0 0 .3em;
+  border-bottom: 1px solid $sh;
+  box-shadow: 0 1px 0 $hl;
+}
+
+h2 {
+  font-size: 12px;
+  font-weight: bold;
+  margin: 1.8em 0 .6em;
+  padding: 3px 8px;
+  background: $navy;
+  color: #fff;
+  border: 2px solid;
+  border-color: $hl $sh2 $sh2 $hl;
+  box-shadow: inset 1px 1px 0 $navy2, inset -1px -1px 0 $sh2;
+  display: inline-block;
+}
+
+h3 {
+  font-size: 1em;
+  margin: 1.2em 0 .3em;
+  padding-bottom: 2px;
+  border-bottom: 1px dotted $sh;
+}
+
+p { margin: .7em 0; }
+ul, ol { padding-left: 1.4em; margin: .7em 0; }
+li { margin: .15em 0; }
+
+code, pre, kbd, samp {
+  font-family: ui-monospace, "Courier New", Consolas, monospace;
+  font-size: 12px;
+}
+
+code {
+  background: $code-bg;
+  border: 1px solid $sh;
+  padding: 0 3px;
+}
+
+kbd {
+  background: $bg;
+  border: 2px solid;
+  border-color: $hl $sh2 $sh2 $hl;
+  box-shadow: inset 1px 1px 0 $code-bg;
+  padding: 0 4px;
+  font-size: 11px;
+}
+
+samp {
+  background: $code-bg;
+  border: 1px solid $sh;
+  padding: 0 3px;
+  font-style: italic;
+}
+
+pre {
+  background: $panel;
+  border: 2px solid;
+  border-color: $sh $hl $hl $sh;
+  box-shadow: inset 1px 1px 0 $code-bg;
+  padding: 8px 10px;
+  overflow-x: auto;
+  line-height: 1.4;
+  margin: 1em 0;
+}
+
+pre code { background: transparent; border: none; padding: 0; }
+
+blockquote {
+  margin: 1em 0;
+  padding: 8px 14px;
+  background: $code-bg;
+  border: 2px solid;
+  border-color: $sh $hl $hl $sh;
+  box-shadow: inset 1px 1px 0 $hl;
+  font-style: italic;
+}
+
+hr {
+  border: none;
+  height: 2px;
+  margin: 1.8em 0;
+  background: $sh;
+  box-shadow: 0 1px 0 $hl;
+}
+
+table {
+  border-collapse: collapse;
+  margin: 1em 0;
+  background: $panel;
+  border: 2px solid;
+  border-color: $sh $hl $hl $sh;
+}
+
+th, td {
+  border: 1px solid $sh;
+  padding: 4px 8px;
+  text-align: left;
+  font-size: 12px;
+}
+
+th {
+  background: $bg;
+  font-weight: bold;
+  box-shadow: inset 1px 1px 0 $hl, inset -1px -1px 0 $sh;
+}
+
+.post-list {
+  list-style: none;
+  padding: 0;
+  margin: 1em 0;
+}
+
+.post-list li {
+  padding: 4px 0;
+  border-bottom: 1px dotted $sh;
+}
+
+.post-list .date {
+  font-family: ui-monospace, "Courier New", monospace;
+  font-size: 11px;
+  color: $muted;
+  margin-right: .8em;
+}
+
+.meta {
+  font-size: 11px;
+  color: $muted;
+  font-family: ui-monospace, "Courier New", monospace;
+}
+
+.btn95 {
+  display: inline-block;
+  background: $bg;
+  border: 2px solid;
+  border-color: $hl $sh2 $sh2 $hl;
+  box-shadow: inset 1px 1px 0 $code-bg, inset -1px -1px 0 $sh;
+  padding: 3px 10px;
+  font-size: 12px;
+  text-decoration: none;
+  color: #000;
+}
+
+.btn95:hover { background: #d0d0d0; color: #000; }
+
+.btn95:active {
+  border-color: $sh2 $hl $hl $sh2;
+  box-shadow: inset 1px 1px 0 $sh;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 1em 0;
+  font-size: 11px;
+}
+
+.tags a {
+  padding: 1px 6px;
+  background: $code-bg;
+  border: 1px solid $sh;
+  text-decoration: none;
+  color: #000;
+}
+
+.tags a:hover { background: $navy; color: #fff; }
+
+.toc {
+  background: $code-bg;
+  border: 2px solid;
+  border-color: $sh $hl $hl $sh;
+  box-shadow: inset 1px 1px 0 $hl;
+  padding: 8px 12px;
+  margin: 1em 0;
+  font-size: 12px;
+}
+
+.toc ul { padding-left: 1.2em; margin: .2em 0; }
+
+.pagination {
+  display: flex;
+  gap: 4px;
+  margin: 1.5em 0;
+  font-size: 12px;
+}
+
+.pagination a,
+.pagination span {
+  padding: 2px 8px;
+  background: $bg;
+  border: 2px solid;
+  border-color: $hl $sh2 $sh2 $hl;
+  box-shadow: inset 1px 1px 0 $code-bg;
+  text-decoration: none;
+  color: #000;
+}
+
+.pagination .current {
+  background: $navy;
+  color: #fff;
+  border-color: $sh2 $hl $hl $sh2;
+  box-shadow: inset 1px 1px 0 $navy2;
+}
+
+::selection { background: $navy; color: #fff; }
+
+* {
+  scrollbar-color: $bg $code-bg;
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar { width: 16px; height: 16px; }
+::-webkit-scrollbar-track { background: $code-bg; }
+::-webkit-scrollbar-thumb {
+  background: $bg;
+  border: 2px outset $hl;
+  box-shadow: inset -1px -1px 0 $sh2, inset 1px 1px 0 $code-bg;
+}
+
+@media (max-width: 700px) {
+  #layout { grid-template-columns: 1fr; }
+  #navigation { position: static; }
+  #contents { padding: 1em; }
+  h1 { font-size: 1.2em; }
+}
