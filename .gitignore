@@ -5,3 +5,4 @@ tmp/
 public/
 tmp/
 .snapcat.md
+.velodiff_dist.diff
