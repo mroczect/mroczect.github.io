@@ -1,55 +1,86 @@
 <!doctype html>
 <html lang="{{ config.default_language }}">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>{% block title %}{{ config.title }}{% endblock %}</title>
-		<meta name="description" content="{{ config.description }}" />
-		<meta name="color-scheme" content="light" />
-		<link
-			rel="alternate"
-			type="application/rss+xml"
-			title="{{ config.title }}"
-			href="{{ get_url(path='rss.xml') }}"
-		/>
-		<link rel="icon" href="data:," />
-		<style>
-			{{ load_data(path="public/style.css") | safe }}
-		</style>
-	</head>
-	<body>
-		<div id="layout">
-			<nav id="navigation">
-				<h2>{{ config.title }}</h2>
-				<ul>
-					<li>
-						<a href="{{ get_url(path='@/_index.md') }}">Home</a>
-					</li>
-					{% set blog_meta = get_section(path="blog/_index.md",
-					required=false, metadata_only=true) %} {% if blog_meta %}
-					<li><a href="{{ blog_meta.permalink }}">Blog</a></li>
-					{% endif %}
-				</ul>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{% block title %}{{ config.title }}{% endblock %}</title>
+    <meta name="description" content="{{ config.description }}" />
+    <meta name="color-scheme" content="light" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="{{ config.title }}"
+      href="{{ get_url(path='rss.xml') }}"
+    />
+    <link rel="icon" href="data:," />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      {{ load_data(path="public/style.css") | safe }}
+    </style>
+  </head>
+  <body>
+    <div id="layout">
+      <nav id="navigation">
+        <h2>{{ config.title }}</h2>
+        <ul>
+          <li>
+            <a href="{{ get_url(path='@/_index.md') }}">Home</a>
+          </li>
+          {% set blog_meta = get_section(path="blog/_index.md", required=false,
+          metadata_only=true) %} {% if blog_meta %}
+          <li><a href="{{ blog_meta.permalink }}">Blog</a></li>
+          {% endif %}
+        </ul>
 
-				{% set blog = get_section(path="blog/_index.md", required=false)
-				%} {% if blog and blog.pages %}
-				<h2>Recent</h2>
-				<ul>
-					{% for page in blog.pages %} {% if loop.index <= 6 %}
-					<li><a href="{{ page.permalink }}">{{ page.title }}</a></li>
-					{% endif %} {% endfor %}
-				</ul>
-				{% endif %}
+        {% set blog = get_section(path="blog/_index.md", required=false) %} {%
+        if blog and blog.pages %}
+        <h2>Recent</h2>
+        <ul>
+          {% for page in blog.pages %} {% if loop.index <= 6 %}
+          <li><a href="{{ page.permalink }}">{{ page.title }}</a></li>
+          {% endif %} {% endfor %}
+        </ul>
+        {% endif %}
 
-				<h2>Links</h2>
-				<ul>
-					<li><a href="{{ config.extra.github }}">GitHub</a></li>
-					<li><a href="{{ config.extra.codeberg }}">Codeberg</a></li>
-					<li><a href="{{ get_url(path='rss.xml') }}">RSS</a></li>
-				</ul>
-			</nav>
+        <h2>Links</h2>
+        <ul>
+          <li><a href="{{ config.extra.github }}">GitHub</a></li>
+          <li><a href="{{ config.extra.codeberg }}">Codeberg</a></li>
+          <li><a href="{{ get_url(path='rss.xml') }}">RSS</a></li>
+        </ul>
+        {% set tags = get_taxonomy(kind="tags", required=false) %}
+        {% if tags and tags.items %}
+        <h2>Tags</h2>
+        <ul>
+          {% for term in tags.items %}
+          <li><a href="{{ term.permalink }}">#{{ term.name }}</a></li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </nav>
+      
 
-			<main id="contents">{% block content %}{% endblock %}</main>
-		</div>
-	</body>
+      <main id="contents">
+        {% block content %}{% endblock %}
+
+        <footer id="footer">
+          <p>
+            © {{ now() | date(format="%Y") }} {{ config.title }}. Content
+            licensed under
+            <a
+              href="https://creativecommons.org/licenses/by-sa/4.0/"
+              rel="license"
+              >CC BY-SA 4.0</a
+            >.
+          </p>
+          <p>Built with <a href="https://www.getzola.org/">Zola</a>.</p>
+        </footer>
+      </main>
+    </div>
+  </body>
 </html>

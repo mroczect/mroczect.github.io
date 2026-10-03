@@ -20,7 +20,7 @@ output
 
 ```sh
 $ zig run a.zig
-kalau text ini muncul di terminal berarti berhasil%                                                                                             
+kalau text ini muncul di terminal berarti berhasil%
 ```
 
 oke jadi dia wak.

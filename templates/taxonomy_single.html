@@ -1,0 +1,19 @@
+{% extends "base.html" %} {% block title %}#{{ term.name }} - {{ config.title
+}}{% endblock %} {% block content %}
+<p><a class="btn95" href="{{ get_url(path='@/_index.md') }}">&larr; home</a></p>
+
+<h1>Tag: #{{ term.name }}</h1>
+
+<p class="meta">{{ term.pages | length }} artikel</p>
+
+<hr />
+
+<ul class="post-list">
+	{% for page in term.pages %}
+	<li>
+		{% if page.date %}<span class="date">{{ page.date }}</span>{% endif %}
+		<a href="{{ page.permalink }}">{{ page.title }}</a>
+	</li>
+	{% endfor %}
+</ul>
+{% endblock %}

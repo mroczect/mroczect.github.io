@@ -1,0 +1,14 @@
+{% extends "base.html" %} {% block title %}Tags - {{ config.title }}{% endblock
+%} {% block content %}
+<p><a class="btn95" href="{{ get_url(path='@/_index.md') }}">&larr; home</a></p>
+
+<h1>Tags</h1>
+
+<div class="tags">
+	{% for term in terms %}
+	<a href="{{ term.permalink }}"
+		>#{{ term.name }} ({{ term.pages | length }})</a
+	>
+	{% endfor %}
+</div>
+{% endblock %}

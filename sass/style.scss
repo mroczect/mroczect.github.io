@@ -1,32 +1,116 @@
-$bg:      #c0c0c0;
-$panel:   #fff;
-$hl:      #fff;
-$sh:      #808080;
-$sh2:     #000;
+$bg: #c0c0c0;
+$panel: #fff;
+$hl: #fff;
+$sh: #808080;
+$sh2: #000;
 $code-bg: #dfdfdf;
-$link:    #0000ee;
+$link: #0000ee;
 $visited: #551a8b;
-$muted:   #575757;
-$navy:    #000080;
-$navy2:   #1084d0;
+$muted: #575757;
+$navy: #000080;
+$navy2: #1084d0;
 
-* { box-sizing: border-box; }
+$mono: "Fira Code", "Consolas", "Courier New", monospace;
 
-html, body {
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
   background: $bg;
   margin: 0;
   padding: 0;
 }
 
 body {
-  font: 13px/1.5 "MS Sans Serif", "Microsoft Sans Serif", Tahoma, Verdana, -apple-system, sans-serif;
+  font: 13px/1.5 #{$mono};
   color: #000;
 }
 
-a { color: $link; text-decoration: underline; }
-a:visited { color: $visited; }
-a:hover { color: #ee0000; }
-a:focus { outline: 1px dotted #000; outline-offset: 1px; }
+button,
+input,
+select,
+textarea,
+code,
+kbd,
+samp,
+pre {
+  font-family: $mono;
+}
+
+a {
+  color: $link;
+  text-decoration: underline;
+}
+a:visited {
+  color: $visited;
+}
+a:hover {
+  color: #ee0000;
+}
+a:focus {
+  outline: 1px dotted #000;
+  outline-offset: 1px;
+}
+
+#header {
+  background: $bg;
+  border-bottom: 2px solid;
+  border-color: $hl $sh2 $sh2 $hl;
+  box-shadow:
+    inset 0 1px 0 $hl,
+    0 1px 0 $sh2;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1em;
+  font-size: 12px;
+}
+
+#header > a {
+  font-weight: bold;
+  text-decoration: none;
+  color: #000;
+  padding: 2px 6px;
+  border: 1px dotted transparent;
+}
+
+#header > a:hover {
+  background: $navy;
+  color: #fff;
+  border: 1px dotted $hl;
+}
+
+#header nav {
+  display: flex;
+  gap: 2px;
+}
+
+#header nav a {
+  display: inline-block;
+  padding: 3px 10px;
+  text-decoration: none;
+  color: #000;
+  background: $bg;
+  border: 2px solid;
+  border-color: $hl $sh2 $sh2 $hl;
+  box-shadow:
+    inset 1px 1px 0 $code-bg,
+    inset -1px -1px 0 $sh;
+  font-size: 12px;
+}
+
+#header nav a:hover {
+  background: #d0d0d0;
+  color: #000;
+}
+
+#header nav a:active {
+  border-color: $sh2 $hl $hl $sh2;
+  box-shadow: inset 1px 1px 0 $sh;
+}
 
 #layout {
   max-width: 66em;
@@ -38,13 +122,14 @@ a:focus { outline: 1px dotted #000; outline-offset: 1px; }
   align-items: start;
 }
 
-/* --- sidebar panel --- */
 #navigation {
   font-size: 12px;
   background: $bg;
   border: 2px solid;
   border-color: $hl $sh2 $sh2 $hl;
-  box-shadow: inset 1px 1px 0 $code-bg, inset -1px -1px 0 $sh;
+  box-shadow:
+    inset 1px 1px 0 $code-bg,
+    inset -1px -1px 0 $sh;
   padding: 10px;
   position: sticky;
   top: 2em;
@@ -54,7 +139,7 @@ a:focus { outline: 1px dotted #000; outline-offset: 1px; }
   font-size: 11px;
   font-weight: bold;
   text-transform: uppercase;
-  letter-spacing: .05em;
+  letter-spacing: 0.05em;
   color: #fff;
   background: $navy;
   margin: 12px -10px 4px;
@@ -63,7 +148,9 @@ a:focus { outline: 1px dotted #000; outline-offset: 1px; }
   border-bottom: 1px solid $sh2;
 }
 
-#navigation h2:first-child { margin-top: -10px; }
+#navigation h2:first-child {
+  margin-top: -10px;
+}
 
 #navigation ul {
   list-style: none;
@@ -71,7 +158,9 @@ a:focus { outline: 1px dotted #000; outline-offset: 1px; }
   margin: 0;
 }
 
-#navigation li { margin: 0; }
+#navigation li {
+  margin: 0;
+}
 
 #navigation a {
   display: block;
@@ -89,7 +178,6 @@ a:focus { outline: 1px dotted #000; outline-offset: 1px; }
   outline: none;
 }
 
-/* --- main window --- */
 #contents {
   background: $panel;
   border: 2px solid;
@@ -99,12 +187,14 @@ a:focus { outline: 1px dotted #000; outline-offset: 1px; }
   min-width: 0;
 }
 
-#contents > :first-child { margin-top: 0; }
+#contents > :first-child {
+  margin-top: 0;
+}
 
 h1 {
   font-size: 1.4em;
   margin: 0 0 1em;
-  padding: 0 0 .3em;
+  padding: 0 0 0.3em;
   border-bottom: 1px solid $sh;
   box-shadow: 0 1px 0 $hl;
 }
@@ -112,29 +202,42 @@ h1 {
 h2 {
   font-size: 12px;
   font-weight: bold;
-  margin: 1.8em 0 .6em;
+  margin: 1.8em 0 0.6em;
   padding: 3px 8px;
   background: $navy;
   color: #fff;
   border: 2px solid;
   border-color: $hl $sh2 $sh2 $hl;
-  box-shadow: inset 1px 1px 0 $navy2, inset -1px -1px 0 $sh2;
+  box-shadow:
+    inset 1px 1px 0 $navy2,
+    inset -1px -1px 0 $sh2;
   display: inline-block;
 }
 
 h3 {
   font-size: 1em;
-  margin: 1.2em 0 .3em;
+  margin: 1.2em 0 0.3em;
   padding-bottom: 2px;
   border-bottom: 1px dotted $sh;
 }
 
-p { margin: .7em 0; }
-ul, ol { padding-left: 1.4em; margin: .7em 0; }
-li { margin: .15em 0; }
+p {
+  margin: 0.7em 0;
+}
+ul,
+ol {
+  padding-left: 1.4em;
+  margin: 0.7em 0;
+}
+li {
+  margin: 0.15em 0;
+}
 
-code, pre, kbd, samp {
-  font-family: ui-monospace, "Courier New", Consolas, monospace;
+code,
+pre,
+kbd,
+samp {
+  font-family: $mono;
   font-size: 12px;
 }
 
@@ -171,7 +274,11 @@ pre {
   margin: 1em 0;
 }
 
-pre code { background: transparent; border: none; padding: 0; }
+pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
 
 blockquote {
   margin: 1em 0;
@@ -199,7 +306,8 @@ table {
   border-color: $sh $hl $hl $sh;
 }
 
-th, td {
+th,
+td {
   border: 1px solid $sh;
   padding: 4px 8px;
   text-align: left;
@@ -209,7 +317,9 @@ th, td {
 th {
   background: $bg;
   font-weight: bold;
-  box-shadow: inset 1px 1px 0 $hl, inset -1px -1px 0 $sh;
+  box-shadow:
+    inset 1px 1px 0 $hl,
+    inset -1px -1px 0 $sh;
 }
 
 .post-list {
@@ -224,16 +334,16 @@ th {
 }
 
 .post-list .date {
-  font-family: ui-monospace, "Courier New", monospace;
+  font-family: $mono;
   font-size: 11px;
   color: $muted;
-  margin-right: .8em;
+  margin-right: 0.8em;
 }
 
 .meta {
   font-size: 11px;
   color: $muted;
-  font-family: ui-monospace, "Courier New", monospace;
+  font-family: $mono;
 }
 
 .btn95 {
@@ -241,14 +351,20 @@ th {
   background: $bg;
   border: 2px solid;
   border-color: $hl $sh2 $sh2 $hl;
-  box-shadow: inset 1px 1px 0 $code-bg, inset -1px -1px 0 $sh;
+  box-shadow:
+    inset 1px 1px 0 $code-bg,
+    inset -1px -1px 0 $sh;
   padding: 3px 10px;
   font-size: 12px;
   text-decoration: none;
   color: #000;
+  font-family: $mono;
 }
 
-.btn95:hover { background: #d0d0d0; color: #000; }
+.btn95:hover {
+  background: #d0d0d0;
+  color: #000;
+}
 
 .btn95:active {
   border-color: $sh2 $hl $hl $sh2;
@@ -269,9 +385,13 @@ th {
   border: 1px solid $sh;
   text-decoration: none;
   color: #000;
+  font-family: $mono;
 }
 
-.tags a:hover { background: $navy; color: #fff; }
+.tags a:hover {
+  background: $navy;
+  color: #fff;
+}
 
 .toc {
   background: $code-bg;
@@ -283,7 +403,10 @@ th {
   font-size: 12px;
 }
 
-.toc ul { padding-left: 1.2em; margin: .2em 0; }
+.toc ul {
+  padding-left: 1.2em;
+  margin: 0.2em 0;
+}
 
 .pagination {
   display: flex;
@@ -301,6 +424,7 @@ th {
   box-shadow: inset 1px 1px 0 $code-bg;
   text-decoration: none;
   color: #000;
+  font-family: $mono;
 }
 
 .pagination .current {
@@ -310,24 +434,79 @@ th {
   box-shadow: inset 1px 1px 0 $navy2;
 }
 
-::selection { background: $navy; color: #fff; }
+#footer {
+  margin-top: 3em;
+  padding-top: 1em;
+  border-top: 2px solid;
+  border-color: $sh $hl $hl $sh;
+  box-shadow: inset 0 1px 0 $hl;
+  font-size: 11px;
+  color: $muted;
+  text-align: center;
+}
+
+#footer p {
+  margin: 0.3em 0;
+}
+
+#footer a {
+  color: $link;
+}
+
+#footer a:visited {
+  color: $visited;
+}
+
+#footer a:hover {
+  color: #ee0000;
+}
+
+::selection {
+  background: $navy;
+  color: #fff;
+}
 
 * {
   scrollbar-color: $bg $code-bg;
   scrollbar-width: thin;
 }
 
-::-webkit-scrollbar { width: 16px; height: 16px; }
-::-webkit-scrollbar-track { background: $code-bg; }
+::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+::-webkit-scrollbar-track {
+  background: $code-bg;
+}
 ::-webkit-scrollbar-thumb {
   background: $bg;
   border: 2px outset $hl;
-  box-shadow: inset -1px -1px 0 $sh2, inset 1px 1px 0 $code-bg;
+  box-shadow:
+    inset -1px -1px 0 $sh2,
+    inset 1px 1px 0 $code-bg;
 }
 
 @media (max-width: 700px) {
-  #layout { grid-template-columns: 1fr; }
-  #navigation { position: static; }
-  #contents { padding: 1em; }
-  h1 { font-size: 1.2em; }
+  #layout {
+    grid-template-columns: 1fr;
+  }
+  #navigation {
+    position: static;
+  }
+  #contents {
+    padding: 1em;
+  }
+  h1 {
+    font-size: 1.2em;
+  }
+
+  #header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.4em;
+  }
+
+  #header nav {
+    flex-wrap: wrap;
+  }
 }

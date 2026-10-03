@@ -5,32 +5,32 @@
 <h1>{{ page.title }}</h1>
 
 <p class="meta">
-	{% if page.date %}{{ page.date }}{% endif %} {% if page.reading_time %}
-	&middot; {{ page.reading_time }} min{% endif %}
+  {% if page.date %}{{ page.date }}{% endif %} {% if page.reading_time %}
+  &middot; {{ page.reading_time }} min{% endif %}
 </p>
 
 {% if page.taxonomies.tags %}
 <div class="tags">
-	{% for tag in page.taxonomies.tags %}
-	<a href="{{ get_taxonomy_url(kind='tags', name=tag) }}">#{{ tag }}</a>
-	{% endfor %}
+  {% for tag in page.taxonomies.tags %}
+  <a href="{{ get_taxonomy_url(kind='tags', name=tag) }}">#{{ tag }}</a>
+  {% endfor %}
 </div>
 {% endif %} {% if page.toc and page.toc | length > 0 %}
 <nav class="toc">
-	<ul>
-		{% for h in page.toc %}
-		<li>
-			<a href="{{ h.permalink }}">{{ h.title }}</a>
-			{% if h.children %}
-			<ul>
-				{% for c in h.children %}
-				<li><a href="{{ c.permalink }}">{{ c.title }}</a></li>
-				{% endfor %}
-			</ul>
-			{% endif %}
-		</li>
-		{% endfor %}
-	</ul>
+  <ul>
+    {% for h in page.toc %}
+    <li>
+      <a href="{{ h.permalink }}">{{ h.title }}</a>
+      {% if h.children %}
+      <ul>
+        {% for c in h.children %}
+        <li><a href="{{ c.permalink }}">{{ c.title }}</a></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
 </nav>
 {% endif %}
 
