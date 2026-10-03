@@ -1,4 +1,4 @@
-base_url = "https://mrozect.biz.id/"
+base_url = "https://mroczect.biz.id/"
 title = "mroczect"
 description = "I write code, mostly in Zig and Rust."
 default_language = "en"
