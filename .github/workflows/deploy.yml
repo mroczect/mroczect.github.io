@@ -19,11 +19,18 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-      - name: Cache and Install TeX Live
-        uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: texlive-latex-extra texlive-fonts-recommended texlive-extra-utils latexmk
-          version: 1.0
+
+      - name: Install TeX Live and Fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            texlive-latex-extra \
+            texlive-fonts-recommended \
+            texlive-fonts-extra \
+            texlive-extra-utils \
+            latexmk
+          # Perintah wajib untuk memperbaiki file map font di server
+          sudo updmap-sys
 
       - name: Build Site
         run: |
