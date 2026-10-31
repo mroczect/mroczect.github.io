@@ -18,11 +18,11 @@ compile-papers:
 	fi
 
 html: setup
-	make4ht -d dist -u $(TARGET).tex "xhtml" || (echo "=== make4ht failed ==="; cat $(TARGET).log; exit 1)
+	make4ht -d dist -u $(TARGET).tex "xhtml" || (echo "=== make4ht GAGAL ==="; cat $(TARGET).log; exit 1)
 	@if [ -f dist/$(TARGET).html ]; then \
 		mv dist/$(TARGET).html dist/index.html; \
 	else \
-		echo "ERROR: HTML tidak digenerate oleh make4ht"; \
+		echo "ERROR: File HTML tidak ditemukan setelah make4ht berjalan."; \
 		exit 1; \
 	fi
 	cp styles/style.css dist/style.css
