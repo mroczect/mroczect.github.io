@@ -28,8 +28,9 @@ jobs:
             texlive-fonts-recommended
             texlive-fonts-extra
             texlive-extra-utils
+            texlive-tex4ht
             latexmk
-          version: 1.0
+          version: 1.1
 
       - name: Fix Font Maps (updmap)
         run: sudo updmap-sys
