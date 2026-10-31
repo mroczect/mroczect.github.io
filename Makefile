@@ -18,8 +18,13 @@ compile-papers:
 	fi
 
 html: setup
-	make4ht -v -d dist -u $(TARGET).tex "xhtml, charset=utf-8"
-	mv dist/$(TARGET).html dist/index.html
+	make4ht -d dist -u $(TARGET).tex "xhtml" || (echo "=== make4ht failed ==="; cat $(TARGET).log; exit 1)
+	@if [ -f dist/$(TARGET).html ]; then \
+		mv dist/$(TARGET).html dist/index.html; \
+	else \
+		echo "ERROR: HTML tidak digenerate oleh make4ht"; \
+		exit 1; \
+	fi
 	cp styles/style.css dist/style.css
 	@if [ -d "paper" ]; then \
 		mkdir -p dist/paper; \
