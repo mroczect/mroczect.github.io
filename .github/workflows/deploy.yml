@@ -16,16 +16,14 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: texlive/texlive:latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install make4ht
+      - name: Install TeX Live and make4ht
         run: |
-          apt-get update
-          apt-get install -y make4ht
+          sudo apt-get update -qq
+          sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended latexmk make4ht tex4ht
 
       - name: Build Site
         run: |
