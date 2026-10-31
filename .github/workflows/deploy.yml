@@ -23,7 +23,11 @@ jobs:
       - name: Install TeX Live and make4ht
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended latexmk make4ht tex4ht
+          sudo apt-get install -y \
+            texlive-latex-extra \
+            texlive-fonts-recommended \
+            texlive-extra-utils \
+            latexmk
 
       - name: Build Site
         run: |
