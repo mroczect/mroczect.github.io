@@ -1,0 +1,128 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\usepackage[scaled=0.92]{helvet}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+
+\setstretch{1.15}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{8pt}
+
+\titleformat{\section}{\normalfont\large\bfseries\sffamily}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries\sffamily}{\thesubsection}{1em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily Dokumentasi Template Akademik MIT Style}
+\fancyhead[R]{\small\sffamily\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\renewenvironment{abstract}
+{\small
+	\begin{center}\textbf{\sffamily Abstract}\end{center}
+	\begin{quote}}
+	{\end{quote}}
+
+\title{\vspace{-1cm}\textbf{\sffamily\LARGE Panduan Komprehensif Implementasi Template Makalah Akademik Bergaya MIT dalam LaTeX}}
+\author{
+	\textbf{Muhammad Riduwan Khafidi} \\ 
+	\small Program Studi Teknik Rekayasa Perangkat Lunak \\
+	\small Politeknik Negeri Batam \\
+	\small \texttt{4342611034@students.polibatam.ac.id}
+}
+\date{\small\today}
+
+\begin{document}
+	
+	\maketitle
+	\thispagestyle{empty}
+	
+	\begin{abstract}
+		Dokumen ini merupakan panduan teknis dan penjelasan komprehensif mengenai arsitektur, tata letak, serta elemen-elemen penyusun sebuah templat makalah akademik (paper) berbasis LaTeX. Templat yang dibahas mengadopsi gaya penulisan yang lazim digunakan oleh institusi terkemuka seperti MIT Press maupun konferensi internasional IEEE dan ACM. Penjelasan mencakup filosofi penggunaan file tunggal tanpa dependensi eksternal, pemilihan tipografi (Palatino dan Helvetica), pengaturan tata letak halaman, modifikasi lingkungan abstrak, penggunaan tabel profesional, hingga manajemen daftar pustaka secara manual. Dokumen ini ditujukan bagi penulis yang hendak memproduksi makalah berkualitas publikasi tanpa harus terikat pada kerumitan konfigurasi kelas dokumen (custom class) yang kompleks.
+	\end{abstract}
+	
+	\section{Pendahuluan dan Filosofi Arsitektur}
+	
+	Dalam ranah penulisan karya ilmiah, LaTeX telah lama menjadi standar de facto bagi para akademisi dan peneliti di seluruh dunia. Keunggulannya dalam menangani tipografi, persamaan matematika yang kompleks, serta konsistensi format dokumen membuatnya jauh lebih unggul dibandingkan pengolah kata konvensional. Namun, kompleksitas konfigurasi LaTeX seringkali menjadi penghalang bagi pemula. Untuk menjembatani hal tersebut, templat yang dibahas dalam dokumen ini dirancang dengan filosofi arsitektur monolitik, yaitu menggunakan satu file sumber (single-file) tanpa memerlukan file kelas (\texttt{.cls}) atau file pustaka (\texttt{.bib}) tambahan.
+	
+	Pendekatan monolitik ini memiliki keunggulan tersendiri dalam hal portabilitas. Penulis dapat membagikan satu file \texttt{.tex} kepada kolega atau penguji, dan dokumen tersebut dapat langsung dikompilasi tanpa risiko kehilangan file dependensi. Seluruh konfigurasi, mulai dari pemanggilan paket, pengaturan tata letak, hingga definisi pustaka, ditulis secara berurutan pada bagian preamble dokumen.
+	
+	\section{Analisis Tipografi dan Tata Letak}
+	
+	Aspek visual dari sebuah makalah akademik memegang peranan penting dalam membangun kesan profesional dan kredibilitas. Templat ini menggunakan paket \texttt{mathpazo} yang mengimplementasikan font Palatino untuk teks isi dan simbol matematika. Font Palatino dipilih karena karakternya yang humanis, mudah dibaca dalam paragraf yang panjang, dan telah menjadi standar estetika pada publikasi MIT Press. Sementara itu, untuk judul bab dan sub-bab, templat ini memanfaatkan font sans-serif Helvetica yang diakses melalui paket \texttt{helvet}. Kombinasi antara teks isi berfont serif dengan judul berfont sans-serif menciptakan kontras hierarki visual yang tegas, sebuah ciri khas yang sangat kuat pada makalah-makalah konferensi ilmiah.
+	
+	Pengaturan margin dokumen dieksekusi menggunakan paket \texttt{geometry} dengan ukuran satu inci di setiap sisi. Ukuran ini merupakan standar baku penulisan akademik untuk kertas ukuran A4 maupun Letter. Jarak antar baris (line spacing) diatur melalui paket \texttt{setspace} dengan nilai pengali 1.15. Nilai ini dipilih untuk memberikan ruang napas yang cukup bagi mata pembaca tanpa membuat dokumen menjadi terlalu tebal. Selain itu, indentasi awal paragraf dihilangkan (diset menjadi nol), dan sebagai gantinya diberikan jarak vertikal antar paragraf sebesar enam poin. Gaya ini dikenal sebagai block paragraph style, yang sering digunakan pada jurnal-jurnal modern.
+	
+	Modifikasi pada format judul bab dilakukan menggunakan paket \texttt{titlesec}. Secara bawaan, LaTeX menampilkan judul bab dengan font serif yang sangat besar. Melalui paket ini, format tersebut ditimpa agar menggunakan ukuran yang lebih proporsional dengan font sans-serif. Sementara itu, bagian header dan footer dikonfigurasi menggunakan paket \texttt{fancyhdr}. Header kiri menampilkan judul singkat makalah, sedangkan header kanan menampilkan nomor halaman, dipisahkan oleh sebuah garis horizontal tipis di bawahnya.
+	
+	\section{Struktur Elemen Akademik}
+	
+	Makalah akademik tidak akan lengkap tanpa adanya elemen pendukung seperti persamaan matematika, gambar, dan tabel. Untuk keperluan notasi matematika, templat ini memuat paket \texttt{amsmath}, \texttt{amssymb}, dan \texttt{amsfonts}. Ketiga paket ini memungkinkan penulisan persamaan diferensial, integral, matriks, serta simbol-simbol matematika lanjutan dengan format yang sangat rapi. Sebagai contoh, penulisan persamaan integral Gaussian dapat dituliskan sebagai berikut.
+	
+	\begin{equation}
+		f(x) = \int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+	\end{equation}
+	
+	Untuk penyisipan gambar, digunakan paket \texttt{graphicx} dengan perintah \texttt{\textbackslash includegraphics}. Gambar akan secara otomatis diposisikan di tengah halaman dan dilengkapi dengan keterangan (caption) di bagian bawahnya. Templat ini juga menyediakan kotak placeholder (menggunakan perintah fbox dan parbox) yang berfungsi sebagai penanda letak gambar, sehingga penulis dapat langsung melihat tata letak gambar sebelum file gambar aslinya dimasukkan.
+	
+	Adapun untuk penyajian data tabular, templat ini secara konsisten menggunakan paket \texttt{booktabs}. Berbeda dengan garis tabel konvensional yang menggunakan perintah \texttt{\textbackslash hline} dan terkesan kaku, \texttt{booktabs} menyediakan garis horizontal atas dan bawah yang lebih tebal, serta garis pemisah tengah yang lebih tipis. Pendekatan ini secara signifikan meningkatkan keterbacaan data dan merupakan standar tipografi tabel pada publikasi ilmiah bereputasi. Implementasinya dapat dilihat pada tabel di bawah ini.
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{Contoh Penyajian Data Menggunakan Standar Booktabs}
+		\label{tab:contoh_tabel}
+		\begin{tabular}{lcr}
+			\toprule
+			\textbf{Parameter} & \textbf{Nilai} & \textbf{Satuan} \\
+			\midrule
+			Kecepatan & 120 & km/jam \\
+			Suhu & 25 & Celsius \\
+			Waktu & 60 & Menit \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\section{Manajemen Sitasi dan Daftar Pustaka}
+	
+	Dalam penulisan karya ilmiah, sitasi memegang peranan krusial untuk menghindari plagiarisme dan memberikan penghargaan kepada peneliti sebelumnya. Meskipun LaTeX memiliki sistem manajemen pustaka otomatis yang canggih seperti BibTeX atau Biber, templat ini sengaja memilih pendekatan manual menggunakan lingkungan \texttt{thebibliography}. Pilihan ini didasari oleh prinsip kesederhanaan dan kemandirian file.
+	
+	Penulis dapat mendeklarasikan daftar pustaka secara langsung di bagian akhir dokumen dengan menggunakan perintah \texttt{\textbackslash bibitem}. Format keluaran yang dihasilkan akan otomatis menyesuaikan dengan gaya IEEE atau ACM, yaitu berupa angka yang diapit tanda kurung siku, misalnya [1], [2], dan seterusnya. Rujukan ke daftar pustaka di dalam teks isi dilakukan dengan memanggil perintah \texttt{\textbackslash cite}. Pendekatan manual ini sangat efektif untuk makalah dengan jumlah referensi yang tidak masif, serta meminimalisir potensi error akibat konfigurasi backend pustaka yang tidak kompatibel pada sistem tertentu.
+	
+	\section{Kesimpulan}
+	
+	Sebagai penutup, templat makalah akademik yang diuraikan dalam dokumen ini menawarkan keseimbangan antara keindahan estetika dan kemudahan fungsional. Penggunaan font Palatino dan Helvetica memberikan nuansa akademik yang kuat, sementara penerapan tata letak satu kolom dengan margin standar memastikan dokumen mudah dibaca. Seluruh elemen teknis, mulai dari penyusunan rumus, tabel profesional, hingga daftar pustaka, telah dikonfigurasi sedemikian rupa sehingga penulis dapat sepenuhnya fokus pada substansi penelitian tanpa perlu dipusingkan oleh masalah format. Templat ini siap digunakan sebagai fondasi yang kokoh bagi siapa pun yang hendak mempublikasikan karya tulis ilmiahnya.
+	
+	\newpage
+	\section*{Daftar Pustaka}
+	\addcontentsline{toc}{section}{Daftar Pustaka}
+	
+	\begin{thebibliography}{99}
+		\raggedright
+		
+		\bibitem{lamport}
+		Lamport, L. (1994). \textit{\LaTeX: A Document Preparation System} (2nd ed.). Addison-Wesley Professional.
+		
+		\bibitem{mittelbach}
+		Mittelbach, F., \& Goossens, M. (2004). \textit{The \LaTeX\ Companion} (2nd ed.). Addison-Wesley Professional.
+		
+		\bibitem{knuth}
+		Knuth, D. E. (1986). \textit{The \TeX book}. Addison-Wesley Professional.
+		
+		\bibitem{styleguide}
+		The IEEE Editorial Style Manual. (2023). \textit{IEEE Periodicals and Conference Proceedings}. IEEE Publishing.
+		
+		\bibitem{booktabs}
+		Fear, S. (2020). Publication quality tables in \LaTeX. \textit{CTAN: Comprehensive \TeX\ Archive Network}. 
+		
+	\end{thebibliography}
+	
+\end{document}
