@@ -1,0 +1,40 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\usepackage[scaled=0.92]{helvet}
+\usepackage[margin=1in]{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+\lstdefinestyle{knr}{
+	basicstyle=\ttfamily\small,
+	keywordstyle=\bfseries,
+	commentstyle=\itshape,
+	breaklines=true,
+	numbers=left,
+	numberstyle=\tiny,
+	frame=none
+}
+\lstset{style=knr}
+
+% --- TRIK SSG: Suntik CSS ke HTML saat di-compile make4ht ---
+\ifdefined\HCode
+  \special{t4ht=<link rel="stylesheet" type="text/css" href="style.css">}
+\fi
+
+\title{\textbf{Personal Documentation And Paper Publishing}}
+\author{Muhammad Riduwan Khafidi}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\input{content/my-porto.tex}
+
+\end{document}

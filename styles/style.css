@@ -1,0 +1,48 @@
+body {
+	font-family: "Georgia", serif;
+	line-height: 1.6;
+	color: #333;
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 2rem;
+	background-color: #f9f9f9;
+}
+h1,
+h2,
+h3 {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: #111;
+	border-bottom: 1px solid #eaeaea;
+	padding-bottom: 0.3em;
+}
+a {
+	color: #0366d6;
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+pre,
+code {
+	font-family:
+		"SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+	background-color: #f6f8fa;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+}
+pre {
+	padding: 1rem;
+	overflow: auto;
+	border: 1px solid #e1e4e8;
+}
+table {
+	border-collapse: collapse;
+	width: 100%;
+	margin-bottom: 1rem;
+}
+th,
+td {
+	padding: 0.5rem;
+	border: 1px solid #dfe2e5;
+	text-align: left;
+}
