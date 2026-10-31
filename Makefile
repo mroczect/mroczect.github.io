@@ -13,12 +13,12 @@ compile-papers:
 		cd paper && for f in *.tex; do \
 			[ -e "$$f" ] || continue; \
 			echo "Compiling $$f..."; \
-			latexmk -pdf "$$f"; \
+			latexmk -pdf -interaction=nonstopmode -file-line-error "$$f"; \
 		done \
 	fi
 
 html: setup
-	make4ht -d dist -u $(TARGET).tex "xhtml, charset=utf-8"
+	make4ht -v -d dist -u $(TARGET).tex "xhtml, charset=utf-8"
 	mv dist/$(TARGET).html dist/index.html
 	cp styles/style.css dist/style.css
 	@if [ -d "paper" ]; then \
@@ -27,7 +27,7 @@ html: setup
 	fi
 
 pdf: setup
-	latexmk -pdf -outdir=dist $(TARGET).tex
+	latexmk -pdf -interaction=nonstopmode -file-line-error -outdir=dist $(TARGET).tex
 
 clean:
 	latexmk -C
