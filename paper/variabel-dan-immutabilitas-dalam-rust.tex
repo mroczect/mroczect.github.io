@@ -1,0 +1,251 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\usepackage[scaled=0.92]{helvet}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+
+\setstretch{1.15}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{8pt}
+\sloppy
+
+\titleformat{\section}{\normalfont\large\bfseries\sffamily}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries\sffamily}{\thesubsection}{1em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily Analisis Semantik Variabel dan Immutabilitas dalam Rust}
+\fancyhead[R]{\small\sffamily\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\renewenvironment{abstract}
+{\small
+	\begin{center}\textbf{\sffamily Abstract}\end{center}
+	\begin{quote}}
+	{\end{quote}}
+
+\lstdefinelanguage{Rust}{
+	morekeywords={let, mut, fn, const, static, if, else, match, loop, while, for, struct, enum, impl, trait, use, pub, mod, return, unsafe, println, format},
+	sensitive=true,
+	morecomment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	morestring=[b]",
+}
+
+\lstdefinestyle{knrstyle}{
+	language=Rust,
+	basicstyle=\ttfamily\small,
+	keywordstyle=\bfseries,
+	stringstyle=\rmfamily,
+	numbers=left,
+	numberstyle=\tiny,
+	numbersep=8pt,
+	showstringspaces=false,
+	breaklines=true,
+	tabsize=4,
+	frame=none,
+	aboveskip=1em,
+	belowskip=1em
+}
+\lstset{style=knrstyle}
+
+\title{\vspace{-1.5cm}\textbf{\sffamily\LARGE Analisis Semantik Variabel, Mutabilitas,\\ dan Siklus Memori dalam Bahasa Pemrograman Rust}}
+\author{
+	\textbf{Muhammad Riduwan Khafidi} \\
+	\small Program Studi Teknik Rekayasa Perangkat Lunak \\
+	\small Politeknik Negeri Batam \\
+	\small \texttt{4342611034@students.polibatam.ac.id}
+}
+\date{\small\today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\begin{abstract}
+	Makalah ini menyajikan kajian analitis mendalam mengenai fondasi semantik variabel dalam bahasa pemrograman Rust. Berbeda dengan mayoritas bahasa arus utama yang menjadikan mutabilitas sebagai perilaku bawaan, Rust secara fundamental menetapkan immutabilitas sebagai standar. Melalui penelusuran sejarah desain, ikhtisar sintaks, mekanisme kompilator, hingga perbandingan lintas bahasa, makalah ini menguraikan bagaimana Rust mendefinisikan ulang konsep variabel sebagai \textit{binding} (pengikatan nama ke nilai). Pembahasan mencakup tipologi pengikatan nilai melalui \texttt{let}, \texttt{const}, dan \texttt{static} beserta syarat anotasi tipenya, mekanisme reassignment yang menuntut kata kunci \texttt{mut}, dinamika siklus hidup memori pada fenomena \textit{shadowing}, batasan lingkup (\textit{scope}), aturan inisialisasi, hingga konvensi penamaan. Seluruh penjelasan teoretis diimplementasikan dalam bentuk kode program Rust yang utuh dan dapat dieksekusi pada bagian lampiran.
+\end{abstract}
+
+\section{Pendahuluan dan Latar Belakang Desain}
+
+Rust pertama kali dikembangkan di Mozilla Research pada tahun 2006 dan mencapai versi stabil 1.0 pada Mei 2015. Bahasa ini dirancang untuk menjembatani celah antara bahasa sistem berperforma tinggi seperti C dan C++ dengan bahasa tingkat tinggi yang lebih menjamin keamanan memori seperti Java atau Go. Dalam perjalanannya, Rust mengambil sejumlah keputusan desain fundamental yang membedakannya dari para pendahulunya.
+
+Salah satu keputusan paling berpengaruh tersebut adalah penetapan sifat \textit{immutable} (tidak dapat diubah) sebagai nilai bawaan (\textit{default}) pada variabel. Keputusan ini berakar dari observasi bahwa sebagian besar nilai di dalam program nyata tidak seharusnya diubah setelah ia dibuat, dan bahwa mutasi data yang tidak terkendali kerap menjadi sumber utama kesalahan, terutama pada arsitektur perangkat lunak yang berjalan secara konkuren.
+
+Alih-alih mengikuti tradisi C yang membebaskan pengembang untuk mengubah nilai variabel kapan saja, Rust membalikkan paradigma tersebut. Nilai dianggap tetap dan tidak berubah, kecuali pengembang secara eksplisit menyatakan niatnya untuk mengubah nilai tersebut. Pendekatan ini sejalan dengan prinsip \textit{aliasing XOR mutability}, yang menjadi pilar utama dalam sistem kepemilikan (\textit{ownership}) Rust. Prinsip ini menegaskan bahwa pada satu waktu, sebuah nilai hanya boleh memiliki satu referensi yang dapat diubah (\textit{mutable}), atau banyak referensi yang tidak dapat diubah (\textit{immutable}), tetapi tidak boleh keduanya secara bersamaan. Secara konseptual, istilah yang lebih tepat digunakan untuk variabel dalam Rust adalah \textit{binding}, karena yang terjadi adalah pengikatan sebuah nama terhadap suatu nilai, bukan sekadar penyimpanan ke dalam wadah yang dapat diisi ulang.
+
+\section{Tipologi Pengikatan dan Aturan Anotasi Tipe}
+
+Secara garis besar, Rust menyediakan tiga bentuk pengikatan nilai tingkat atas yang memiliki aturan berbeda, yaitu \texttt{let}, \texttt{const}, dan \texttt{static}. Pengikatan nilai paling mendasar dilakukan melalui kata kunci \texttt{let} dengan sintaks \texttt{let nama = nilai;}. Binding yang dihasilkan oleh \texttt{let} secara bawaan bersifat \textit{immutable}. Untuk mengizinkan reassignment, pengembang harus menambahkan kata kunci \texttt{mut} setelah \texttt{let}. Rust menuntut pernyataan niat yang eksplisit ini. Upaya mengubah binding yang tidak dideklarasikan dengan \texttt{mut} akan langsung ditolak oleh kompilator dengan pesan \textit{cannot assign twice to immutable variable}. Pada penggunaan \texttt{let}, kompilator Rust umumnya mampu melakukan inferensi tipe secara otomatis berdasarkan nilai yang diikatkan.
+
+Bentuk pengikatan kedua adalah \texttt{const}, yang mendeklarasikan sebuah konstanta. Nilai dari sebuah konstanta tidak dapat berubah dan wajib dapat dievaluasi pada saat kompilasi (\textit{compile-time}). Berbeda dengan \texttt{let}, aturan baku pada \texttt{const} mewajibkan adanya anotasi tipe yang eksplisit, misalnya \texttt{const MAX\_SKOR: u32 = 100;}. Penulisan konstanta tidak boleh menggunakan kata kunci \texttt{mut}, dan konvensi penamaannya menggunakan huruf besar seluruhnya. Konstanta diizinkan untuk dideklarasikan di luar fungsi, dan nilai yang tersimpan di dalamnya akan disisipkan (\textit{inlined}) secara langsung pada setiap tempat di mana konstanta tersebut dipanggil di dalam kode.
+
+Adapun bentuk ketiga adalah \texttt{static}, yang mendeklarasikan nilai global dengan masa hidup (\textit{lifetime}) sepanjang program berjalan. Sama seperti \texttt{const}, \texttt{static} juga mewajibkan anotasi tipe eksplisit. Berbeda dengan \texttt{const} yang di-\textit{inline}, nilai \texttt{static} menempati lokasi memori yang tetap. Sebuah \texttt{static} secara teknis dapat dijadikan \textit{mutable}, namun hal ini sangat dibatasi. Untuk mengubah nilai \texttt{static} yang mutable, pengembang harus menggunakan blok \texttt{unsafe}. Selain itu, terdapat syarat teknis yang ketat: tipe data yang disimpan dalam \texttt{static} haruslah mengimplementasikan trait \texttt{Sync} (agar aman diakses lintas utas) dan tidak boleh memiliki implementasi destruktor \texttt{Drop} yang membutuhkan eksekusi saat program berakhir.
+
+\section{Paradigma Immutabilitas dan Representasi Memori}
+
+Salah satu ciri khas paling kentara dari Rust adalah sifat immutabilitas pada variabel yang dibuat melalui \texttt{let}. Setelah sebuah nilai diikatkan pada sebuah nama, nilai tersebut tidak dapat diganti melalui nama yang sama. Pengembang dipaksa untuk menyatakan niatnya secara eksplisit apabila memang ingin mengubah nilai. Bagi kompilator, sifat ini sangat memudahkan proses penalaran terhadap alur program, mencegah kesalahan logika akibat mutasi yang tidak terduga, dan meminimalisir risiko \textit{data race} pada program konkuren.
+
+Perlu dipahami bahwa pernyataan mengenai identitas memori ini berlaku spesifik untuk binding lokal yang dibuat dengan \texttt{let}. Pada binding \texttt{let}, nilai tersebut tetap tersimpan dan memiliki alamat memori yang sah, namun kompilator tidak mengizinkan pengarahan ulang nama ke nilai lain. Sementara itu, pada \texttt{const}, karena nilainya disisipkan langsung ke dalam kode mesin, konstanta tersebut tidak memiliki alamat memori tetap pada saat program berjalan.
+
+\section{Mutabilitas Eksplisit dan Reassignment}
+
+Untuk keperluan tertentu di mana sebuah nilai harus berubah sepanjang siklus hidup program, kata kunci \texttt{mut} digunakan untuk memberikan izin reassignment. Deklarasi \texttt{let mut skor = 0;} mengizinkan baris kode berikutnya untuk melakukan reassignment seperti \texttt{skor = 10;}. Namun, penggunaan \texttt{mut} bukan tanpa konsekuensi. Kata kunci ini hanya memberikan izin, bukan kewajiban. Apabila pengembang mendeklarasikan \texttt{mut} tetapi variabel tersebut tidak pernah diubah nilainya, kompilator Rust akan memberikan peringatan berupa \textit{variable does not need to be mutable}. Reassignment sendiri harus dibedakan secara tegas dari konsep \textit{shadowing}, di mana reassignment mengubah nilai pada binding yang sama, sementara shadowing menciptakan entitas baru.
+
+\section{Dinamika Memori pada Fenomena Shadowing}
+
+Shadowing merupakan teknik di mana pengembang membuat binding baru menggunakan nama yang persis sama dengan binding yang sudah ada sebelumnya. Shadowing dilakukan dengan menulis kata kunci \texttt{let} sekali lagi untuk nama yang sama, dan hal ini sama sekali tidak membutuhkan kata kunci \texttt{mut}. Jika terdapat baris \texttt{let x = 5;} lalu diikuti oleh \texttt{let x = 10;}, maka yang terjadi bukanlah perubahan nilai, melainkan pembuatan binding baru yang menutupi binding lama.
+
+Terdapat miskonsepsi umum yang menganggap shadowing menghapus nilai lama dari memori. Sesungguhnya, binding lama tidak lagi dapat diakses melalui nama tersebut, tetapi nilai yang diikat padanya tetap hidup di dalam memori. Nilai tersebut baru akan di-\textit{drop} (dibersihkan dari memori) ketika eksekusi program mencapai akhir dari blok scope tempat binding tersebut dideklarasikan. Shadowing juga memungkinkan terjadinya perubahan tipe data. Sebuah variabel yang awalnya menyimpan nilai integer, misalnya \texttt{let x = 5;}, dapat di-\textit{shadow} menjadi tipe string dengan \texttt{let x = "hello";}. Kemampuan mengubah tipe inilah yang menjadikan shadowing lebih fleksibel dibandingkan reassignment biasa. Shadowing juga sangat berguna ketika dilakukan di dalam sebuah blok karena binding baru hanya akan berlaku selama blok tersebut dieksekusi, dan setelah blok selesai, binding dari luar blok akan kembali terlihat.
+
+\section{Lingkup (Scope) dan Analisis Statis Inisialisasi}
+
+Scope atau lingkup adalah wilayah berlakunya sebuah binding, yang umumnya dibatasi oleh sepasang kurung kurawal. Binding diciptakan saat deklarasinya dieksekusi dan berakhir masa berlakunya tepat pada akhir scope. Binding luar dapat diakses dari scope yang lebih dalam, tetapi tidak sebaliknya. Perlu dicatat bahwa teknik shadowing dapat menutupi binding luar di dalam sebuah blok, sehingga untuk sementara waktu akses ke binding luar tersebut terhalang hingga blok selesai.
+
+Berbeda dengan beberapa bahasa lain yang mengizinkan pembacaan variabel yang belum diinisialisasi, Rust menerapkan aturan yang sangat ketat. Sebuah binding diperbolehkan untuk dideklarasikan tanpa nilai awal, asalkan sebelum nilainya dibaca, binding tersebut sudah dipastikan memiliki nilai. Jika fungsi \texttt{println!} dipanggil sebelum variabel diisi, kompilator akan menghentikan proses dengan pesan kesalahan \textit{used binding x isn't initialized}. Kompilator Rust melakukan analisis statis yang peka terhadap alur eksekusi (\textit{flow-sensitive analysis}) untuk memastikan bahwa dalam skenario percabangan sekalipun, semua jalur eksekusi memberikan nilai pada variabel sebelum variabel itu digunakan.
+
+\section{Konvensi Penamaan, Pola Destructuring, dan Manajemen Peringatan}
+
+Aturan penamaan dalam Rust mewajibkan penggunaan huruf, angka, atau garis bawah, serta tidak boleh diawali dengan angka. Konvensi standar yang digunakan adalah \textit{snake\_case}. Selain penamaan individual, Rust juga mendukung \textit{pattern destructuring} pada proses binding, di mana pengembang dapat mengikat beberapa nilai sekaligus, misalnya \texttt{let (a, b) = (1, 2);}.
+
+Kompilator Rust juga sangat peduli terhadap kebersihan kode. Jika terdapat binding yang tidak pernah digunakan, kompilator akan memberikan peringatan \textit{unused variable}. Pengembang dapat mengawali nama variabel dengan garis bawah untuk menekan peringatan ini, namun terdapat perbedaan mendasar antara \texttt{\_} dan \texttt{\_nama}. Penggunaan garis bawah tunggal (\texttt{\_}) secara spesifik berarti nilai tersebut langsung dibuang dan tidak terjadi proses binding sama sekali. Sementara itu, \texttt{\_nama} tetap melakukan proses binding (nilai tetap dimiliki dan hidup sesuai scope), hanya saja kompilator mengabaikan peringatan jika variabel tersebut tidak digunakan.
+
+\section{Komparasi dengan Bahasa Pemrograman Lain}
+
+Untuk memahami keunikan desain Rust, perbandingan dengan bahasa lain menjadi relevan. Pada Python, JavaScript, dan Ruby, variabel bersifat \textit{mutable} secara bawaan dan tidak ada mekanisme kompilator yang menegakkan sifat immutabilitas. Pada C dan C++, meskipun kata kunci \texttt{const} tersedia, penggunaannya bersifat opsional. Bahasa Go juga menjadikan variabel \textit{mutable} secara bawaan dan tidak memiliki padanan langsung untuk \texttt{mut} pada tingkat binding. Sementara itu, pada bahasa fungsional murni seperti Haskell, semua binding bersifat \textit{immutable}, dan perubahan state dimodelkan melalui mekanisme kompleks seperti monad. Rust hadir di tengah-tengah dengan menjadikan immutabilitas sebagai standar, namun tetap menyediakan jalur eksplisit bagi pengembang yang membutuhkan mutabilitas.
+
+\section{Kesimpulan}
+
+Pemahaman mendalam mengenai variabel di dalam Rust merupakan pergeseran paradigma dalam berpikir mengenai manajemen state dan keamanan memori. Melalui desain \textit{binding}, penegakan immutabilitas secara bawaan, penggunaan eksplisit kata kunci \texttt{mut}, serta analisis statis yang ketat, Rust memaksa pengembang untuk menulis kode yang prediktabel. Detail-detail teknis seperti anotasi tipe pada konstanta, siklus hidup memori pada shadowing, hingga pembedaan antara variabel berawalan garis bawah dan garis bawah tunggal memperkuat fondasi sebelum pengembang melangkah ke topik lanjutan seperti \textit{borrowing} dan \textit{lifetime}.
+
+\newpage
+\section*{Referensi}
+\addcontentsline{toc}{section}{Referensi}
+
+\begin{thebibliography}{99}
+	\bibitem{rustbook}
+	Klabnik, S., \& Nichols, C. (2019). \textit{The Rust Programming Language}. No Starch Press.
+		[Akses daring: \url{https://doc.rust-lang.org/book/}]
+
+	\bibitem{rustref}
+	The Rust Project Developers. (2026). \textit{The Rust Reference: Variables}.
+	Diakses pada 1 November 2026, dari \url{https://doc.rust-lang.org/reference/variables.html}
+
+	\bibitem{rustexample}
+	The Rust Project Developers. (2026). \textit{Rust by Example: Variable Bindings}.
+	Diakses pada 1 November 2026, dari \url{https://doc.rust-lang.org/rust-by-example/variable_bindings.html}
+
+	\bibitem{rustconst}
+	The Rust Project Developers. (2026). \textit{Rust Standard Library: Keyword const}.
+	Diakses pada 1 November 2026, dari \url{https://doc.rust-lang.org/std/keyword.const.html}
+
+	\bibitem{ruststatic}
+	The Rust Project Developers. (2026). \textit{Rust Standard Library: Keyword static}.
+	Diakses pada 1 November 2026, dari \url{https://doc.rust-lang.org/std/keyword.static.html}
+
+	\bibitem{rustprimitives}
+	The Rust Project Developers. (2026). \textit{Rust Standard Library: Primitive Types}.
+	Diakses pada 1 November 2026, dari \url{https://doc.rust-lang.org/std/primitive/index.html}
+
+	\bibitem{rustrfc}
+	The Rust RFCs. (2016). \textit{RFC 1444: const fn}.
+	Diakses pada 1 November 2026, dari \url{https://rust-lang.github.io/rfcs/1444-const-fn.html}
+
+	\bibitem{ghostcell}
+	Yanovski, J., Dang, H.-H., Jung, R., \& Dreyer, D. (2021). GhostCell: Separating Permissions from Data in Rust. \textit{Proceedings of the ACM on Programming Languages}, 5(ICFP), 1-30.
+	\url{https://doi.org/10.1145/3473597}
+
+	\bibitem{thrust}
+	Priya, S., \& Gurfinkel, A. (2025). Thrust: A Prophecy-Based Refinement Type System for Rust. \textit{Proceedings of the ACM on Programming Languages}, 9(PLDI), Article 147.
+	\url{https://dl.acm.org/doi/10.1145/3720423}
+
+	\bibitem{rustnomicon}
+	The Rust Project Developers. (2026). \textit{The Rustonomicon: The Dark Arts of Unsafe Rust}.
+	Diakses pada 1 November 2026, dari \url{https://doc.rust-lang.org/nomicon/}
+\end{thebibliography}
+
+\newpage
+\section*{Lampiran: Implementasi dan Eksekusi Kode}
+\addcontentsline{toc}{section}{Lampiran: Implementasi dan Eksekusi Kode}
+
+Berikut adalah kode sumber lengkap yang merepresentasikan seluruh penjelasan teoretis di atas, mencakup demonstrasi destructuring, perubahan tipe via shadowing, serta perilaku peringatan kompilator.
+
+\begin{lstlisting}
+const MAX_SKOR: u32 = 100;
+const NAMA_APLIKASI: &str = "Belajar Rust";
+static BAHASA: &str = "Rust";
+
+fn main() {
+	let umur = 20;
+	println!("Umur saya {}", umur);
+
+	let mut x = 5;
+	println!("Nilai awal x: {}", x);
+	x = 10;
+	println!("Nilai baru x: {}", x);
+
+	let nilai = 10;
+	println!("Nilai awal (integer): {}", nilai);
+
+	let nilai = "sepuluh";
+	println!("Nilai setelah shadowing (string): {}", nilai);
+
+	let hitung = 5;
+	let hitung = hitung + 1;
+	let hitung = hitung * 2;
+	println!("Hitung akhir: {}", hitung);
+
+	let x_luar = 1;
+	{
+		let y_dalam = 2;
+		println!("Di dalam blok: x_luar={} y_dalam={}", x_luar, y_dalam);
+
+		let x_luar = 99;
+		println!("x_luar di dalam blok (shadowed): {}", x_luar);
+	}
+	println!("Di luar blok (kembali normal): x_luar={}", x_luar);
+
+	let (a, b) = (1, "dua");
+	println!("Hasil destructuring: a={}, b={}", a, b);
+
+	let nanti;
+	nanti = 100;
+	println!("nilai nanti: {}", nanti);
+
+	let kondisi = true;
+	let hasil;
+	if kondisi {
+		hasil = 10;
+	} else {
+		hasil = 20;
+	}
+	println!("hasil: {}", hasil);
+
+	let _ = 42;
+	let _tidak_dipakai = 5;
+
+	println!("Nama aplikasi: {}", NAMA_APLIKASI);
+	println!("Skor maksimum: {}", MAX_SKOR);
+	println!("Bahasa: {}", BAHASA);
+
+	const BATAS_LOKAL: i32 = 10;
+	println!("Batas lokal: {}", BATAS_LOKAL);
+
+	println!("Selesai.");
+}
+\end{lstlisting}
+
+\end{document}
