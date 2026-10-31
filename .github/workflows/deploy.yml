@@ -19,15 +19,11 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Install TeX Live and make4ht
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y \
-            texlive-latex-extra \
-            texlive-fonts-recommended \
-            texlive-extra-utils \
-            latexmk
+      - name: Cache and Install TeX Live
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: texlive-latex-extra texlive-fonts-recommended texlive-extra-utils latexmk
+          version: 1.0
 
       - name: Build Site
         run: |
