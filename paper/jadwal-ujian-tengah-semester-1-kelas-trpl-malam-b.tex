@@ -1,0 +1,73 @@
+\documentclass[11pt,a4paper]{article}
+
+% 1. PENGATURAN DASAR & LANDSCAPE (MENDATAR)
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in, landscape]{geometry}
+\usepackage{tabularx} % Untuk tabel auto-lebar
+\usepackage{booktabs} % Garis tabel rapi
+\usepackage{multirow} % Menggabungkan sel (Hari/Tanggal)
+
+\begin{document}
+
+% 2. JUDUL SEDERHANA
+\begin{center}
+	{\LARGE \textbf{Jadwal Ujian Tengah Semester (UTS)}} \\
+	\vspace{0.3cm}
+	{\Large \textbf{Kelas TRPL Malam B}} \\
+	\vspace{0.5cm}
+	{\large Program Studi Teknik Rekayasa Perangkat Lunak} \\
+	Politeknik Negeri Batam \\
+	Semester Ganjil 2026/2027
+\end{center}
+
+\vspace{0.5cm}
+
+% 3. TABEL JADWAL (FONT SEDIKIT DIPERKECIL AGAR PASTI MUAT 1 HALAMAN)
+\noindent
+\small
+\renewcommand{\arraystretch}{1.5} % Spasi baris tabel dilonggarkan
+\begin{tabularx}{\textwidth}{@{} l l c X c c c @{}}
+	\toprule
+	\textbf{Hari} & \textbf{Jam}   & \textbf{Tanggal}            & \textbf{Mata Kuliah}                                                     & \textbf{Dosen}          & \textbf{Ruang} & \textbf{Kode} \\
+	\midrule
+
+	% === SENIN ===
+	\multirow{2}{*}{Senin}
+	              & 18:50 -- 19:40 & \multirow{2}{*}{2/11/2026}  & RPL106 -- Pengantar Basis Data                                           & AM                      & TA 12.4        & RPL106        \\
+	              & 19:40 -- 22:10 &                             & RPL106 -- Pengantar Basis Data (Praktikum)                               & AM                      & TA 12.4        & RPL106        \\
+	\midrule
+
+	% === SELASA (3 Nov) ===
+	\multirow{4}{*}{Selasa}
+	              & 18:00 -- 18:50 & \multirow{4}{*}{3/11/2026}  & RPL101 -- Pengantar Rekayasa Perangkat Lunak                             & MS                      & Online         & RPL101        \\
+	              & 19:40 -- 21:20 &                             & RPL103 -- Matematika Diskrit                                             & RK                      & Online         & RPL103        \\
+	              & 21:20 -- 22:10 &                             & RPL105 -- Pemrograman Berbasis Web                                       & NR                      & Online         & RPL105        \\
+	              & 22:10 -- 23:00 &                             & RPL102 -- Algoritma dan Pemrograman                                      & AY                      & Online         & RPL102        \\
+	\midrule
+
+	% === KAMIS ===
+	\multirow{2}{*}{Kamis}
+	              & 18:50 -- 19:40 & \multirow{2}{*}{5/11/2026}  & RPL104 -- Analisis dan Spesifikasi Kebutuhan Perangkat Lunak             & HK                      & TA 12.4        & RPL104        \\
+	              & 19:40 -- 22:10 &                             & RPL104 -- Analisis dan Spesifikasi Kebutuhan Perangkat Lunak (Praktikum) & HK                      & TA 12.4        & RPL104        \\
+	\midrule
+
+	% === SELASA (10 Nov) ===
+	Selasa
+	              & 20:30 -- 23:00 & 10/11/2026                  & RPL102 -- Algoritma dan Pemrograman (Praktikum)                          & AY                      & TA 12.4        & RPL102        \\
+	\midrule
+
+	% === RABU ===
+	\multirow{2}{*}{Rabu}
+	              & 18:00 -- 19:40 & \multirow{2}{*}{11/11/2026} & RPL101 -- Pengantar Rekayasa Perangkat Lunak (Praktikum)                 & IQ                      & TA 12.3B       & RPL101        \\
+	              & 20:30 -- 23:00 &                             & RPL105 -- Pemrograman Berbasis Web (Praktikum)                           & NR                      & TA 12.4        & RPL105        \\
+	\midrule
+
+	% === JUMAT ===
+	Jum'at
+	              & 18:00 -- 19:40 & 13/11/2026                  & PK001RPL -- Pendidikan Agama                                             & Izza/ Ester/ Laurensius & Online         & PK001RPL      \\
+
+	\bottomrule
+\end{tabularx}
+
+\end{document}
