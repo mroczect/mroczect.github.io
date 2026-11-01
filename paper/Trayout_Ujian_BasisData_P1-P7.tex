@@ -1,0 +1,161 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[scaled=0.92]{helvet}
+\usepackage{mathpazo}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tabularx}
+\usepackage[hidelinks]{hyperref}
+
+% --- SETUP ---
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
+\setlist[enumerate]{leftmargin=*, label=\textbf{\arabic*.}, itemsep=0.8em}
+\setlist[itemize]{leftmargin=*, itemsep=0.2em}
+
+% --- STYLES ---
+\definecolor{primary}{HTML}{1F3A5F}
+\definecolor{codebg}{HTML}{F4F5F7}
+
+\titleformat{\section}{\normalfont\large\bfseries\sffamily\color{primary}}{}{0em}{}[\vspace{-0.5em}\rule{\linewidth}{0.5pt}]
+\titleformat{\subsection}{\normalfont\normalsize\bfseries\sffamily\color{primary}}{}{0em}{}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{primary}\bfseries,
+    backgroundcolor=\color{codebg},
+    frame=none,
+    breaklines=true,
+    aboveskip=4pt,
+    belowskip=4pt,
+    xleftmargin=1em,
+    columns=fullflexible,
+    keepspaces=true
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\bfseries EVALUASI KOMPREHENSIF BASIS DATA (P1--P7)}
+\fancyhead[R]{\small\sffamily TRPL - Politeknik Negeri Batam}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{gray!50}\leaders\hrule height \headrulewidth\hfill}}
+
+\begin{document}
+
+\begin{center}
+	\Large\textbf{\sffamily UJIAN EVALUASI KOMPREHENSIF BASIS DATA} \\
+	\large\textbf{\sffamily (Materi P1 s.d. P7)} \\
+	\vspace{0.5em}
+	\normalsize Waktu: 120 Menit | Sifat: Tutup Buku
+\end{center}
+
+\vspace{1em}
+\noindent\textbf{Nama:} \rule{10cm}{0.4pt} \hfill \textbf{NIM:} \rule{3cm}{0.4pt}
+
+\section*{Bagian A: Pilihan Ganda Analitis (Bobot: 30\%)}
+\textit{Pilih satu jawaban yang paling tepat. Soal ini menguji ketelitian Anda terhadap konsep dasar.}
+
+\begin{enumerate}
+	\item Dalam pemodelan EERD Universitas (P3), entitas \textit{Sivitas} dispesialisasikan menjadi \textit{Dosen} dan \textit{Mahasiswa}. Aturan bisnis menyatakan bahwa seorang Sivitas tidak bisa menjadi keduanya sekaligus. Jenis constraint partisipasi dan disjointness yang tepat untuk kasus ini adalah...
+	      \begin{enumerate}[label=\Alph*.]
+		      \item Total Participation dan Overlapping.
+		      \item Partial Participation dan Disjoint.
+		      \item Total Participation dan Disjoint.
+		      \item Partial Participation dan Overlapping.
+	      \end{enumerate}
+
+	\item Perhatikan kasus Agregasi pada Sistem Konsultan IT (P3). Mengapa hubungan antara Karyawan, Proyek, dan Peralatan \textbf{harus} diselesaikan dengan Agregasi, bukan relasi Ternary biasa?
+	      \begin{enumerate}[label=\Alph*.]
+		      \item Karena Peralatan hanya bisa dipinjam oleh satu Karyawan saja.
+		      \item Karena Keterlibatan Proyek (Karyawan-Proyek) adalah entitas mandiri yang kemudian berelasi dengan Peralatan.
+		      \item Karena relasi Ternary tidak dapat menyimpan atribut Tambahan seperti \texttt{Tgl\_Pinjam}.
+		      \item Karena Karyawan dan Proyek memiliki Primary Key yang sama.
+	      \end{enumerate}
+
+	\item Dalam konversi ERD ke Relasional, jika terdapat relasi Many-to-Many (N:M) antara Entitas A dan Entitas B, maka aturan mutlak yang harus dilakukan adalah...
+	      \begin{enumerate}[label=\Alph*.]
+		      \item Menambahkan FK dari A ke tabel B.
+		      \item Menambahkan FK dari B ke tabel A.
+		      \item Membuat tabel baru yang berisi PK dari A dan B sebagai Composite Primary Key.
+		      \item Menggabungkan seluruh atribut A dan B menjadi satu tabel besar.
+	      \end{enumerate}
+
+	\item Pada DDL (P6), Anda diminta menyimpan data nominal uang (contoh: Rp 10.500,50) ke dalam database MySQL. Tipe data yang paling tepat dan efisien untuk menghindari pembulatan desimal yang salah adalah...
+	      \begin{enumerate}[label=\Alph*.]
+		      \item \texttt{FLOAT}
+		      \item \texttt{DOUBLE}
+		      \item \texttt{NUMERIC(9,2)}
+		      \item \texttt{VARCHAR(20)}
+	      \end{enumerate}
+
+	\item Perhatikan fungsi agregat pada DML (P7). Jika sebuah tabel memiliki 10 baris data, dan pada kolom \texttt{No\_Telepon} terdapat 3 baris yang bernilai \texttt{NULL}. Apa hasil dari perintah \texttt{SELECT COUNT(No\_Telepon) FROM Pelanggan;}?
+	      \begin{enumerate}[label=\Alph*.]
+		      \item 10
+		      \item 7
+		      \item 3
+		      \item 0
+	      \end{enumerate}
+
+	\item Anda mengeksekusi perintah: \texttt{SELECT * FROM MovieStar WHERE name LIKE '\_a\%';} (Perhatikan underscore di awal). Data nama manakah yang akan muncul?
+	      \begin{enumerate}[label=\Alph*.]
+		      \item Al Pacino
+		      \item Sean Penn
+		      \item Leonardo DiCaprio
+		      \item Tom Hanks
+	      \end{enumerate}
+\end{enumerate}
+
+\section*{Bagian B: Esai \& Studi Kasus (Bobot: 70\%)}
+\textit{Jawablah dengan sintaks SQL yang valid dan logika yang tepat.}
+
+\begin{enumerate}[start=7]
+	\item \textbf{(EERD to Relational Schema - 20 Poin)}\\
+	      Berdasarkan studi kasus \textbf{Sistem Informasi Manajemen Pengguna Universitas} (P3):
+	      \begin{itemize}
+		      \item Supertype: \texttt{Sivitas (ID\_Sivitas, Nama, Email)}
+		      \item Subtype 1: \texttt{Dosen (NIDN, Gelar)}
+		      \item Subtype 2: \texttt{Mahasiswa (NIM, Tahun\_Masuk)}
+		      \item Subtype dari Mahasiswa: \texttt{Mahasiswa\_S1 (SKS, IPK)} dan \texttt{Mahasiswa\_S2 (Judul\_Tesis, Pembimbing)}.
+	      \end{itemize}
+	      \textbf{Pertanyaan:}
+	      Jika Anda menggunakan strategi \textbf{Single Table Inheritance} (semua digabung jadi satu tabel besar dengan nilai \texttt{NULL} untuk atribut yang tidak relevan), tuliskan struktur tabel hasil konversinya secara lengkap! (Sebutkan nama kolom dan tentukan Primary Key-nya).
+
+	\item \textbf{(DDL - 20 Poin)}\\
+	      Berdasarkan skema perbankan pada modul P6, buatlah perintah SQL DDL untuk membuat tabel \texttt{atmwithdrawal} dengan spesifikasi berikut:
+	      \begin{itemize}
+		      \item Kolom \texttt{transaction\_id} (Integer, PK).
+		      \item Kolom \texttt{account\_number} (Char(3), FK ke tabel \texttt{account(number)}, dengan aturan jika akun dihapus maka data penarikan ikut terhapus).
+		      \item Kolom \texttt{amount} (Numeric(9,2), tidak boleh kosong).
+		      \item Kolom \texttt{withdraw\_date} (Date).
+		      \item Tambahkan aturan \texttt{CHECK} agar \texttt{amount} tidak boleh bernilai negatif.
+	      \end{itemize}
+
+	\item \textbf{(DML - 15 Poin)}\\
+	      Masih menggunakan database perbankan, tuliskan kueri SQL untuk menjawab:
+	      \begin{enumerate}[label=\alph*.]
+		      \item Tampilkan nama customer (\texttt{name}) dan saldo (\texttt{balance}) dari nasabah yang memiliki tipe akun \texttt{'checking'} dan saldonya di atas 1000. (Gunakan \texttt{JOIN} antara tabel \texttt{customer} dan \texttt{account}).
+		      \item Tampilkan total nominal penarikan (\texttt{amount}) dari tabel \texttt{atmwithdrawal} yang dilakukan pada bulan April tahun 2008 (format tanggal: YYYY-MM-DD).
+	      \end{enumerate}
+
+	\item \textbf{(Analisis Query - 15 Poin)}\\
+	      Pada database Movie Industry (P7), seorang analis menuliskan query berikut:
+	      \begin{lstlisting}[language=SQL]
+SELECT name
+FROM MovieStar, StarsIn, Movie
+WHERE MovieStar.name = StarsIn.starName
+AND StarsIn.movieTitle = Movie.title;
+	\end{lstlisting}
+	      \begin{enumerate}[label=\alph*.]
+		      \item Apa hasil akhir dari query di atas secara logis? (Menampilkan data apa?).
+		      \item Jika kita \textbf{menghapus} klausa \texttt{WHERE}-nya, apa yang akan terjadi pada hasil query? Sebutkan istilah kueri tersebut dalam ilmu basis data!
+	      \end{enumerate}
+\end{enumerate}
+
+\end{document}
