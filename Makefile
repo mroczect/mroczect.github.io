@@ -37,7 +37,7 @@ pdf: setup
 clean:
 	latexmk -C
 	@if [ -d "paper" ]; then cd paper && latexmk -C; fi
-	rm -rf dist *.html *.css *.4ct *.4tc *.idv *.lg *.tmp *.xref *.dvi
+	rm -rf dist *.html *.css *.4ct *.4tc *.idv *.lg *.tmp *.xref *.dvi *.pdf
 
 rebuild: clean all
 
