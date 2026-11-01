@@ -29,7 +29,7 @@
 
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small\sffamily Analisis Pemodelan Data: Entity Relationship Diagram}
+\fancyhead[L]{\small\sffamily Pengantar Konsep Basis Data Relasional}
 \fancyhead[R]{\small\sffamily\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
@@ -41,7 +41,7 @@
 	\begin{quote}}
 	{\end{quote}}
 
-\title{\vspace{-1.5cm}\textbf{\sffamily\LARGE Analisis Pemodelan Data: \\ Entity Relationship Diagram (ERD)}}
+\title{\vspace{-1.5cm}\textbf{\sffamily\LARGE Pengantar Konsep Basis Data Relasional:\\ Dari Data Mentah Menuju Sistem Terstruktur}}
 \author{
 	\textbf{Muhammad Riduwan Khafidi} \\
 	\small Program Studi Teknik Rekayasa Perangkat Lunak \\
@@ -56,159 +56,163 @@
 \thispagestyle{empty}
 
 \begin{abstract}
-	Perancangan basis data berskala besar tidak dapat dilakukan secara instan. Perancang seringkali dihadapkan pada kompleksitas kebutuhan pengguna yang sulit diterjemahkan langsung ke dalam tabel fisik. Untuk menjembatani celah ini, digunakanlah Entity Relationship Diagram (ERD) sebagai model konseptual. ERD memvisualisasikan entitas (objek dunia nyata), atribut (properti entitas), dan relasi (hubungan antar entitas) secara intuitif. Makalah ini membedah secara komprehensif seluruh anatomi ERD, mulai dari notasi dasar, jenis-jenis atribut, hirarki kunci (keys), derajat relasi, kardinalitas, batasan partisipasi, hingga konsep entitas lemah (weak entity). Pemahaman mendalam terhadap ERD merupakan fondasi mutlak sebelum skema konseptual ini dipetakan menjadi skema relasional yang siap diimplementasikan ke dalam DBMS.
+	Basis data (database) merupakan teknologi fundamental yang menopang hampir seluruh sistem digital di era modern. Mulai dari aplikasi e-commerce, sistem pemetaan, portal akademik, hingga analisis performa klub sepak bola, semuanya bergantung pada pengelolaan data yang efisien. Makalah ini membedah konsep dasar basis data sebagaimana dipaparkan dalam modul pengantar basis data. Pembahasan dimulai dari perbedaan mendasar antara \textit{datum} dan \textit{data}, definisi basis data, tujuan perancangannya, keterbatasan penyimpanan konvensional (seperti Excel), hingga konsep Basis Data Relasional (RDB) beserta tahapan perancangannya. Melalui visualisasi diagram yang komprehensif, makalah ini bertujuan untuk memberikan pemahaman holistik mengenai bagaimana data mentah diubah menjadi informasi yang terstruktur dan bernilai guna.
 \end{abstract}
 
-\section{Mengapa Kita Membutuhkan ERD?}
+\section{Pendahuluan: Basis Data Ada di Mana-Mana}
 
-Bayangkan seorang arsitek yang akan membangun gedung pencakar langit. Ia tidak akan langsung menyuruh tukang untuk menyusun batu bata. Ia harus menggambar blueprint (cetak biru) terlebih dahulu. Begitu pula dalam pembuatan basis data. Pada skala kecil, perancang mungkin bisa langsung memutuskan struktur tabelnya. Namun, pada aplikasi berskala besar, seringkali tidak ada satu orang pun yang memahami secara menyeluruh data apa saja yang dibutuhkan.
+Pernahkah kita menyadari bahwa setiap aplikasi yang kita gunakan saat ini—mulai dari \textit{e-commerce} seperti Shopee, aplikasi peta seperti Google Maps, sistem informasi akademik kampus, hingga media sosial—tidak bisa berjalan tanpa adanya basis data? Basis data bersifat \textit{ubiquitous} (ada di mana-mana). Perusahaan raksasa seperti Google dan Facebook membangun pusat data (\textit{data center}) raksasa yang berisi ribuan server untuk menyimpan miliaran baris data pengguna mereka.
 
-Di sinilah Entity Relationship Diagram (ERD) berperan. ERD adalah teknik pemodelan data tingkat konseptual yang mengilustrasikan secara visual entitas dan relasi di dalam sebuah sistem. ERD bertindak sebagai bahasa universal yang menjembatani komunikasi antara perancang basis data dengan *customer* (pengguna). Melalui ERD, kita dapat memetakan integritas batasan (*integrity constraints*) dan aturan bisnis (*business rules*) sebelum menuliskan satu baris kode SQL pun.
+Penggunaan data tidak hanya terbatas pada aplikasi digital. Dalam dunia olahraga, klub sepak bola Liverpool FC menggunakan analisis \textit{data science} yang luar biasa untuk membantu pelatih mengambil keputusan taktis di tengah pertandingan secara \textit{real-time}. Hal ini menegaskan satu hal: data adalah "minyak baru" (\textit{data is the new oil}) yang harus ditambang, diolah, dan didistribusikan agar memiliki nilai.
 
-\section{Anatomi Dasar: Entitas, Atribut, dan Relasi}
+\section{Datum vs Data: Memahami Atom Informasi}
 
-Sebuah ERD tersusun dari tiga komponen utama. Pertama adalah \textbf{Entitas} (\textit{Entity}), yaitu objek di dunia nyata yang dapat dibedakan dari objek lain, misalnya "Pegawai", "Departemen", atau "Mahasiswa". Dalam diagram, entitas digambarkan dengan persegi panjang. Kumpulan entitas yang serupa disebut \textit{Entity Set}, dan setiap entitas set wajib memiliki kunci (\textit{key}).
+Sebelum melangkah lebih jauh, kita harus memahami perbedaan antara \textit{datum} dan \textit{data}. Secara etimologis, kata "data" merupakan bentuk jamak dari kata Latin "datum". Sebuah \textit{datum} adalah satu fakta tunggal, satu entitas, atau satu titik materi yang direkam. Sementara itu, data adalah kumpulan dari fakta-fakta yang direkam tersebut. Data pada dasarnya tidak memiliki arti sebelum diinterpretasikan.
 
-Kedua adalah \textbf{Atribut}, yaitu properti yang melekat pada entitas. Misalnya, entitas "Pegawai" memiliki atribut "Nama", "Nomor Pegawai", dan "Tanggal Lahir". Sebuah atribut dilambangkan dengan elips.
-
-Ketiga adalah \textbf{Relasi} (\textit{Relationship}), yaitu hubungan yang terjadi antar entitas, misalnya "Pegawai" bekerja di "Departemen". Relasi digambarkan dengan belah ketupat (\textit{diamond}). Sebuah relasi juga bisa memiliki atribut sendiri, seperti atribut "Mulai" yang menyimpan tanggal kapan seorang pegawai mulai bekerja di departemen tersebut.
-
-\subsection{Tipe-Tipe Atribut}
-Tidak semua atribut digambarkan dengan cara yang sama. Terdapat beberapa tipe atribut khusus yang penting untuk dipahami. Perhatikan Gambar \ref{fig:atribut} di bawah ini.
+Sebagai ilustrasi, perhatikanlah alur transformasi pada Gambar \ref{fig:datum} di bawah ini. Angka "100" atau kata "Baik" hanyalah sebuah \textit{datum} jika berdiri sendiri. Namun, ketika kumpulan \textit{datum} tersebut dikaitkan dengan konteks kolom (misalnya, Sekolah A memiliki 100 siswa dengan kondisi Baik), barulah ia berevolusi menjadi sebuah informasi yang bermakna.
 
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[
-			entity/.style={draw, rectangle, minimum width=2.5cm, minimum height=1cm, fill=blue!10, thick, font=\sffamily},
-			attr/.style={draw, ellipse, minimum width=2cm, minimum height=0.8cm, fill=green!10, font=\small\sffamily},
-			multi/.style={draw, ellipse, double, double distance=2pt, minimum width=2cm, minimum height=0.8cm, fill=green!10, font=\small\sffamily},
-			derived/.style={draw, ellipse, dashed, minimum width=2cm, minimum height=0.8cm, fill=orange!10, font=\small\sffamily},
-			link/.style={thick, color=gray!80!black}
+			node distance=2cm,
+			box/.style={draw, rectangle, rounded corners=3pt, minimum width=3cm, minimum height=1.2cm, align=center, fill=blue!5, drop shadow={opacity=0.2}, font=\sffamily},
+			arrow/.style={->, >=Stealth, thick, color=gray!80!black}
 		]
-		\node[entity] (pegawai) at (0,0) {Pegawai};
+		\node[box] (d1) at (0,2) {\textbf{Datum}\\ Angka: 100};
+		\node[box] (d2) at (0,0) {\textbf{Datum}\\ Kondisi: Baik};
 
-		\node[attr] (nopeg) at (-3,0) {\underline{nopeg}};
-		\draw[link] (pegawai) -- (nopeg);
+		\node[box, fill=green!10] (data) at (4.5,1) {\textbf{Data Terstruktur}\\ (Sekolah A, 100, Baik)};
+		\node[box, fill=orange!15] (info) at (9.5,1) {\textbf{Informasi}\\ Sekolah A memiliki 100\\ siswa dengan kondisi baik};
 
-		\node[multi] (notelp) at (3,0) {notelp};
-		\draw[link] (pegawai) -- (notelp);
-
-		\node[derived] (umur) at (3,-2) {umur};
-		\draw[link, dashed] (pegawai) -- (umur);
-
-		\node[attr] (nama) at (0,2.5) {nama};
-		\node[attr, fill=gray!10] (namadpn) at (-1.5,4) {namadpn};
-		\node[attr, fill=gray!10] (namablk) at (1.5,4) {namablk};
-		\draw[link] (pegawai) -- (nama);
-		\draw[link] (nama) -- (namadpn);
-		\draw[link] (nama) -- (namablk);
+		\draw[arrow] (d1.east) -- (data.west);
+		\draw[arrow] (d2.east) -- (data.west);
+		\draw[arrow] (data.east) -- (info.west) node[midway, above, font=\footnotesize] {Interpretasi};
 	\end{tikzpicture}
-	\caption{Ilustrasi Ragam Tipe Atribut pada Entitas Pegawai.}
-	\label{fig:atribut}
+	\caption{Ilustrasi Transformasi \textit{Datum} Menjadi Informasi yang Bermakna.}
+	\label{fig:datum}
 \end{figure}
 
-Atribut \textbf{Simple} (seperti \texttt{nopeg}) tidak dapat dipecah lagi. Atribut yang menjadi \textbf{Primary Key} (Kunci Utama) ditandai dengan garis bawah. Atribut \textbf{Composite} (seperti \texttt{nama}) dapat dipecah menjadi bagian yang lebih kecil (\texttt{namadpn} dan \texttt{namablk}). Atribut \textbf{Multi-valued} (seperti \texttt{notelp}) memungkinkan satu entitas memiliki lebih dari satu nilai, dilambangkan dengan elips garis ganda. Terakhir, atribut \textbf{Derived} (seperti \texttt{umur}) nilainya dihasilkan (diturunkan) dari atribut lain (seperti tanggal lahir), dilambangkan dengan elips garis putus-putus.
+\section{Definisi dan Tujuan Basis Data}
 
-\section{Hirarki Kunci (Keys)}
+Secara harfiah, basis data (\textit{database}) adalah gabungan dari kata "data" dan "base" (basis). Basis data didefinisikan sebagai kumpulan data dalam jumlah besar yang diorganisasikan untuk pencarian dan pengambilan kembali secara cepat oleh komputer. Basis data juga memodelkan objek dunia nyata, yang terdiri dari entitas (misalnya: orang atau barang) dan relasi (misalnya: Tony tinggal di Jalan Ahmad Yani).
 
-Dalam basis data, tidak boleh ada dua entitas yang benar-benar identik. Oleh karena itu, kita membutuhkan sebuah Kunci (\textit{Key}) untuk membedakannya. Proses identifikasi kunci ini memiliki tahapan bertingkat.
+Mengapa kita membutuhkan basis data? Sistem penyimpanan data memiliki beberapa tujuan utama. Pertama, kecepatan dan efisiensi ruang penyimpanan. Kedua, akurasi data yang dijaga menggunakan batasan data (\textit{data constraints}) agar tidak ada data ganda. Ketiga, ketersediaan (\textit{availability}) dan kelengkapan, di mana jika data belum lengkap, struktur dapat ditambahkan. Keempat, keamanan (\textit{security}) melalui manajemen pengguna. Terakhir, kemampuan untuk dibagikan (\textit{sharability}), memungkinkan banyak pengguna mengakses dan berbagi basis data yang sama secara bersamaan.
 
-Langkah pertama adalah \textbf{Superkey}, yaitu satu atau lebih atribut yang secara unik dapat membedakan setiap entitas. Dari superkey ini, kita memilih yang paling minimal (tanpa atribut mubazir) yang disebut \textbf{Candidate Key}. Terakhir, dari beberapa kandidat, kita memilih satu yang paling representatif sebagai \textbf{Primary Key} (Kunci Utama). Sebagai contoh, atribut \texttt{NIK} atau \texttt{NIM} biasanya dipilih sebagai Primary Key, bukan atribut \texttt{Nama}, karena nama bisa saja sama.
+\section{Keterbatasan Excel dan Hadirnya Basis Data Relasional}
 
-\section{Derajat Relasi dan Peran}
+Sebagai mahasiswa, kita sering menggunakan Microsoft Excel atau Google Sheets untuk menyimpan data. Excel memang simpel, mudah dibagikan, dan mudah untuk melakukan operasi tambah, edit, serta hapus data. Namun, ketika data sudah mencapai ribuan baris (misalnya data mahasiswa Polibatam), Excel mulai menunjukkan kelemahannya. Ukuran file yang membengkak membuat proses pengolahan menjadi lambat, terjadi duplikasi data (\textit{redundancy}), dan yang paling krusial adalah sulitnya menghubungkan data satu dengan yang lain. Misalnya, jika ingin mencari tahu "Siapa saja mahasiswa yang mengambil mata kuliah Basis Data?", kita harus melakukan pencarian manual yang melelahkan. Belum lagi masalah versi data (jika satu orang mengubah data, orang lain mungkin belum melihat perubahannya) dan masalah keamanan (siapa saja bisa mengedit).
 
-Relasi antar entitas memiliki tingkat kompleksitas yang disebut Derajat Relasi (\textit{Degree of Relationship}). Relasi paling sederhana adalah \textbf{Unary} (satu entitas berelasi dengan dirinya sendiri, misalnya Pegawai memiliki atasan sesama Pegawai). \textbf{Binary} adalah relasi antara dua entitas (Pegawai dengan Departemen). Sedangkan \textbf{Ternary} melibatkan tiga entitas sekaligus, seperti pada Gambar \ref{fig:ternary}.
+Untuk mengatasi masalah ini, muncullah konsep Basis Data Relasional (RDB). RDB mengorganisir data ke dalam tabel-tabel, baris (\textit{records}), dan kolom. Keunggulan utamanya adalah kemampuannya membangun relasi yang terdefinisi dengan baik antar tabel. Tabel-tabel tersebut saling berkomunikasi dan berbagi informasi, sehingga memudahkan pencarian data yang kompleks. RDB menggunakan Structured Query Language (SQL) sebagai bahasa standarnya.
+
+Sebagai ilustrasi relasi, perhatikan Gambar \ref{fig:rdb_tables} di bawah ini. Terdapat tiga tabel terpisah: Tabel Mahasiswa (MHS), Tabel Mata Kuliah (MKUL), dan Tabel Nilai (NILAI). Tabel Nilai bertindak sebagai jembatan yang menghubungkan mahasiswa dengan mata kuliah yang mereka ambil.
 
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[
-			entity/.style={draw, rectangle, minimum width=2cm, minimum height=1cm, fill=blue!10, thick, font=\sffamily},
-			relation/.style={draw, diamond, aspect=2, minimum width=2.5cm, minimum height=1cm, fill=red!10, thick, font=\sffamily}
+			table/.style={draw, rectangle, fill=white, thick, align=center, drop shadow={opacity=0.15}},
+			header/.style={fill=blue!15, font=\bfseries\sffamily},
+			cell/.style={minimum width=1.8cm, minimum height=0.5cm, font=\small\sffamily}
 		]
-		\node[entity] (pegawai) at (0,2) {Pegawai};
-		\node[entity] (dept) at (6,2) {Departemen};
-		\node[entity] (job) at (3,-1.5) {Pekerjaan};
-		\node[relation] (kerja) at (3,2) {Bekerja\_di};
+		\node[table] (mhs) at (0,0) {
+			\begin{tabular}{c c c}
+				\multicolumn{3}{c}{\textbf{Mahasiswa (MHS)}} \\
+				\hline
+				\textbf{NPM}      & Nama      & Alamat       \\
+				\hline
+				\textbf{10296832} & Nurhayati & Jakarta      \\
+				\textbf{10296126} & Astuti    & Jakarta      \\
+				\textbf{31296500} & Budi      & Depok        \\
+				\hline
+			\end{tabular}
+		};
 
-		\draw[thick] (pegawai) -- (kerja);
-		\draw[thick] (dept) -- (kerja);
-		\draw[thick] (job) -- (kerja);
+		\node[table] (mkul) at (8,0) {
+			\begin{tabular}{c c c c}
+				\multicolumn{4}{c}{\textbf{Mata Kuliah (MKUL)}} \\
+				\hline
+				\textbf{KDMK}  & MTKULIAH      & SKS            \\
+				\hline
+				\textbf{KK021} & P. Basis Data & 2              \\
+				\textbf{KD132} & SIM           & 3              \\
+				\textbf{KU122} & Pancasila     & 2              \\
+				\hline
+			\end{tabular}
+		};
+
+		\node[table] (nilai) at (4,-4.5) {
+			\begin{tabular}{c c c c}
+				\multicolumn{4}{c}{\textbf{Nilai (NILAI)}}           \\
+				\hline
+				\textbf{NPM (FK)} & \textbf{KDMK (FK)} & MID & FINAL \\
+				\hline
+				\textbf{10296832} & \textbf{KK021}     & 60  & 75    \\
+				\textbf{10296126} & \textbf{KD132}     & 70  & 90    \\
+				\textbf{31296500} & \textbf{KK021}     & 55  & 40    \\
+				\hline
+			\end{tabular}
+		};
+
+		\draw[->, dashed, thick, red!80!black] (mhs.south) -- (nilai.north west) node[midway, left, text=red!80!black, font=\footnotesize] {Relasi NPM};
+		\draw[->, dashed, thick, red!80!black] (mkul.south) -- (nilai.north east) node[midway, right, text=red!80!black, font=\footnotesize] {Relasi KDMK};
 	\end{tikzpicture}
-	\caption{Relasi Ternary antara Pegawai, Departemen, dan Pekerjaan.}
-	\label{fig:ternary}
+	\caption{Contoh Relasi Antar Tabel dalam Basis Data Relasional.}
+	\label{fig:rdb_tables}
 \end{figure}
 
-Selain derajat, entitas yang sama dapat memiliki peran (\textit{role}) yang berbeda. Contoh klasiknya adalah relasi \textit{Bertanggung\_jawab\_pada} antar entitas Pegawai. Di sini, Pegawai berperan sebagai "Supervisor" bagi pegawai lainnya, dan berperan sebagai "Bawahan" bagi supervisor tersebut.
+\section{Tahapan Perancangan Basis Data}
 
-\section{Kardinalitas (Cardinality)}
-
-Kardinalitas mendefinisikan jumlah maksimum entitas yang dapat diasosiasikan dengan entitas lain melalui sebuah relasi. Terdapat empat jenis kardinalitas utama: One-to-One (1:1), One-to-Many (1:N), Many-to-One (N:1), dan Many-to-Many (N:M).
-
-Sebagai contoh, relasi \textit{Mengelola} antara Pegawai dan Departemen. Jika aturannya adalah "Setiap departemen hanya memiliki paling banyak satu manajer", dan "Seorang manajer bisa mengelola beberapa departemen", maka ini adalah relasi One-to-Many (dari sisi Pegawai) atau Many-to-One (dari sisi Departemen).
-
-Dalam notasi ERD (seperti yang terlihat pada Gambar \ref{fig:cardinality}), kehadiran tanda panah (\textit{arrow}) pada ujung garis relasi memiliki makna spesifik: \textbf{"Paling banyak satu"} (at most one). Tanda panah ini tidak menjamin keberadaan entitas, hanya membatasi jumlahnya.
+Membangun basis data tidak bisa dilakukan secara sembarangan. Terdapat alur perancangan yang sistematis sebelum data dimasukkan ke dalam sistem manajemen basis data (DBMS). Alur ini dimulai dari kebutuhan pengguna hingga menjadi sistem yang siap pakai.
 
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[
-			entity/.style={draw, rectangle, minimum width=2.5cm, minimum height=1cm, fill=blue!10, thick, font=\sffamily, drop shadow={opacity=0.2}},
-			relation/.style={draw, diamond, aspect=2.5, minimum width=3cm, minimum height=1.2cm, fill=red!10, thick, font=\sffamily, drop shadow={opacity=0.2}},
-			line/.style={thick, color=gray!80!black}
+			node distance=1.8cm,
+			block/.style={draw, rectangle, rounded corners=5pt, text width=3.2cm, align=center, minimum height=1.2cm, fill=cyan!10, drop shadow={opacity=0.2}, font=\sffamily\small},
+			arrow/.style={->, >=Stealth, thick, color=gray!80!black}
 		]
-		\node[entity] (pegawai) at (-4,0) {Pegawai};
-		\node[entity] (dept) at (4,0) {Departemen};
-		\node[relation] (mengelola) at (0,0) {Mengelola};
+		\node[block] (analisis) {\textbf{1. Analisis}\\ Kebutuhan Sistem};
+		\node[block, right=of analisis] (er) {\textbf{2. Pemodelan}\\ Entity-Relationship};
+		\node[block, right=of er] (relasi) {\textbf{3. Skema}\\ Relasional (Tabel)};
+		\node[block, right=of relasi] (dbms) {\textbf{4. Implementasi}\\ DBMS \& Query};
 
-		\draw[line, -{Stealth[length=3mm]}] (mengelola.west) -- (pegawai.east);
-		\draw[line] (mengelola.east) -- (dept.west);
+		\draw[arrow] (analisis) -- (er);
+		\draw[arrow] (er) -- (relasi);
+		\draw[arrow] (relasi) -- (dbms);
 	\end{tikzpicture}
-	\caption{Relasi Many-to-One dengan Tanda Panah "Paling Banyak Satu" pada Sisi Pegawai.}
-	\label{fig:cardinality}
+	\caption{Alur Perancangan Basis Data.}
+	\label{fig:design_flow}
 \end{figure}
 
-\section{Batasan Partisipasi (Participation Constraints)}
+Berdasarkan diagram di atas, tahap pertama adalah Analisis Kebutuhan, di mana perancang memahami data apa saja yang perlu disimpan. Tahap kedua adalah membuat Pemodelan Data, biasanya menggunakan Entity-Relationship (ER) Diagram untuk memetakan entitas dan relasinya. Tahap ketiga adalah menerjemahkan model tersebut menjadi Skema Relasional (tabel-tabel). Tahap terakhir adalah implementasi menggunakan perangkat lunak DBMS (seperti MySQL, PostgreSQL, Oracle) dan menuliskan \textit{query} SQL untuk mengelola datanya.
 
-Selain kardinalitas, kita juga harus mendefinisikan aturan partisipasi entitas di dalam sebuah relasi. Terdapat dua jenis partisipasi:
+\section{Komponen Ekosistem Basis Data}
 
-Pertama, \textbf{Partisipasi Total} (Total Participation), yang digambarkan dengan dua garis sejajar. Ini berarti setiap entitas dalam himpunan tersebut \textit{wajib} berpartisipasi dalam relasi. Contoh: Sebuah entitas "Pinjaman" (uang) tidak mungkin ada di dunia nyata tanpa ada "Customer" yang meminjamnya. Maka, partisipasi Pinjaman dalam relasi Peminjaman adalah total.
-
-Kedua, \textbf{Partisipasi Parsial} (Partial Participation), digambarkan dengan satu garis. Ini berarti beberapa entitas mungkin tidak berpartisipasi dalam relasi tersebut. Contoh: Tidak semua "Customer" harus memiliki "Pinjaman" (mungkin ia hanya punya tabungan).
-
-\section{Entitas Kuat vs Entitas Lemah}
-
-Sebuah entitas dikatakan \textbf{Entitas Kuat} (\textit{Strong Entity}) jika ia memiliki cukup atribut untuk membentuk Primary Key-nya sendiri (contoh: Pegawai dengan NIP).
-
-Sebaliknya, \textbf{Entitas Lemah} (\textit{Weak Entity}) adalah entitas yang tidak memiliki Primary Key sendiri. Keberadaannya sangat bergantung pada entitas lain (entitas kuat). Contoh klasik adalah entitas "Pembayaran" pada sebuah "Pinjaman". Sebuah pembayaran tidak akan pernah ada jika tidak ada pinjaman.
-
-Pada Gambar \ref{fig:weak}, entitas lemah digambarkan dengan persegi panjang bersusun dua (\textit{double rectangle}). Hubungannya dengan entitas kuat digambarkan dengan belah ketupat bersusun dua yang disebut relasi pengidentifikasi (\textit{Identifying Relationship}). Primary key dari entitas lemah didapat dari kombinasi Primary Key entitas kuat ditambah dengan \textit{Discriminator} (garis bawah putus-putus) miliknya sendiri. Jadi, Primary Key untuk Pembayaran adalah (no-pinjam, no-byr).
+Sebuah sistem basis data tidak berdiri sendiri. Ia terdiri dari beberapa komponen yang saling terkait untuk membentuk Sistem Basis Data (\textit{Database System}). Secara garis besar, komponen tersebut meliputi perangkat keras, sistem operasi, basis data itu sendiri, perangkat lunak DBMS (\textit{Database Management System}), pengguna, dan aplikasi pendukung. DBMS bertindak sebagai perantara cerdas yang mengelola data masuk, mengaturnya, dan menyediakan cara agar data tersebut dapat dimodifikasi atau diekstraksi oleh pengguna.
 
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[
-			strong/.style={draw, rectangle, minimum width=2.5cm, minimum height=1cm, fill=blue!15, thick, font=\sffamily},
-			weak/.style={draw, rectangle, double, double distance=2pt, minimum width=2.5cm, minimum height=1cm, fill=gray!15, thick, font=\sffamily},
-			ident/.style={draw, diamond, double, double distance=2pt, aspect=2, minimum width=4.5cm, minimum height=1.2cm, fill=red!15, thick, font=\small\sffamily, align=center}
+			box/.style={draw, rectangle, rounded corners=3pt, minimum width=2.8cm, minimum height=1.2cm, align=center, fill=teal!10, drop shadow={opacity=0.2}, font=\sffamily},
+			arrow/.style={->, >=Stealth, thick, color=gray!80!black}
 		]
-		\node[strong] (pinjam) at (0,0) {Pinjaman};
-		\node[weak] (bayar) at (10,0) {Pembayaran};
-		\node[ident] (rel) at (5,0) {Pembayaran\\Pinjaman};
+		\node[box] (user) at (0,0) {\textbf{Pengguna}\\ (User)};
+		\node[box] (app) at (4,0) {\textbf{Aplikasi}\\ (Frontend)};
+		\node[box, fill=yellow!20] (dbms) at (8,0) {\textbf{DBMS}\\ (MySQL, Oracle)};
+		\node[box, fill=blue!15] (db) at (12,0) {\textbf{Basis Data}\\ (Tabel, Record)};
 
-		\node[draw, ellipse, fill=gray!5, font=\small\sffamily] (nobyr) at (8.5,2) {\underline{\textit{no-byr}}};
-		\node[draw, ellipse, fill=gray!5, font=\small\sffamily] (jml) at (11.5,2) {jumlah};
-
-		\draw[thick] (bayar) -- (nobyr);
-		\draw[thick] (bayar) -- (jml);
-
-		\draw[thick, -{Stealth[length=3mm]}] (rel.west) -- (pinjam.east);
-		\draw[thick, double] (rel.east) -- (bayar.west);
+		\draw[arrow] (user) -- (app) node[midway, above, font=\footnotesize] {Input};
+		\draw[arrow] (app) -- (dbms) node[midway, above, font=\footnotesize] {Query (SQL)};
+		\draw[arrow] (dbms) -- (db) node[midway, above, font=\footnotesize] {Simpan/Ambil};
 	\end{tikzpicture}
-	\caption{Representasi Entitas Lemah (Pembayaran) dan Relasi Pengidentifikasinya.}
-	\label{fig:weak}
+	\caption{Interaksi Pengguna, Aplikasi, DBMS, dan Basis Data.}
+	\label{fig:dbms_flow}
 \end{figure}
 
-\section{Kesimpulan}
+\section{Kesimpulan dan Prospek ke Depan}
 
-Entity Relationship Diagram (ERD) adalah seni menerjemahkan kebutuhan bisnis yang rumit menjadi sebuah peta visual yang terstruktur. Melalui pemahaman terhadap anatomi entitas, atribut, relasi, hirarki kunci, kardinalitas, batasan partisipasi, hingga entitas lemah, seorang perancang basis data dapat membangun fondasi yang kokoh. ERD bukanlah sekadar gambar, melainkan kontrak konseptual yang memastikan bahwa data yang akan disimpan nantinya benar-benar merepresentasikan realitas bisnis secara akurat, efisien, dan bebas dari anomali.
+Memahami konsep dasar basis data adalah fondasi mutlak bagi siapa pun yang ingin terjun ke dunia rekayasa perangkat lunak. Kita telah belajar bahwa data adalah aset berharga yang harus diolah. Dari penyimpanan konvensional yang rentan terhadap redundansi (seperti Excel), kita beralih ke sistem yang lebih tangguh, yaitu Basis Data Relasional, yang mengedepankan hubungan antar entitas melalui tabel-tabel yang terstruktur.
+
+Bidang basis data menawarkan kontribusi besar bagi ilmu komputer dan memiliki prospek karier yang sangat cemerlang. Teknologi ini menjadi pintu gerbang menuju bidang-bidang lanjutan seperti Data Mining, Big Data, Business Intelligence, hingga profesi bergengsi sebagai Data Scientist. Sebagaimana dikatakan oleh David Buckingham, "Data is the new oil. We need to find it, extract it, refine it, distribute it and monetize it." (Data adalah minyak baru. Kita perlu menemukannya, mengekstraknya, memurnikannya, mendistribusikannya, dan memonetisasinya). Basis data adalah kilang minyak tempat kita memurnikan data mentah menjadi informasi yang berharga.
 
 \newpage
 \section*{Referensi}
@@ -216,10 +220,16 @@ Entity Relationship Diagram (ERD) adalah seni menerjemahkan kebutuhan bisnis yan
 
 \begin{thebibliography}{99}
 	\bibitem{lubis}
-	Lubis, A. I. (2026). \textit{Entity Relationship Diagram} [Slide Presentasi Mata Kuliah Pengantar Basis Data]. Politeknik Negeri Batam.
+	Lubis, A. I. (2026). \textit{Introduction to Database Concepts} [Slide Presentasi Mata Kuliah Pengantar Basis Data]. Politeknik Negeri Batam.
 
 	\bibitem{silberschatz}
 	Silberschatz, A., Korth, H. F., \& Sudarshan, S. (2019). \textit{Database System Concepts} (7th ed.). McGraw-Hill Education.
+
+	\bibitem{widyastuti}
+	Widyastuti, H. \textit{Slide Relational Database}. [Modul Perkuliahan].
+
+	\bibitem{santiputri}
+	Santiputri, M. \textit{Slide Basis Data}. [Modul Perkuliahan].
 \end{thebibliography}
 
 \end{document}
