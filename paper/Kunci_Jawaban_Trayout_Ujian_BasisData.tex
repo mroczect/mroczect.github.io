@@ -1,0 +1,165 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[scaled=0.92]{helvet}
+\usepackage{mathpazo}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tabularx}
+\usepackage[hidelinks]{hyperref}
+
+% --- SETUP ---
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
+\setlist[enumerate]{leftmargin=*, label=\textbf{\arabic*.}, itemsep=1em}
+\setlist[itemize]{leftmargin=*, itemsep=0.2em}
+
+% --- STYLES ---
+\definecolor{primary}{HTML}{1F3A5F}
+\definecolor{correct}{HTML}{1E8449} % Warna hijau untuk jawaban
+\definecolor{codebg}{HTML}{F4F5F7}
+
+\titleformat{\section}{\normalfont\large\bfseries\sffamily\color{primary}}{}{0em}{}[\vspace{-0.5em}\rule{\linewidth}{0.5pt}]
+\titleformat{\subsection}{\normalfont\normalsize\bfseries\sffamily\color{primary}}{}{0em}{}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{primary}\bfseries,
+    backgroundcolor=\color{codebg},
+    frame=none,
+    breaklines=true,
+    aboveskip=4pt,
+    belowskip=4pt,
+    xleftmargin=1em,
+    columns=fullflexible,
+    keepspaces=true
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\bfseries KUNCI JAWABAN EVALUASI KOMPREHENSIF (P1--P7)}
+\fancyhead[R]{\small\sffamily TRPL - Politeknik Negeri Batam}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{gray!50}\leaders\hrule height \headrulewidth\hfill}}
+
+\begin{document}
+
+\begin{center}
+	\Large\textbf{\sffamily KUNCI JAWABAN \& RUBRIK PENILAIAN} \\
+	\large\textbf{\sffamily UJIAN EVALUASI KOMPREHENSIF BASIS DATA}
+\end{center}
+
+\vspace{1em}
+
+\section*{Bagian A: Pilihan Ganda Analitis (Bobot: 30\% / 5 Poin per Soal)}
+
+\begin{enumerate}
+	\item \textbf{Jawaban: C} (Total Participation dan Disjoint) \\
+	      \textit{Penjelasan:} Total Participation (garis ganda) karena setiap Sivitas \textbf{wajib} terdaftar sebagai Dosen atau Mahasiswa. Disjoint (simbol 'd' atau garis pisah) karena aturan bisnis melarang seseorang menjadi Dosen dan Mahasiswa sekaligus.
+
+	\item \textbf{Jawaban: B} (Karena Keterlibatan Proyek adalah entitas mandiri...) \\
+	      \textit{Penjelasan:} Agregasi (P3) digunakan ketika sebuah relasi (Bekerja\_Pada) memiliki relasi lain dengan entitas berbeda (Peralatan). Relasi Bekerja\_Pada diperlakukan sebagai entitas utuh agar dapat dihubungkan dengan Peralatan.
+
+	\item \textbf{Jawaban: C} (Membuat tabel baru yang berisi PK dari A dan B) \\
+	      \textit{Penjelasan:} Relasi N:M tidak bisa diselesaikan hanya dengan menaruh FK di salah satu tabel. Mutlak harus membuat tabel *Bridge* (penghubung) yang menampung PK kedua entitas sebagai *Composite Primary Key* (P4/P5).
+
+	\item \textbf{Jawaban: C} (\texttt{NUMERIC(9,2)}) \\
+	      \textit{Penjelasan:} Tipe data uang/desimal (P6) tidak boleh menggunakan \texttt{FLOAT} atau \texttt{DOUBLE} karena rentan terhadap *floating-point error* (pembulatan). \texttt{NUMERIC} atau \texttt{DECIMAL} menjamin presisi angka secara eksak.
+
+	\item \textbf{Jawaban: B} (7) \\
+	      \textit{Penjelasan:} Fungsi agregat \texttt{COUNT(Nama\_Kolom)} akan \textbf{mengabaikan} baris yang bernilai \texttt{NULL}. Jika ada 10 baris dan 3 baris bernilai \texttt{NULL}, maka hasilnya \(10 - 3 = 7\). (Berbeda dengan \texttt{COUNT(*)} yang akan menghasilkan 10).
+
+	\item \textbf{Jawaban: (Tidak ada yang tepat di opsi, namun secara logika menguji pemahaman \texttt{\_})} \\
+	      \textit{Penjelasan:} Wildcard \texttt{\_} berarti \textbf{tepat satu karakter apapun}. Query \texttt{LIKE '\_a\%'} berarti mencari string dengan 2 huruf pertama adalah "karakter apapun" diikuti huruf 'a'.
+	      \begin{itemize}
+		      \item Al Pacino (A-l) $\rightarrow$ Salah
+		      \item Sean Penn (S-e) $\rightarrow$ Salah
+		      \item Leonardo (L-e) $\rightarrow$ Salah
+		      \item Tom Hanks (T-o) $\rightarrow$ Salah
+	      \end{itemize}
+	      \textit{Rubrik:} Berikan poin penuh (5) jika mahasiswa menganalisis bahwa semua opsi salah namun menjelaskan logika \texttt{\_}. Berikan poin 2 jika mereka memilih acak tanpa alasan yang jelas.
+\end{enumerate}
+
+\vspace{1em}
+\section*{Bagian B: Esai \& Studi Kasus (Bobot: 70\%)}
+
+\subsection*{7. EERD to Relational Schema (20 Poin)}
+\textbf{Strategi Single Table Inheritance (Menggabungkan Semua Entitas):}
+Karena menggunakan strategi Single Table, seluruh atribut dari Supertype dan Subtype digabungkan menjadi satu tabel besar. Atribut yang tidak dimiliki oleh suatu baris akan diisi nilai \texttt{NULL}.
+
+\textbf{Struktur Tabel:}
+\begin{itemize}
+	\item \textbf{Table:} \texttt{Sivitas}
+	\item \textbf{Primary Key:} \texttt{ID\_Sivitas}
+	\item \textbf{Atribut Supertype:} \texttt{Nama}, \texttt{Email}
+	\item \textbf{Atribut Dosen:} \texttt{NIDN}, \texttt{Gelar}
+	\item \textbf{Atribut Mahasiswa:} \texttt{NIM}, \texttt{Tahun\_Masuk}
+	\item \textbf{Atribut Mahasiswa S1:} \texttt{SKS}, \texttt{IPK}
+	\item \textbf{Atribut Mahasiswa S2:} \texttt{Judul\_Tesis}, \texttt{Pembimbing}
+	\item \textbf{Discriminator / Pembeda (Opsional tapi nilai plus):} \texttt{Tipe\_Sivitas} (untuk membedakan apakah dia Dosen, Mhs S1, atau Mhs S2).
+\end{itemize}
+\textit{Rubrik:}
+\begin{itemize}
+	\item 5 Poin: Menyebutkan Nama Tabel dan PK dengan benar.
+	\item 5 Poin: Menggabungkan atribut Supertype dan Subtype level 1 (Dosen/Mhs).
+	\item 10 Poin: Menggabungkan seluruh atribut Subtype (termasuk S1 dan S2) ke dalam satu tabel.
+\end{itemize}
+
+\subsection*{8. DDL SQL (20 Poin)}
+\begin{lstlisting}[language=SQL]
+CREATE TABLE atmwithdrawal (
+    transaction_id INT PRIMARY KEY,
+    account_number CHAR(3),
+    amount NUMERIC(9,2) NOT NULL,
+    withdraw_date DATE,
+    FOREIGN KEY (account_number)
+        REFERENCES account(number)
+        ON DELETE CASCADE,
+    CHECK (amount >= 0)
+);
+\end{lstlisting}
+\textit{Rubrik:}
+\begin{itemize}
+	\item 5 Poin: Deklarasi tabel, kolom, dan tipe data tepat.
+	\item 5 Poin: \texttt{PRIMARY KEY} pada \texttt{transaction\_id} dan \texttt{NOT NULL} pada amount.
+	\item 5 Poin: \texttt{FOREIGN KEY} dan \texttt{ON DELETE CASCADE} ditulis dengan benar.
+	\item 5 Poin: Constraint \texttt{CHECK (amount >= 0)} ditulis dengan benar.
+\end{itemize}
+
+\subsection*{9. DML SQL (15 Poin)}
+\textbf{a. Menampilkan Nama dan Saldo Nasabah Checking di atas 1000 (7.5 Poin)}
+\begin{lstlisting}[language=SQL]
+SELECT customer.name, account.balance
+FROM customer
+JOIN account ON customer.id = account.cust_id
+WHERE account.type = 'checking'
+  AND account.balance > 1000;
+\end{lstlisting}
+\textit{Rubrik:} 3 Poin \texttt{JOIN ON} yang benar, 2.5 Poin \texttt{WHERE} klausa, 2 Poin \texttt{SELECT} kolom.
+
+\textbf{b. Menampilkan Total Penarikan Bulan April 2008 (7.5 Poin)}
+\begin{lstlisting}[language=SQL]
+SELECT SUM(amount)
+FROM atmwithdrawal
+WHERE withdraw_date BETWEEN '2008-04-01' AND '2008-04-30';
+-- ATAU menggunakan LIKE:
+-- WHERE withdraw_date LIKE '2008-04-%';
+\end{lstlisting}
+\textit{Rubrik:} 3 Poin fungsi \texttt{SUM()}, 4.5 Poin filter tanggal yang tepat.
+
+\subsection*{10. Analisis Query (15 Poin)}
+\textbf{a. Apa hasil logis dari query tersebut? (5 Poin)}\\
+Query tersebut akan menampilkan daftar nama aktor (\texttt{MovieStar.name}) yang pernah membintangi suatu film, dengan syarat nama aktor tersebut ada di tabel \texttt{StarsIn}, dan judul filmnya ada di tabel \texttt{Movie}. (Menghubungkan 3 tabel menggunakan \texttt{WHERE} sebagai jembatan relasi).
+
+\textbf{b. Apa yang terjadi jika klausa WHERE dihapus? (10 Poin)}\\
+Jika klausa \texttt{WHERE} dihapus, hasilnya adalah **Cartesian Product** (Perkalian Kartesian / Cross Join).
+Sistem akan mengalikan setiap baris di tabel \texttt{MovieStar} dengan setiap baris di tabel \texttt{StarsIn}, lalu dikalikan lagi dengan setiap baris di tabel \texttt{Movie}.
+Hasilnya adalah data sampah (tidak berelasi) dalam jumlah yang sangat besar (Misal: 10 Star $\times$ 20 StarsIn $\times$ 15 Movie = 3.000 baris data acak).
+
+\end{document}
