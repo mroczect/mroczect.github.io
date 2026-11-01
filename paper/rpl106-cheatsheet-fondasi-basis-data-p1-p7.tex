@@ -1,0 +1,255 @@
+\documentclass[10pt,a4paper]{article}
+
+% --- PACKAGES ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[scaled=0.92]{helvet}
+\usepackage{mathpazo}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage[hidelinks]{hyperref}
+
+% --- SETUP ---
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+\setlist[itemize]{leftmargin=*, noitemsep, topsep=0pt, parsep=0pt}
+\setlist[enumerate]{leftmargin=*, noitemsep, topsep=0pt, parsep=0pt}
+
+% --- COLORS & STYLES ---
+\definecolor{codeblue}{rgb}{0.1,0.2,0.6}
+\definecolor{codegray}{rgb}{0.4,0.4,0.4}
+\definecolor{codebg}{rgb}{0.96,0.96,0.96}
+
+\titleformat{\section}{\normalfont\large\bfseries\sffamily\color{codeblue}}{}{0em}{}[\titlerule]
+\titlespacing*{\section}{0pt}{1.5ex}{1ex}
+
+\titleformat{\subsection}{\normalfont\small\bfseries\sffamily}{}{0em}{}
+\titlespacing*{\subsection}{0pt}{1ex}{0.5ex}
+
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{codeblue}\bfseries,
+    backgroundcolor=\color{codebg},
+    frame=single,
+    rulecolor=\color{codegray!30},
+    breaklines=true,
+    aboveskip=2pt,
+    belowskip=2pt
+}
+
+% Header & Footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\bfseries Cheat Sheet Fondasi Basis Data (P1-P7)}
+\fancyhead[R]{\small\sffamily Muhammad Riduwan Khafidi}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Custom box for Tips
+\newtcolorbox{tipbox}{
+    colback=gray!5, colframe=gray!40,
+    boxrule=0.5pt, arc=2pt,
+    left=4pt, right=4pt, top=4pt, bottom=4pt,
+    fontupper=\small\sffamily
+}
+
+\begin{document}
+
+\begin{multicols*}{2}
+
+	% ==========================================
+	% BAGIAN 1: KONSEP DASAR & ERD
+	% ==========================================
+	\section{Konsep Dasar & ERD (P1-P3)}
+
+	\textbf{Data vs Database:} Data = fakta mentah. Database = kumpulan data terorganisir yang saling berelasi. DBMS = software pengelola (MySQL, Oracle, dll).
+
+	\textbf{Komponen ERD:}
+	\begin{itemize}
+		\item \textbf{Entitas (Kotak):} Objek nyata (Pegawai, Barang).
+		\item \textbf{Atribut (Elips):} Properti entitas.
+		      \begin{itemize}
+			      \item \textit{Primary Key:} Digarisbawahi.
+			      \item \textit{Multivalued:} Elips ganda (No. Telp).
+			      \item \textit{Derivatif:} Elips putus-putus (Umur dari Tgl Lahir).
+		      \end{itemize}
+		\item \textbf{Relasi (Belah Ketupat):} Hubungan antar entitas.
+		\item \textbf{Weak Entity (Kotak Ganda):} Entitas tanpa PK, butuh entitas kuat.
+	\end{itemize}
+
+	\textbf{Kardinalitas Relasi:}
+	\begin{itemize}
+		\item \textbf{1:1} (Satu Dept punya satu Manajer).
+		\item \textbf{1:N} (Satu Dept punya banyak Pegawai).
+		\item \textbf{N:M} (Banyak Mahasiswa ambil banyak Matkul).
+	\end{itemize}
+
+	\textbf{Participation Constraints:}
+	\begin{itemize}
+		\item \textit{Total (Garis Ganda):} Wajib berpartisipasi (Pinjaman wajib punya nasabah).
+		\item \textit{Partial (Garis Tunggal):} Boleh tidak berpartisipasi.
+	\end{itemize}
+
+	\textbf{EERD (Enhanced ERD):}
+	\begin{itemize}
+		\item \textbf{Specialization/Generalization:} Sub-grouping (Dosen $\rightarrow$ Dosen Tetap / Tidak Tetap). Simbol segitiga "IS A".
+		\item \textbf{Aggregation:} Relasi diperlakukan sebagai entitas baru.
+	\end{itemize}
+
+	% ==========================================
+	% BAGIAN 2: MODEL RELASIONAL & KONVERSI
+	% ==========================================
+	\section{Model Relasional (P4-P5)}
+	\textbf{Istilah:} Relasi = Tabel, Tuple = Baris/Record, Atribut = Kolom/Field. Degree = jumlah kolom. Cardinality = jumlah baris.
+
+	\textbf{Jenis Key:}
+	\begin{itemize}
+		\item \textbf{Super Key:} Kumpulan atribut pembeda.
+		\item \textbf{Candidate Key:} Super key paling minimal.
+		\item \textbf{Primary Key (PK):} Candidate key yang dipilih.
+		\item \textbf{Foreign Key (FK):} Atribut yang merujuk PK tabel lain.
+	\end{itemize}
+
+	\textbf{Konversi ERD ke Tabel:}
+	\begin{enumerate}
+		\item \textbf{Entitas Kuat:} Jadi Tabel. Atribut jadi kolom, PK jadi Primary Key.
+		\item \textbf{Entitas Lemah:} Jadi Tabel. Tambahkan PK entitas kuat sebagai FK (wajib \texttt{ON DELETE CASCADE}).
+		\item \textbf{Relasi 1:1:} Tambahkan FK di salah satu tabel.
+		\item \textbf{Relasi 1:N:} Taruh FK di sisi "Many" (Banyak).
+		\item \textbf{Relasi N:M:} Buat \textbf{Tabel Baru} berisi PK dari kedua entitas (sebagai Composite PK).
+		\item \textbf{Multivalued:} Buat tabel baru (PK entitas asli + atribut multivalued).
+	\end{enumerate}
+
+	% ==========================================
+	% BAGIAN 3: DDL (P6)
+	% ==========================================
+	\section{DDL - Membuat Struktur (P6)}
+	\textbf{Tipe Data Penting:}
+	\begin{itemize}
+		\item \texttt{CHAR(n)}: Panjang tetap (boros memori, tapi cepat).
+		\item \texttt{VARCHAR(n)}: Panjang dinamis (hemat memori).
+		\item \texttt{INT}, \texttt{NUMERIC(p,d)}, \texttt{DATE}, \texttt{NULL}.
+	\end{itemize}
+
+	\textbf{Create \& Alter Table:}
+	\begin{lstlisting}[language=SQL]
+CREATE TABLE branch (
+  branch_name VARCHAR(15) NOT NULL,
+  assets INT,
+  PRIMARY KEY (branch_name),
+  CHECK (assets >= 0)
+);
+
+ALTER TABLE borrower
+  ADD b_date DATE; -- Tambah kolom
+ALTER TABLE borrower
+  CHANGE b_date birth_date DATE; -- Ganti nama
+ALTER TABLE borrower
+  DROP birth_date; -- Hapus kolom
+\end{lstlisting}
+
+	\textbf{Constraints Penting:}
+	\begin{itemize}
+		\item \texttt{NOT NULL}, \texttt{UNIQUE}, \texttt{CHECK (kondisi)}.
+		\item \texttt{FOREIGN KEY ... REFERENCES ... ON DELETE CASCADE}: Jika data induk dihapus, data anak ikut terhapus.
+	\end{itemize}
+
+	\textbf{Index (Kecepatan Pencarian):}
+	\begin{lstlisting}[language=SQL]
+CREATE INDEX branch_idx ON Account (branch_name);
+\end{lstlisting}
+	\textbf{CRUD (DML Dasar):}
+	\begin{lstlisting}[language=SQL]
+INSERT INTO account VALUES ('A-1', 'Batam', 2000);
+DELETE FROM account WHERE branch_name = 'Batam';
+UPDATE account SET balance = balance * 1.05 WHERE balance > 1000;
+\end{lstlisting}
+
+	% ==========================================
+	% BAGIAN 4: DML (P7)
+	% ==========================================
+	\section{DML - Query \& Manipulasi (P7)}
+	\textbf{Struktur Dasar:}
+	\begin{lstlisting}[language=SQL]
+SELECT A1, A2, ... FROM R1, R2 WHERE P;
+\end{lstlisting}
+
+	\textbf{Operator WHERE:}
+	\begin{itemize}
+		\item Logika: \texttt{AND, OR, NOT}.
+		\item Perbandingan: \texttt{=, >, >=, <, <=, <>}.
+		\item String: \texttt{LIKE} (\% = banyak karakter, \_ = 1 karakter).
+		\item Cek Kosong: \texttt{IS NULL} / \texttt{IS NOT NULL}.
+		\item Rentang: \texttt{IN ('102', '104')}, \texttt{BETWEEN 10 AND 20}.
+	\end{itemize}
+
+	\textbf{Fungsi Agregat (Hasil 1 Baris):}
+	\texttt{AVG, MIN, MAX, SUM, COUNT}.
+	\begin{lstlisting}[language=SQL]
+SELECT COUNT(*) FROM Customer;
+SELECT MIN(Balance), MAX(Balance) FROM Account;
+\end{lstlisting}
+
+	\textbf{Join 2 Tabel (FROM Extension):}
+	Menggabungkan 2 tabel dengan WHERE (menghindari Cartesian Product):
+	\begin{lstlisting}[language=SQL]
+SELECT A.Owner, A.Balance
+FROM Account A, Deposit D
+WHERE D.Account = A.Number AND D.Amount > 1000;
+\end{lstlisting}
+
+	\textbf{CASE Statement (Percabangan):}
+	\begin{lstlisting}[language=SQL]
+UPDATE account SET balance =
+  CASE
+    WHEN balance <= 1000 THEN balance * 1.05
+    ELSE balance * 1.06
+  END;
+\end{lstlisting}
+
+	% ==========================================
+	% BAGIAN 5: TIPS & TRIK (CONTEKAN)
+	% ==========================================
+	\section*{💡 Tips \& Trik Ujian / Praktikum}
+
+	\begin{tipbox}
+		\textbf{1. Hati-hati dengan NULL!}\\
+		Jangan pernah menulis \texttt{WHERE Address = NULL}. SQL tidak akan pernah mengembalikan hasil. Gunakan \texttt{WHERE Address IS NULL}.
+	\end{tipbox}
+
+	\begin{tipbox}
+		\textbf{2. Kapan pakai CHAR vs VARCHAR?}\\
+		Gunakan \texttt{CHAR} jika panjang datanya pasti (misal: Kode Negara 'ID', 'US'). Gunakan \texttt{VARCHAR} jika panjangnya bervariasi (misal: Nama, Alamat).
+	\end{tipbox}
+
+	\begin{tipbox}
+		\textbf{3. Bahaya Cartesian Product!}\\
+		Jika menulis \texttt{SELECT * FROM A, B} tanpa klausa \texttt{WHERE} yang menghubungkan PK dan FK, hasilnya adalah perkalian semua baris A dan B (Ribuan data sampah).
+	\end{tipbox}
+
+	\begin{tipbox}
+		\textbf{4. Kapan Index digunakan?}\\
+		Gunakan \texttt{INDEX} HANYA pada kolom yang sering dicari (\texttt{WHERE kolom = ...}). \textbf{JANGAN} gunakan pada tabel kecil atau tabel yang sering di-\textit{update}, karena setiap update akan memperlambat kinerja karena index harus diperbarui.
+	\end{tipbox}
+
+	\begin{tipbox}
+		\textbf{5. Ingat Aturan Konversi N:M!}\\
+		Relasi Many-to-Many (N:M) \textbf{TIDAK BISA} langsung dimasukkan sebagai Foreign Key di salah satu tabel. Wajib dibuatkan \textbf{Tabel Baru} (Tabel Penghubung/Bridge Table).
+	\end{tipbox}
+
+	\begin{tipbox}
+		\textbf{6. Perbedaan DELETE vs DROP:}\\
+		\texttt{DELETE FROM table} = Menghapus data (baris). Tabel masih ada.\\
+		\texttt{DROP TABLE table} = Menghapus struktur tabel secara permanen beserta datanya.
+	\end{tipbox}
+
+\end{multicols*}
+\end{document}
