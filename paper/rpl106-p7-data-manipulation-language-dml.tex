@@ -1,0 +1,306 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\usepackage[scaled=0.92]{helvet}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{microtype}
+
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+\setstretch{1.15}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.8em}
+\sloppy
+
+\titleformat{\section}{\normalfont\large\bfseries\sffamily}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries\sffamily}{\thesubsection}{1em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily Fondasi Basis Data: Data Manipulation Language}
+\fancyhead[R]{\small\sffamily\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\captionsetup{font=small,labelfont=bf,labelsep=period}
+
+% Palet warna minimalis untuk kode (sama seperti dokumen sebelumnya)
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0.1,0.2,0.6}
+\definecolor{codebg}{rgb}{0.97,0.97,0.97}
+
+\lstdefinestyle{sqlstyle}{
+	backgroundcolor=\color{codebg},
+	commentstyle=\color{codegray}\itshape,
+	keywordstyle=\color{codeblue}\bfseries,
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{black},
+	basicstyle=\ttfamily\small,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	keepspaces=true,
+	numbers=left,
+	numbersep=8pt,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	tabsize=2,
+	frame=single,
+	rulecolor=\color{codegray!30},
+	language=SQL
+}
+\lstset{style=sqlstyle}
+
+\renewenvironment{abstract}
+{\small
+	\begin{center}\textbf{\sffamily Abstrak}\end{center}
+	\begin{quote}}
+	{\end{quote}}
+
+\title{\vspace{-1.5cm}\textbf{\sffamily\LARGE Fondasi Basis Data: Data Manipulation Language (DML)}}
+\author{
+	\textbf{Muhammad Riduwan Khafidi} \\
+	\small Program Studi Teknik Rekayasa Perangkat Lunak \\
+	\small Politeknik Negeri Batam \\
+	\small \texttt{4342611034@students.polibatam.ac.id}
+}
+\date{\small\today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\begin{abstract}
+	Jika \textit{Data Definition Language} (DDL) berfungsi membangun struktur atau kerangka tabel, maka \textit{Data Manipulation Language} (DML) adalah pilar yang bertugas mengelola isi dari kerangka tersebut. Makalah ini membahas secara komprehensif perintah-perintah dasar DML dalam SQL, dengan fokus utama pada klausa \texttt{SELECT}, \texttt{FROM}, dan \texttt{WHERE}. Pembahasan mencakup teknik penyaringan data (\textit{filtering}), penggunaan operator logika, pencarian berbasis pola teks (\texttt{LIKE}), penggunaan fungsi agregat untuk meringkas data, hingga konsep penggabungan dua tabel (\textit{join}) menggunakan klausa \texttt{WHERE}. Pemahaman mendalam mengenai DML sangat krusial bagi seorang \textit{software engineer} untuk dapat berinteraksi secara dinamis dengan basis data.
+\end{abstract}
+
+\section{Pendahuluan: Struktur Dasar Query}
+
+Dalam SQL, mengambil atau memanipulasi data dilakukan melalui sebuah \textit{query} (kueri). Struktur dasar dari kueri SQL dapat dirumuskan sebagai berikut:
+
+\begin{center}
+	\texttt{SELECT} \(A_1, A_2, \dots, A_n\) \texttt{FROM} \(R_1, R_2, \dots, R_m\) \texttt{WHERE} \(P\)
+\end{center}
+
+Di mana:
+\begin{itemize}
+	\item \(A_i\) adalah \textit{selected field} (kolom yang ingin ditampilkan). Tanda bintang (*) berarti menampilkan semua kolom.
+	\item \(R_i\) adalah nama tabel yang akan diambil datanya.
+	\item \(P\) adalah \textit{requirement condition} (kondisi yang harus dipenuhi oleh data).
+\end{itemize}
+
+Sebagai contoh, kita memiliki beberapa tabel perbankan: \texttt{Account}, \texttt{Deposit}, \texttt{Check}, \texttt{ATMWithdrawal}, dan \texttt{Customer}. Misalkan kita memiliki tabel \texttt{ATMWithdrawal} seperti di bawah ini:
+
+\begin{table}[H]
+	\centering
+	\small
+	\caption{Tabel \texttt{ATMWithdrawal}}
+	\begin{tabularx}{0.9\textwidth}{@{} c c c X c @{}}
+		\toprule
+		\textbf{TransactionID} & \textbf{CustId} & \textbf{AcctNo} & \textbf{Amount} & \textbf{WithdrawDate} \\
+		\midrule
+		1                      & 1               & 102             & \$25.00         & 11/1/2000 9:45:00     \\
+		2                      & 1               & 102             & \$150.00        & 11/10/2000 13:15:00   \\
+		3                      & 2               & 101             & \$40.00         & 11/1/2000 10:05:00    \\
+		4                      & 2               & 100             & \$40.00         & 11/1/2000 10:07:00    \\
+		5                      & 2               & 100             & \$200.00        & 11/8/2000 14:14:00    \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+Jika kita ingin menampilkan kolom \texttt{AcctNo} dan \texttt{Amount} saja, kita menggunakan kueri dasar:
+\begin{lstlisting}
+SELECT AcctNo, Amount
+FROM ATMWithdrawal;
+\end{lstlisting}
+
+\section{Filtering Data dengan WHERE}
+
+Klausa \texttt{WHERE} digunakan untuk menyaring data sehingga hanya baris yang memenuhi kondisi tertentu yang akan ditampilkan. Contohnya, jika kita ingin menampilkan semua atribut dari tabel \texttt{ATMWithdrawal} di mana nilai \texttt{Amount} kurang dari 50:
+
+\begin{lstlisting}
+SELECT *
+FROM ATMWithdrawal
+WHERE Amount < 50;
+\end{lstlisting}
+Kueri di atas akan memeriksa setiap baris. Baris dengan Amount \$25.00 dan \$40.00 akan diloloskan, sedangkan baris \$150.00 dan \$200.00 akan diabaikan.
+
+\section{Ekstensi Klausa SELECT}
+
+SQL menyediakan berbagai ekstensi untuk memperkaya hasil kueri \texttt{SELECT}:
+
+\subsection{DISTINCT dan ALL}
+Secara default, SQL memperbolehkan adanya duplikasi data pada hasil kueri. Untuk menghilangkan duplikasi, gunakan kata kunci \texttt{DISTINCT} setelah \texttt{SELECT}. Sebaliknya, \texttt{ALL} secara eksplisit mempertahankan duplikasi (meskipun ini adalah perilaku *default*).
+\begin{lstlisting}
+SELECT DISTINCT AcctNo, Amount FROM Deposit;
+\end{lstlisting}
+
+\subsection{Ekspresi Aritmatika dan Alias (AS)}
+Kita dapat melakukan operasi matematika (+, -, *, /) pada kolom yang bertipe numerik. Selain itu, kita bisa memberikan nama baru pada kolom hasil (alias) menggunakan kata kunci \texttt{AS}.
+\begin{lstlisting}
+SELECT AcctNo AS Number, Amount * 10 AS Amt
+FROM ATMWithdrawal
+WHERE Amount < 50;
+\end{lstlisting}
+Pada kueri di atas, nilai \texttt{Amount} akan dikalikan 10, dan judul kolom pada hasilnya akan berubah menjadi \texttt{Number} dan \texttt{Amt}.
+
+\subsection{Fungsi Agregat (Aggregate Functions)}
+Fungsi agregat digunakan untuk melakukan perhitungan terhadap sekumpulan nilai dan mengembalikan satu nilai tunggal. Nilai yang diolah harus numerik.
+\begin{itemize}
+	\item \texttt{avg}: Nilai rata-rata
+	\item \texttt{min}: Nilai minimum
+	\item \texttt{max}: Nilai maksimum
+	\item \texttt{sum}: Jumlah total nilai
+	\item \texttt{count}: Jumlah banyaknya data
+\end{itemize}
+
+Contoh penggunaan:
+\begin{lstlisting}
+SELECT MIN(Balance), MAX(Balance), AVG(Balance) FROM Account;
+
+SELECT count(*) FROM Customer;
+
+SELECT avg(Amount) FROM Check WHERE Amount < 50;
+\end{lstlisting}
+
+\section{Ekstensi Klausa WHERE (Operator Lanjutan)}
+
+Selain operator perbandingan standar (\texttt{=, >, >=, <, <=, <>}), klausa \texttt{WHERE} mendukung berbagai operator logika dan pencocokan string.
+
+\subsection{Operator Logika}
+Gunakan \texttt{AND}, \texttt{OR}, dan \texttt{NOT} untuk menggabungkan beberapa kondisi.
+\begin{lstlisting}
+SELECT Number, CustID
+FROM Account
+WHERE Balance > 1000 AND TYPE = 'checking';
+\end{lstlisting}
+
+\subsection{Pengecekan Nilai Kosong (NULL)}
+Gunakan \texttt{IS NULL} atau \texttt{IS NOT NULL} untuk mencari data yang kosong atau tidak kosong. (Catatan: Jangan gunakan \texttt{= NULL}).
+\begin{lstlisting}
+SELECT * FROM Customer WHERE Address IS NULL;
+SELECT * FROM Customer WHERE Phone IS NOT NULL;
+\end{lstlisting}
+
+\subsection{Operator String: LIKE}
+Operator \texttt{LIKE} digunakan untuk pencarian berbasis pola. Terdapat dua *wildcard* utama:
+\begin{itemize}
+	\item \texttt{\%} : Mewakili nol atau beberapa karakter.
+	\item \texttt{\_} : Mewakili tepat satu karakter.
+\end{itemize}
+
+\begin{lstlisting}
+-- Nama berawalan 'Fr'
+SELECT * FROM Customer WHERE Name LIKE 'Fr%';
+
+-- Nama yang mengandung 're'
+SELECT * FROM Customer WHERE Name LIKE '%re%';
+
+-- Nama berawalan 'Fr', diikuti 2 karakter, lalu 're'
+SELECT * FROM Customer WHERE Name LIKE 'Fr__re';
+\end{lstlisting}
+
+\subsection{Operator IN dan BETWEEN}
+\texttt{IN} digunakan untuk mempersingkat penulisan beberapa kondisi \texttt{OR}. \texttt{BETWEEN} digunakan untuk mencari nilai dalam sebuah rentang (inklusif).
+\begin{lstlisting}
+-- Menggunakan OR (Panjang)
+SELECT * FROM Deposit WHERE AcctNo = '102' OR AcctNo = '104';
+-- Menggunakan IN (Ringkas)
+SELECT * FROM Deposit WHERE AcctNo IN ('102', '104');
+
+-- Menggunakan BETWEEN untuk rentang tanggal
+SELECT * FROM ATMwithdrawal
+WHERE WithdrawDate BETWEEN '2008-04-01' AND '2008-04-15';
+\end{lstlisting}
+
+\section{Query dengan Dua Tabel (FROM Extension)}
+
+Dalam basis data relasional, data sering kali tersebar di beberapa tabel. Kita bisa menggabungkan dua tabel di dalam klausa \texttt{FROM}. Jika kita menuliskan \texttt{SELECT * FROM Account, Deposit}, sistem akan menghasilkan **Kombinasi Kartesian** (Cartesian Product), yaitu semua kemungkinan pasangan baris dari kedua tabel.
+
+Agar hasilnya masuk akal, kita harus memfilter hasil perkawinan silang tersebut menggunakan klausa \texttt{WHERE} sebagai jembatan penghubung (yang saat ini kita kenal sebagai \textit{JOIN}).
+
+Misalkan kita memiliki tabel \texttt{Account} dan \texttt{Deposit}:
+
+\begin{table}[H]
+	\centering
+	\small
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\caption{Tabel \texttt{Account}}
+		\begin{tabular}{@{} c c c @{}}
+			\toprule
+			\textbf{Number} & \textbf{Owner} & \textbf{Balance} \\
+			\midrule
+			101             & J. Smith       & 1000.00          \\
+			102             & W. Wei         & 2000.00          \\
+			103             & J. Smith       & 5000.00          \\
+			104             & M. Jones       & 1000.00          \\
+			105             & H. Martin      & 10000.00         \\
+			\bottomrule
+		\end{tabular}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\caption{Tabel \texttt{Deposit}}
+		\begin{tabular}{@{} c c c @{}}
+			\toprule
+			\textbf{Account} & \textbf{T-id} & \textbf{Amount} \\
+			\midrule
+			102              & 1             & 500.00          \\
+			102              & 2             & 200.00          \\
+			104              & 3             & 1000.00         \\
+			105              & 4             & 10000.00        \\
+			\bottomrule
+		\end{tabular}
+	\end{minipage}
+\end{table}
+
+Jika kita ingin mencari nama pemilik akun (\texttt{Owner}) dan saldonya (\texttt{Balance}) yang pernah melakukan deposit dengan nominal di atas 1000, kita gunakan kueri berikut:
+
+\begin{lstlisting}
+SELECT A.Owner, A.Balance
+FROM Account A, Deposit D
+WHERE D.Account = A.Number AND D.Amount > 1000;
+\end{lstlisting}
+
+Penjelasan:
+\begin{enumerate}
+	\item \texttt{A} dan \texttt{D} adalah *alias* untuk tabel \texttt{Account} dan \texttt{Deposit} agar penulisan lebih singkat.
+	\item \texttt{D.Account = A.Number} adalah kunci penghubung (relasi) antara kedua tabel.
+	\item \texttt{D.Amount > 1000} adalah filter untuk nominal deposit.
+\end{enumerate}
+
+Mesin basis data akan memeriksa setiap kombinasi baris. Jika nomor akun cocok dan nominal deposit lebih dari 1000, baris tersebut akan ditampilkan. Jika tidak cocok (misalnya akun 101 tidak ada di tabel deposit), maka kombinasi tersebut diabaikan (\textit{Ignore}). Hasil akhirnya adalah data milik W. Wei (Deposit \$10.000) dan H. Martin (Deposit \$10.000).
+
+\section{Kesimpulan}
+
+\textit{Data Manipulation Language} (DML) memberikan kekuatan bagi pengguna untuk mengekstraksi informasi berharga dari tumpukan data mentah. Penguasaan klausa \texttt{SELECT}, \texttt{FROM}, dan \texttt{WHERE} adalah fondasi mutlak. Dengan memadukan operator logika, pencarian pola, fungsi agregat, dan penggabungan antar tabel, seorang *software engineer* dapat membangun kueri yang kompleks namun efisien untuk memenuhi kebutuhan bisnis atau aplikasi yang sedang dikembangkan.
+
+\newpage
+\section*{Referensi}
+\addcontentsline{toc}{section}{Referensi}
+
+\begin{thebibliography}{99}
+	\bibitem{lubis}
+	Lubis, A. I. (2026). \textit{SQL: Data Manipulation Language (DML)} [Slide Presentasi Mata Kuliah Pengantar Basis Data]. Politeknik Negeri Batam.
+
+	\bibitem{silberschatz}
+	Silberschatz, A., Korth, H. F., \& Sudarshan, S. (2019). \textit{Database System Concepts} (7th ed.). McGraw-Hill Education.
+\end{thebibliography}
+
+\end{document}
