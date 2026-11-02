@@ -61,6 +61,10 @@ clean:
 		main.pdf public.asc paper/SHA256SUMS
 	@echo "[clean] Done."
 
+changelog:
+	@echo "[changelog] Generating LaTeX and PDF..."
+	@python3 scripts/gen_changelog.py --compile
+	
 rebuild: clean all
 
 .PHONY: all setup gen-papers compile-papers verify-papers html pdf clean rebuild
