@@ -1,0 +1,62 @@
+name: Update Changelog
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "content/changelog.tex"
+      - "dist/changelog.pdf"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: changelog
+  cancel-in-progress: true
+
+jobs:
+  changelog:
+    name: Regenerate LaTeX Changelog
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install TeX Live
+        uses: awalsh128/cache-apt-pkgs-action@v1
+        with:
+          packages: >
+            texlive-latex-extra
+            texlive-fonts-recommended
+            texlive-fonts-extra
+            latexmk
+          version: 3.0
+
+      - name: Generate and Compile Changelog
+        run: |
+          python3 scripts/gen_changelog.py --limit 1000 --compile
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet content/changelog.tex dist/changelog.pdf; then
+            echo "No changelog changes"
+            exit 0
+          fi
+
+          git add content/changelog.tex
+          git add -f dist/changelog.pdf
+          git commit -m "chore(changelog): auto-update LaTeX and PDF [skip ci]"
+          git push
