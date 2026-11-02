@@ -87,7 +87,7 @@
 \thispagestyle{empty}
 
 \begin{abstract}
-	Modul ini mengajarkan teori himpunan sebagai alat kerja untuk memodelkan data dalam rekayasa perangkat lunak. Setiap konsep dibuka dengan analogi sehari-hari, dijelaskan mengapa ia ada, lalu diperagakan lewat contoh berangka. Sebelas visual dirancang hitam-putih dan disertai narasi yang menggambarkan bentuk, posisi, label, dan makna setiap bagian sehingga pembaca yang tidak dapat melihat gambar tetap dapat memahaminya. Modul ini juga memuat sepuluh tabel ringkas dan satu studi kasus delapan langkah tentang dashboard pengguna e-commerce. Setelah membaca modul ini, pembaca dapat berpindah dari data mentah menuju keputusan yang dapat dihitung, diperiksa, dan dipertanggungjawabkan.
+	Modul ini mengajarkan teori himpunan sebagai alat kerja untuk memodelkan data dalam rekayasa perangkat lunak. Setiap konsep dibuka dengan analogi sehari-hari, dijelaskan mengapa ia ada, lalu diperagakan lewat contoh berangka yang ditulis langkah demi langkah. Sebelas visual dirancang hitam-putih dan disertai narasi yang menggambarkan bentuk, posisi, label, dan makna setiap bagian sehingga pembaca yang tidak dapat melihat gambar tetap dapat memahaminya. Modul ini juga memuat sebelas tabel ringkas, satu studi kasus delapan langkah, serta bagian Cara Berpikir dan Kalau Salah di setiap konsep kunci. Setelah membaca modul ini, pembaca dapat berpindah dari data mentah menuju keputusan yang dapat dihitung, diperiksa, dan dipertanggungjawabkan.
 \end{abstract}
 
 \section{Pendahuluan}
@@ -112,7 +112,7 @@ Jika pembaca hanya punya waktu singkat, bacalah setiap bagian "Mengapa Ini Penti
 
 \subsection{Peta Pembahasan}
 
-Bagian kedua membahas apa itu himpunan dan mengapa larik biasa tidak cukup. Bagian ketiga membahas cara menyajikan himpunan. Bagian keempat membahas kardinalitas. Bagian kelima membahas himpunan khusus dan relasi antar himpunan. Bagian keenam membahas operasi dasar. Bagian ketujuh membahas operasi lanjutan. Bagian kedelapan membahas prinsip inklusi-eksklusi. Bagian kesembilan membahas himpunan fuzzy. Bagian kesepuluh menyandingkan seluruh konsep. Bagian kesebelas memakai konsep pada studi kasus dashboard pengguna. Bagian keduabelas dan ketigabelas memberi daftar kesalahan umum dan lembar rujukan cepat. Bagian keempatbelas menutup dengan tiga prinsip.
+Bagian kedua membahas apa itu himpunan dan mengapa larik biasa tidak cukup. Bagian ketiga membahas cara menyajikan himpunan. Bagian keempat membahas kardinalitas. Bagian kelima membahas himpunan khusus dan relasi antar himpunan. Bagian keenam membahas operasi dasar. Bagian ketujuh membahas prinsip inklusi-eksklusi. Bagian kedelapan membahas himpunan fuzzy. Bagian kesembilan menyandingkan seluruh konsep. Bagian kesepuluh memakai konsep pada studi kasus dashboard pengguna. Bagian kesebelas dan keduabelas memberi daftar kesalahan umum dan lembar rujukan cepat. Bagian ketigabelas menutup dengan tiga prinsip.
 
 \section{Apa Itu Himpunan dan Mengapa Larik Tidak Cukup}
 
@@ -138,31 +138,38 @@ Himpunan menghapus duplikat secara otomatis. Himpunan dari larik di atas adalah 
 
 \begin{figure}[H]
 	\centering
+	\resizebox{\textwidth}{!}{%
 	\begin{tikzpicture}[
-			cell/.style={rectangle, draw=black, minimum width=1.2cm, minimum height=0.65cm, align=center, font=\ttfamily\scriptsize}
+			cell/.style={rectangle, draw=black, minimum width=1.5cm, minimum height=0.75cm, align=center, font=\ttfamily\small}
 		]
-		\node[font=\sffamily\small] at (-4.6, 1.6) {Larik mentah:};
-		\node[cell, fill=black!5] at (-3.2, 1.6) {USR01};
-		\node[cell, fill=black!5] at (-2.0, 1.6) {USR02};
-		\node[cell, fill=black!5] at (-0.8, 1.6) {USR01};
-		\node[cell, fill=black!5] at (0.4, 1.6) {USR03};
-		\node[cell, fill=black!5] at (1.6, 1.6) {USR01};
-		\node[font=\scriptsize\sffamily, right=0.3cm of {1.6,1.6}] {5 posisi};
+		\node[font=\sffamily\small, anchor=east] at (-3.3, 1.5) {Larik mentah:};
+		\node[cell, fill=black!5] at (-2.2, 1.5) {USR01};
+		\node[cell, fill=black!5] at (-0.7, 1.5) {USR02};
+		\node[cell, fill=black!5] at (0.8, 1.5) {USR01};
+		\node[cell, fill=black!5] at (2.3, 1.5) {USR03};
+		\node[cell, fill=black!5] at (3.8, 1.5) {USR01};
+		\node[font=\scriptsize\sffamily, anchor=west] at (4.7, 1.5) {5 posisi};
 
-		\node[font=\sffamily\small] at (-4.6, 0) {Himpunan:};
-		\node[cell, fill=black!15] at (-3.2, 0) {USR01};
-		\node[cell, fill=black!15] at (-2.0, 0) {USR02};
-		\node[cell, fill=black!15] at (-0.8, 0) {USR03};
-		\node[font=\scriptsize\sffamily, right=0.3cm of {-0.8,0}] {3 elemen unik};
+		\node[font=\sffamily\small, anchor=east] at (-3.3, -0.5) {Himpunan:};
+		\node[cell, fill=black!15] at (-2.2, -0.5) {USR01};
+		\node[cell, fill=black!15] at (-0.7, -0.5) {USR02};
+		\node[cell, fill=black!15] at (0.8, -0.5) {USR03};
+		\node[font=\scriptsize\sffamily, anchor=west] at (1.7, -0.5) {3 elemen unik};
 
-		\draw[thick, -latex] (-2.0, 1.0) -- (-2.0, 0.5);
-		\node[font=\scriptsize\sffamily, align=left] at (0.8, 0.75) {hapus duplikat};
-	\end{tikzpicture}
+		\draw[thick, -latex] (0.8, 1.0) -- (0.8, 0.0);
+		\node[font=\scriptsize\sffamily, anchor=west] at (1.1, 0.5) {hapus duplikat};
+	\end{tikzpicture}}
 	\caption{Larik mentah dengan duplikat dan himpunan unik yang dihasilkannya.}
 	\label{fig:larik-vs-himpunan}
 \end{figure}
 
-Cara membaca Gambar~\ref{fig:larik-vs-himpunan}: gambar ini terdiri dari dua baris. Baris atas adalah deretan lima kotak kecil yang mewakili lima posisi larik. Dari kiri ke kanan, isi kotak adalah USR01, USR02, USR01, USR03, USR01. Di kanan deretan tertulis "lima posisi". Baris bawah adalah deretan tiga kotak kecil yang mewakili tiga elemen himpunan. Dari kiri ke kanan, isi kotak adalah USR01, USR02, USR03. Di kanan deretan tertulis "tiga elemen unik". Di antara dua baris itu ada panah pendek yang mengarah ke bawah dengan label "hapus duplikat". Panah itu berarti baris atas diubah menjadi baris bawah dengan membuang salinan yang berulang. Inti pesan gambar ini adalah satu larik dengan lima posisi hanya memiliki tiga pengguna unik, dan himpunanlah yang menyimpan angka tiga itu, bukan larik.
+Cara membaca Gambar~\ref{fig:larik-vs-himpunan}: gambar ini terdiri dari dua baris. Baris atas adalah deretan lima kotak kecil yang mewakili lima posisi larik. Dari kiri ke kanan, isi kotak adalah USR01, USR02, USR01, USR03, USR01. Di kanan deretan tertulis "lima posisi". Baris bawah adalah deretan tiga kotak kecil yang mewakili tiga elemen himpunan. Dari kiri ke kanan, isi kotak adalah USR01, USR02, USR03. Di kanan deretan tertulis "tiga elemen unik". Di antara dua baris itu ada panah pendek yang mengarah ke bawah dengan label "hapus duplikat". Inti pesan gambar ini adalah satu larik dengan lima posisi hanya memiliki tiga pengguna unik, dan himpunanlah yang menyimpan angka tiga itu, bukan larik.
+
+\subsection{Cara Berpikir: Kapan Data Disebut Himpunan}
+
+Saat menghadapi data mentah, ajukan tiga pertanyaan berurutan. Pertama, apakah posisi penting? Jika posisi penting, misalnya nomor urut antrean, maka data itu larik, bukan himpunan. Kedua, apakah duplikat boleh ada? Jika duplikat tidak boleh ada, maka data itu himpunan. Ketiga, apakah ada aturan yang menentukan anggota? Jika ada aturan, misalnya "semua pengguna yang login hari ini", maka data itu himpunan dengan notasi pembentuk.
+
+Jika ketiga pertanyaan itu dijawab, representasi data sudah pasti. Pengembang tidak perlu menebak. Ia hanya perlu menjawab tiga pertanyaan itu.
 
 \subsection{Mengapa Ini Penting untuk Rekayasa Perangkat Lunak}
 
@@ -266,9 +273,29 @@ Di akhir acara, panitia tidak perlu menghitung berapa kali setiap orang keluar-m
 
 Kardinalitas adalah banyaknya elemen berbeda dalam himpunan berhingga. Notasinya $|A|$ atau $n(A)$. Jika log mentah berisi $[\text{USR01},\text{USR05},\text{USR02},\text{USR01},\text{USR03},\text{USR05},\text{USR01},\text{USR04},\text{USR02}]$, maka himpunan pengguna uniknya adalah $\{\text{USR01},\text{USR05},\text{USR02},\text{USR03},\text{USR04}\}$. Kardinalitas himpunan itu adalah lima, bukan sembilan, karena empat kemunculan berulang tidak dihitung lagi \cite{rosen}.
 
-\subsection{Contoh Berangka}
+\subsection{Contoh Berangka yang Ditulis Langkah Demi Langkah}
 
-Misalkan sebuah sistem menerima log selama satu jam. Log mentah berisi sembilan baris. Setelah diubah menjadi himpunan, tersisa lima elemen. Rasio penghematan adalah $5/9 \approx 0{,}56$, artinya hanya sekitar 56 persen dari log mentah yang benar-benar informasi baru. Jika sistem menerima satu juta baris log per jam, dan rasio penghematan sama, maka pengguna unik per jam hanya sekitar 560 ribu. Angka ini penting untuk kapasitas server.
+Misalkan sebuah sistem menerima log selama satu jam. Log mentah berisi sembilan baris. Kita hitung kardinalitasnya dengan cara panitia di atas.
+
+Langkah pertama, siapkan papan kosong. Papan saat ini berisi himpunan kosong.
+
+Langkah kedua, baca baris pertama, USR01. Papan belum memuat USR01. Tulis USR01. Papan sekarang berisi $\{\text{USR01}\}$.
+
+Langkah ketiga, baca baris kedua, USR05. Papan belum memuat USR05. Tulis USR05. Papan sekarang berisi $\{\text{USR01},\text{USR05}\}$.
+
+Langkah keempat, baca baris ketiga, USR02. Papan belum memuat USR02. Tulis USR02. Papan sekarang berisi $\{\text{USR01},\text{USR05},\text{USR02}\}$.
+
+Langkah kelima, baca baris keempat, USR01. Papan sudah memuat USR01. Tidak tulis apa-apa. Papan tetap berisi tiga elemen.
+
+Lanjutkan langkah ini sampai baris kesembilan. Setelah baris ketujuh dan kesembilan (USR01 dan USR02) tidak ditulis lagi, papan akhir berisi lima elemen. Kardinalitasnya lima.
+
+Rasio penghematan adalah $5/9 \approx 0{,}56$, artinya hanya sekitar 56 persen dari log mentah yang benar-benar informasi baru. Jika sistem menerima satu juta baris log per jam, dan rasio penghematan sama, maka pengguna unik per jam hanya sekitar 560 ribu. Angka ini penting untuk kapasitas server.
+
+\subsection{Kalau Salah: Apa yang Terjadi Jika Kardinalitas Diabaikan}
+
+Misalkan sebuah dashboard menampilkan total kunjungan hari ini sebesar 300 ribu. Jika dashboard itu menjumlahkan panjang larik log, angka 300 ribu itu adalah jumlah kunjungan, bukan jumlah pengunjung. Jika rasio pengunjung unik terhadap kunjungan adalah 1 banding 3, maka pengunjung unik sebenarnya hanya 100 ribu.
+
+Manajer yang membaca dashboard akan mengira ada 300 ribu orang yang tertarik pada produk. Ia akan memesan kapasitas server untuk 300 ribu orang. Padahal yang dibutuhkan hanya kapasitas untuk 100 ribu orang. Kesalahan ini mahal, dan satu-satunya cara mencegahnya adalah menghitung kardinalitas himpunan, bukan panjang larik.
 
 \subsection{Mengapa Ini Penting untuk Rekayasa Perangkat Lunak}
 
@@ -316,13 +343,13 @@ Himpunan kosong adalah himpunan tanpa elemen. Notasinya $\varnothing$ atau $\{\}
 		\node[set, fill=white] (B) at (0,0) {};
 		\node[sub] (A) at (-1.2,0) {$A$};
 		\node[font=\sffamily\small] at (2.8,1.3) {$B$};
-		\node[font=\sffamily\small, align=center] at (4.8,0) {$A \subseteq B$\\setiap elemen $A$\\ada di $B$};
+		\node[font=\sffamily\small, align=center] at (5.3,0) {$A \subseteq B$\\setiap elemen $A$\\ada di $B$};
 	\end{tikzpicture}
 	\caption{Subset $A$ di dalam superset $B$.}
 	\label{fig:subset}
 \end{figure}
 
-Cara membaca Gambar~\ref{fig:subset}: gambar ini menampilkan dua elips. Elips besar berada di tengah dan diberi label $B$ di sisi kanan atas. Di dalam elips besar itu ada elips kecil yang diberi label $A$. Elips kecil seluruhnya berada di dalam elips besar, tidak ada bagian yang keluar. Di sebelah kanan gambar, di luar kedua elips, tertulis $A \subseteq B$ dengan keterangan "setiap elemen $A$ ada di $B$". Elips kecil diberi latar abu-abu muda sedangkan elips besar berlatar putih, supaya batas keduanya terlihat jelas. Inti pesan gambar ini adalah satu himpunan yang seluruhnya berada di dalam himpunan lain disebut subset.
+Cara membaca Gambar~\ref{fig:subset}: gambar ini menampilkan dua elips. Elips besar berada di tengah dan diberi label $B$ di sisi kanan atas. Di dalam elips besar itu ada elips kecil yang diberi label $A$. Elips kecil seluruhnya berada di dalam elips besar, tidak ada bagian yang keluar. Di sebelah kanan gambar, di luar kedua elips, tertulis $A \subseteq B$ dengan keterangan "setiap elemen A ada di B". Elips kecil diberi latar abu-abu muda sedangkan elips besar berlatar putih, supaya batas keduanya terlihat jelas. Inti pesan gambar ini adalah satu himpunan yang seluruhnya berada di dalam himpunan lain disebut subset.
 
 \subsection{Himpunan Kuasa}
 
@@ -331,43 +358,36 @@ Himpunan kuasa dari $A$ adalah himpunan yang semua elemennya adalah himpunan bag
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[
-			box/.style={rectangle, draw=black, thick, minimum width=1.2cm, minimum height=0.8cm, align=center, font=\ttfamily\small},
-			lnk/.style={draw, thick}
+			box/.style={rectangle, draw=black, thick, minimum width=1.4cm, minimum height=0.7cm, align=center, font=\ttfamily\small}
 		]
-		\node[box, fill=black!20] (root) at (0,2) {$\{a,b,c\}$};
-		\node[box, fill=white] (n1) at (-4.5,0.4) {$\varnothing$};
-		\node[box, fill=black!5] (n2) at (-3,0.4) {$\{a\}$};
-		\node[box, fill=black!5] (n3) at (-1.5,0.4) {$\{b\}$};
-		\node[box, fill=black!5] (n4) at (0,0.4) {$\{c\}$};
-		\node[box, fill=black!10] (n5) at (-3,-1.2) {$\{a,b\}$};
-		\node[box, fill=black!10] (n6) at (-1.5,-1.2) {$\{a,c\}$};
-		\node[box, fill=black!10] (n7) at (0,-1.2) {$\{b,c\}$};
-		\node[box, fill=black!20] (n8) at (-1.5,-2.8) {$\{a,b,c\}$};
+		\node[font=\sffamily\small, anchor=east] at (-4, 3) {0 elemen:};
+		\node[box, fill=white] at (0, 3) {$\varnothing$};
+		\node[font=\scriptsize\sffamily, anchor=west] at (1, 3) {(1 subset)};
 
-		\draw[lnk] (root.south) -- (-4.5,1.05);
-		\draw[lnk] (-4.5,1.05) -- (-3,1.05);
-		\draw[lnk] (-4.5,1.05) -- (-1.5,1.05);
-		\draw[lnk] (-4.5,1.05) -- (0,1.05);
-		\draw[lnk] (-4.5,1.05) -- (-4.5,0.8);
-		\draw[lnk] (-3,1.05) -- (-3,0.8);
-		\draw[lnk] (-1.5,1.05) -- (-1.5,0.8);
-		\draw[lnk] (0,1.05) -- (0,0.8);
+		\node[font=\sffamily\small, anchor=east] at (-4, 1.8) {1 elemen:};
+		\node[box, fill=black!5] at (-1.6, 1.8) {$\{a\}$};
+		\node[box, fill=black!5] at (0, 1.8) {$\{b\}$};
+		\node[box, fill=black!5] at (1.6, 1.8) {$\{c\}$};
+		\node[font=\scriptsize\sffamily, anchor=west] at (2.6, 1.8) {(3 subset)};
 
-		\draw[lnk] (-3,-1.6) -- (-3,0.0);
-		\draw[lnk] (-1.5,-1.6) -- (-1.5,0.0);
-		\draw[lnk] (0,-1.6) -- (0,0.0);
+		\node[font=\sffamily\small, anchor=east] at (-4, 0.6) {2 elemen:};
+		\node[box, fill=black!10] at (-1.6, 0.6) {$\{a,b\}$};
+		\node[box, fill=black!10] at (0, 0.6) {$\{a,c\}$};
+		\node[box, fill=black!10] at (1.6, 0.6) {$\{b,c\}$};
+		\node[font=\scriptsize\sffamily, anchor=west] at (2.6, 0.6) {(3 subset)};
 
-		\draw[lnk] (-3,-1.6) -- (-3,-2.4);
-		\draw[lnk] (-1.5,-1.6) -- (-1.5,-2.4);
-		\draw[lnk] (0,-1.6) -- (0,-2.4);
-		\draw[lnk] (-3,-2.4) -- (0,-2.4);
-		\draw[lnk] (-1.5,-2.4) -- (-1.5,-2.4);
+		\node[font=\sffamily\small, anchor=east] at (-4, -0.6) {3 elemen:};
+		\node[box, fill=black!15] at (0, -0.6) {$\{a,b,c\}$};
+		\node[font=\scriptsize\sffamily, anchor=west] at (1, -0.6) {(1 subset)};
+
+		\draw[thick] (-4.5, -1.6) -- (3.5, -1.6);
+		\node[font=\small\sffamily, anchor=north] at (-0.5, -1.7) {total: $1+3+3+1=8=2^3$};
 	\end{tikzpicture}
-	\caption{Himpunan kuasa dari $\{a,b,c\}$ berisi delapan subset.}
+	\caption{Himpunan kuasa dari $\{a,b,c\}$ berisi delapan subset, tersusun per jumlah elemen.}
 	\label{fig:himpunan-kuasa}
 \end{figure}
 
-Cara membaca Gambar~\ref{fig:himpunan-kuasa}: gambar ini berbentuk pohon. Di bagian paling atas ada satu kotak berlabel $\{a,b,c\}$, yaitu himpunan asal. Di bawahnya tersusun tiga tingkat. Tingkat pertama berisi empat kotak: kotak paling kiri berlabel $\varnothing$ (himpunan kosong), lalu $\{a\}$, $\{b\}$, dan $\{c\}$. Tingkat kedua berisi tiga kotak: $\{a,b\}$, $\{a,c\}$, dan $\{b,c\}$. Tingkat ketiga berisi satu kotak, yaitu $\{a,b,c\}$ itu sendiri. Garis-garis menghubungkan kotak-kotak itu untuk menunjukkan bahwa setiap kotak di bawah adalah subset dari kotak di atasnya. Seluruh kotak dijumlahkan ada delapan, sesuai dengan rumus $2^3=8$. Inti pesan gambar ini adalah himpunan dengan tiga elemen memiliki delapan subset, dan delapan itulah kardinalitas himpunan kuasanya.
+Cara membaca Gambar~\ref{fig:himpunan-kuasa}: gambar ini menampilkan empat baris kotak yang disusun berdasarkan jumlah elemen di dalam subset. Baris paling atas berlabel "0 elemen" dan berisi satu kotak, yaitu $\varnothing$. Di kanannya tertulis "(1 subset)". Baris kedua berlabel "1 elemen" dan berisi tiga kotak, yaitu $\{a\}$, $\{b\}$, dan $\{c\}$. Di kanannya tertulis "(3 subset)". Baris ketiga berlabel "2 elemen" dan berisi tiga kotak, yaitu $\{a,b\}$, $\{a,c\}$, dan $\{b,c\}$. Di kanannya tertulis "(3 subset)". Baris keempat berlabel "3 elemen" dan berisi satu kotak, yaitu $\{a,b,c\}$. Di kanannya tertulis "(1 subset)". Di bawah keempat baris ada garis pemisah dan tulisan "total: 1+3+3+1=8=2^3". Inti pesan gambar ini adalah himpunan dengan tiga elemen memiliki delapan subset, dan delapan itu muncul dari penjumlahan jumlah subset per tingkat.
 
 \subsection{Himpunan Sama dan Ekivalen}
 
@@ -405,6 +425,12 @@ Bayangkan sebuah aplikasi pesan dengan dua label: Label Kerja dan Label Keluarga
 
 Keempat tombol itu adalah empat operasi dasar pada himpunan: irisan, gabungan, komplemen, dan selisih.
 
+\subsection{Cara Berpikir: Memilih Operasi yang Tepat}
+
+Sebelum memilih operasi, tanyakan lima pertanyaan ini secara berurutan. Pertama, apakah saya ingin elemen yang ada di kedua himpunan? Jika ya, pakai irisan. Kedua, apakah saya ingin elemen yang ada di salah satu himpunan, tanpa memedulikan apakah di kedua atau tidak? Jika ya, pakai gabungan. Ketiga, apakah saya ingin elemen yang tidak ada di satu himpunan tertentu? Jika ya, pakai komplemen. Keempat, apakah saya ingin elemen yang ada di himpunan pertama tetapi tidak di himpunan kedua? Jika ya, pakai selisih. Kelima, apakah saya ingin elemen yang ada di salah satu himpunan tetapi tidak di keduanya? Jika ya, pakai beda simetris.
+
+Urutan pertanyaan ini penting. Banyak kesalahan terjadi karena orang langsung memakai irisan padahal yang dimaksud adalah gabungan, atau sebaliknya. Dengan lima pertanyaan ini, pemilihan operasi menjadi tidak ambigu.
+
 \subsection{Irisan, Gabungan, dan Komplemen}
 
 Irisan $A \cap B$ berisi elemen yang ada di $A$ dan di $B$. Gabungan $A \cup B$ berisi elemen yang ada di $A$ atau di $B$. Komplemen $\overline{A}$ berisi elemen semesta $U$ yang bukan elemen $A$.
@@ -414,22 +440,23 @@ Contoh irisan: $A=\{2,4,6,8,10,11\}$ dan $B=\{4,10,11,14,18\}$, maka $A \cap B=\
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[
-			lbl/.style={font=\sffamily\small}
+			lbl/.style={font=\sffamily\small},
+			tag/.style={font=\scriptsize\sffamily, align=center}
 		]
 		\draw[thick, fill=black!5] (0,0) circle (1.6);
-		\draw[thick, fill=none] (2.2,0) circle (1.6);
-		\node[lbl] at (-1.2,0) {$A$};
-		\node[lbl] at (3.4,0) {$B$};
-		\node[font=\scriptsize, align=center] at (-0.9,0) {hanya $A$};
-		\node[font=\scriptsize, align=center] at (1.1,0) {$A \cap B$};
-		\node[font=\scriptsize, align=center] at (3.1,0) {hanya $B$};
-		\node[font=\small\sffamily, align=center] at (1.1,-2.4) {$A \cup B$ adalah seluruh daerah\\di dalam dua lingkaran};
+		\draw[thick, fill=none] (2.4,0) circle (1.6);
+		\node[lbl] at (-1.0, 1.9) {$A$};
+		\node[lbl] at (3.4, 1.9) {$B$};
+		\node[tag] at (-0.8, 0) {A saja};
+		\node[tag] at (1.2, 0) {$A \cap B$};
+		\node[tag] at (3.2, 0) {B saja};
+		\node[font=\small\sffamily, align=center] at (1.2, -2.4) {$A \cup B$ adalah seluruh daerah\\di dalam dua lingkaran};
 	\end{tikzpicture}
 	\caption{Irisan dan gabungan dua himpunan.}
 	\label{fig:irisan-gabungan}
 \end{figure}
 
-Cara membaca Gambar~\ref{fig:irisan-gabungan}: gambar ini menampilkan dua lingkaran yang saling berpotongan. Lingkaran pertama berada di kiri, berlabel $A$ di sisi kirinya. Lingkaran kedua berada di kanan, berlabel $B$ di sisi kanannya. Kedua lingkaran saling menimpa sekitar sepertiga lebar masing-masing, sehingga terbentuk tiga daerah. Daerah kiri hanya tertutup lingkaran $A$, dan di dalamnya tertulis "hanya $A$". Daerah tengah tertutup kedua lingkaran, dan di dalamnya tertulis $A \cap B$. Daerah kanan hanya tertutup lingkaran $B$, dan di dalamnya tertulis "hanya $B$". Di bawah gambar, di luar lingkaran, tertulis "A ∪ B adalah seluruh daerah di dalam dua lingkaran". Lingkaran kiri diberi latar abu-abu sangat muda, sedangkan lingkaran kanan berlatar putih, supaya batas keduanya terlihat jelas. Inti pesan gambar ini adalah irisan adalah daerah tengah, sedangkan gabungan adalah seluruh daerah di dalam dua lingkaran.
+Cara membaca Gambar~\ref{fig:irisan-gabungan}: gambar ini menampilkan dua lingkaran yang saling berpotongan. Lingkaran pertama berada di kiri, label $A$ diletakkan di atas sisi kiri lingkaran, di luar area lingkaran. Lingkaran kedua berada di kanan, label $B$ diletakkan di atas sisi kanan lingkaran, juga di luar area lingkaran. Kedua lingkaran saling menimpa sekitar sepertiga lebar masing-masing, sehingga terbentuk tiga daerah. Daerah kiri hanya tertutup lingkaran $A$, dan di dalamnya tertulis "A saja". Daerah tengah tertutup kedua lingkaran, dan di dalamnya tertulis $A \cap B$. Daerah kanan hanya tertutup lingkaran $B$, dan di dalamnya tertulis "B saja". Di bawah gambar, di luar lingkaran, tertulis "$A \cup B$ adalah seluruh daerah di dalam dua lingkaran". Lingkaran kiri diberi latar abu-abu sangat muda, sedangkan lingkaran kanan berlatar putih. Inti pesan gambar ini adalah irisan adalah daerah tengah, sedangkan gabungan adalah seluruh daerah di dalam dua lingkaran.
 
 \subsection{Selisih dan Beda Simetris}
 
@@ -468,29 +495,30 @@ Produk kartesian $A \times B$ adalah himpunan semua pasangan berurutan $(a,b)$ d
 
 \begin{figure}[H]
 	\centering
+	\resizebox{\textwidth}{!}{%
 	\begin{tikzpicture}[
-			cell/.style={rectangle, draw=black, minimum width=2.4cm, minimum height=0.65cm, align=center, font=\ttfamily\scriptsize},
+			cell/.style={rectangle, draw=black, minimum width=2.4cm, minimum height=0.65cm, align=center, font=\ttfamily\small},
 			hdr/.style={font=\sffamily\small}
 		]
-		\node[hdr] at (0,0.9) {$A$};
-		\node[hdr] at (3.4,0.9) {$B$};
-		\node[cell, fill=black!5] at (0,0) {Chrome};
-		\node[cell, fill=black!5] at (0,-0.8) {Firefox};
-		\node[cell, fill=black!10] at (3.4,0.4) {Windows};
-		\node[cell, fill=black!10] at (3.4,-0.4) {Linux};
-		\node[cell, fill=black!10] at (3.4,-1.2) {MacOS};
-		\node[font=\ttfamily\scriptsize, align=left] at (6.8,0.4) {(Chrome,Windows)};
-		\node[font=\ttfamily\scriptsize, align=left] at (6.8,-0.4) {(Chrome,Linux)};
-		\node[font=\ttfamily\scriptsize, align=left] at (6.8,-1.2) {(Chrome,MacOS)};
-		\node[font=\ttfamily\scriptsize, align=left] at (6.8,-2.0) {(Firefox,Windows)};
-		\node[font=\ttfamily\scriptsize, align=left] at (6.8,-2.8) {(Firefox,Linux)};
-		\node[font=\ttfamily\scriptsize, align=left] at (6.8,-3.6) {(Firefox,MacOS)};
-	\end{tikzpicture}
+		\node[hdr] at (-2,1.1) {$A$};
+		\node[hdr] at (1,1.1) {$B$};
+		\node[cell, fill=black!5] at (-2,0.3) {Chrome};
+		\node[cell, fill=black!5] at (-2,-0.5) {Firefox};
+		\node[cell, fill=black!10] at (1,0.7) {Windows};
+		\node[cell, fill=black!10] at (1,-0.1) {Linux};
+		\node[cell, fill=black!10] at (1,-0.9) {MacOS};
+		\node[font=\ttfamily\small, anchor=west] at (3,0.7) {(Chrome,Windows)};
+		\node[font=\ttfamily\small, anchor=west] at (3,-0.1) {(Chrome,Linux)};
+		\node[font=\ttfamily\small, anchor=west] at (3,-0.9) {(Chrome,MacOS)};
+		\node[font=\ttfamily\small, anchor=west] at (3,-1.7) {(Firefox,Windows)};
+		\node[font=\ttfamily\small, anchor=west] at (3,-2.5) {(Firefox,Linux)};
+		\node[font=\ttfamily\small, anchor=west] at (3,-3.3) {(Firefox,MacOS)};
+	\end{tikzpicture}}
 	\caption{Produk kartesian browser dan sistem operasi.}
 	\label{fig:produk-kartesian}
 \end{figure}
 
-Cara membaca Gambar~\ref{fig:produk-kartesian}: gambar ini terdiri dari tiga kolom. Kolom paling kiri berjudul $A$ dan berisi dua kotak kecil: kotak atas bertuliskan Chrome, kotak bawah bertuliskan Firefox. Kolom tengah berjudul $B$ dan berisi tiga kotak kecil: kotak atas bertuliskan Windows, kotak tengah bertuliskan Linux, kotak bawah bertuliskan MacOS. Kolom paling kanan berisi enam kotak kecil yang tersusun tiga baris dan dua tingkat, yaitu (Chrome,Windows), (Chrome,Linux), (Chrome,MacOS), (Firefox,Windows), (Firefox,Linux), dan (Firefox,MacOS). Setiap pasangan adalah kombinasi satu browser dengan satu sistem operasi. Inti pesan gambar ini adalah produk kartesian menghasilkan seluruh kombinasi yang mungkin antara dua himpunan.
+Cara membaca Gambar~\ref{fig:produk-kartesian}: gambar ini terdiri dari tiga kolom. Kolom paling kiri berjudul $A$ dan berisi dua kotak kecil: kotak atas bertuliskan Chrome, kotak bawah bertuliskan Firefox. Kolom tengah berjudul $B$ dan berisi tiga kotak kecil: kotak atas bertuliskan Windows, kotak tengah bertuliskan Linux, kotak bawah bertuliskan MacOS. Kolom paling kanan berisi enam tulisan pasangan, yaitu (Chrome,Windows), (Chrome,Linux), (Chrome,MacOS), (Firefox,Windows), (Firefox,Linux), dan (Firefox,MacOS). Setiap pasangan adalah kombinasi satu browser dengan satu sistem operasi. Inti pesan gambar ini adalah produk kartesian menghasilkan seluruh kombinasi yang mungkin antara dua himpunan.
 
 \subsection{Mengapa Ini Penting}
 
@@ -535,6 +563,12 @@ Untuk dua himpunan berhingga, berlaku $|A \cup B|=|A|+|B|-|A \cap B|$. Contoh: $
 
 Angka 4800 adalah jawaban yang benar. Jika irisan tidak dikurangi, hasilnya 5600, yaitu terlalu besar sebesar 800. Kesalahan sebesar 800 pada satu hari akan menumpuk menjadi kesalahan besar pada laporan bulanan \cite{rosen}.
 
+\subsection{Kalau Salah: Apa yang Terjadi Jika Lupa Koreksi Irisan}
+
+Misalkan dashboard menampilkan tiga angka: total pengguna Mobile 3500, total pengguna Web 2100, dan total pengguna unik 5600. Angka 5600 itu diperoleh dari penjumlahan langsung tanpa koreksi. Namun angka 5600 tidak mungkin benar, karena total pengguna unik tidak boleh melebihi total pengguna yang tercatat di sistem. Jika sistem mencatat 5000 pengguna, maka dashboard melaporkan angka yang lebih besar dari jumlah orang yang ada di sistem. Pengguna dashboard akan langsung tahu ada yang salah, tetapi ia tidak akan tahu di mana kesalahannya.
+
+Koreksi irisan mengubah 5600 menjadi 4800. Angka 4800 masuk akal karena lebih kecil dari 5000. Perbedaan 800 adalah pengguna yang memakai kedua platform, dan mereka hanya boleh dihitung satu kali. Inilah gunanya inklusi-eksklusi: ia membuat angka kembali masuk akal.
+
 \subsection{Tiga Himpunan}
 
 Untuk tiga himpunan, berlaku rumus $|N \cup D \cup V|=|N|+|D|+|V|-|N \cap D|-|N \cap V|-|D \cap V|+|N \cap D \cap V|$. Dengan data $|N|=120$, $|D|=80$, $|V|=60$, $|N \cap D|=40$, $|N \cap V|=25$, $|D \cap V|=15$, dan $|N \cap D \cap V|=10$, hasilnya adalah $120+80+60-40-25-15+10=190$. Perhatikan Gambar~\ref{fig:tiga-himpunan}.
@@ -542,28 +576,28 @@ Untuk tiga himpunan, berlaku rumus $|N \cup D \cup V|=|N|+|D|+|V|-|N \cap D|-|N 
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[
-			num/.style={font=\scriptsize\sffamily, align=center}
+			num/.style={font=\small\sffamily, align=center}
 		]
 		\draw[thick, fill=black!5] (0,0) circle (1.7);
 		\draw[thick, fill=none] (2.4,0) circle (1.7);
 		\draw[thick, fill=none] (1.2,1.8) circle (1.7);
 		\node[font=\sffamily\small] at (-0.9,1.2) {$N$};
 		\node[font=\sffamily\small] at (3.3,1.2) {$D$};
-		\node[font=\sffamily\small] at (1.2,3.6) {$V$};
-		\node[num] at (-0.7,0.1) {65};
-		\node[num] at (3.1,0.1) {35};
+		\node[font=\sffamily\small] at (1.2,3.7) {$V$};
+		\node[num] at (-0.7,0.0) {65};
+		\node[num] at (3.1,0.0) {35};
 		\node[num] at (1.2,2.4) {30};
-		\node[num] at (0.9,-0.1) {30};
-		\node[num] at (1.9,1.0) {10};
-		\node[num] at (0.5,1.3) {15};
-		\node[num] at (2.0,1.3) {5};
-		\node[font=\scriptsize\sffamily, align=center] at (1.2,-2.5) {Angka adalah kardinalitas\\setiap daerah};
+		\node[num] at (1.0,-0.5) {30};
+		\node[num] at (1.2,0.8) {10};
+		\node[num] at (0.4,1.4) {15};
+		\node[num] at (2.0,1.4) {5};
+		\node[font=\scriptsize\sffamily, align=center] at (1.2,-2.6) {Angka adalah kardinalitas\\setiap daerah};
 	\end{tikzpicture}
 	\caption{Diagram inklusi-eksklusi tiga himpunan.}
 	\label{fig:tiga-himpunan}
 \end{figure}
 
-Cara membaca Gambar~\ref{fig:tiga-himpunan}: gambar ini menampilkan tiga lingkaran berpotongan yang membentuk pola seperti tiga koin yang saling bertumpuk. Lingkaran kiri berlabel $N$, lingkaran kanan berlabel $D$, dan lingkaran atas berlabel $V$. Setiap daerah di dalam lingkaran diberi angka kecil yang menyatakan kardinalitasnya. Daerah khusus $N$ berisi 65, daerah khusus $D$ berisi 35, dan daerah khusus $V$ berisi 30. Daerah $N \cap D$ saja berisi 30, daerah $N \cap V$ saja berisi 15, dan daerah $D \cap V$ saja berisi 5. Daerah irisan ketiganya berisi 10. Di bawah gambar tertulis "angka adalah kardinalitas setiap daerah". Jika seluruh angka dijumlahkan, hasilnya 190, yaitu kardinalitas gabungan tiga himpunan. Inti pesan gambar ini adalah penjumlahan semua angka di dalam tiga lingkaran menghasilkan gabungan, tetapi hanya jika angka di setiap daerah sudah dihitung sebagai kardinalitas daerah itu sendiri, bukan sebagai kardinalitas himpunan.
+Cara membaca Gambar~\ref{fig:tiga-himpunan}: gambar ini menampilkan tiga lingkaran berpotongan yang membentuk pola seperti tiga koin yang saling bertumpuk. Lingkaran kiri berlabel $N$, lingkaran kanan berlabel $D$, dan lingkaran atas berlabel $V$. Setiap daerah di dalam lingkaran diberi angka yang menyatakan kardinalitasnya. Daerah khusus $N$ berisi 65, daerah khusus $D$ berisi 35, dan daerah khusus $V$ berisi 30. Daerah $N \cap D$ saja berisi 30, terletak di bagian bawah dekat pertemuan kedua lingkaran bawah. Daerah $N \cap V$ saja berisi 15, terletak di antara $N$ dan $V$. Daerah $D \cap V$ saja berisi 5, terletak di antara $D$ dan $V$. Daerah irisan ketiganya berisi 10, terletak di tengah, di antara ketiga lingkaran. Di bawah gambar tertulis "angka adalah kardinalitas setiap daerah". Jika seluruh angka dijumlahkan, hasilnya $65+30+35+30+15+5+10=190$, yaitu kardinalitas gabungan tiga himpunan. Inti pesan gambar ini adalah setiap angka di dalam diagram sudah menghitung daerah yang diwakilinya sendiri, bukan menghitung himpunan secara keseluruhan.
 
 \subsection{Mengapa Ini Penting}
 
@@ -595,6 +629,10 @@ Tabel~\ref{tab:inklusi} merangkum rumus dan kesalahan umum.
 \subsection{Analogi: Suhu Air di Pancuran}
 
 Bayangkan sebuah pancuran. Jika air terlalu dingin, kita menyebutnya dingin. Jika air terlalu panas, kita menyebutnya panas. Tetapi air pada suhu 40 derajat Celsius bisa disebut hangat, dan pada 45 derajat bisa disebut panas sedang. Batas dingin, hangat, dan panas tidak bertepi tajam. Itulah gagasan himpunan fuzzy: keanggotaan bisa sebagian, bukan hanya ya atau tidak.
+
+\subsection{Cara Berpikir: Kapan Memakai Fuzzy}
+
+Ajukan tiga pertanyaan. Pertama, apakah data aslinya biner, misalnya laki-laki atau perempuan, hidup atau mati? Jika biner, pakai crisp. Kedua, apakah data aslinya berupa derajat, misalnya tingkat kepuasan satu sampai sepuluh, tingkat kecurigaan spam nol sampai satu? Jika berupa derajat, pakai fuzzy. Ketiga, apakah keputusan akhirnya tetap biner, misalnya terima atau tolak? Jika ya, fuzzy masih berguna karena ia memberi urutan sebelum keputusan itu diambil. Urutan itulah yang hilang jika kita memakai crisp sejak awal.
 
 \subsection{Crisp dan Fuzzy}
 
@@ -643,28 +681,38 @@ Fungsi keanggotaan fuzzy memetakan elemen ke nilai pada $[0,1]$. Jika himpunan u
 			axis/.style={draw, thick, -latex},
 			lbl/.style={font=\sffamily\small}
 		]
-		\draw[axis] (0,0) -- (9,0) node[below] {umur};
-		\draw[axis] (0,0) -- (0,3) node[left] {$\mu$};
+		\draw[axis] (0,0) -- (10.5,0) node[below] {umur};
+		\draw[axis] (0,0) -- (0,3.2) node[left] {$\mu$};
 		\draw[thick] (0,2.4) -- (2.5,2.4) -- (4.5,0);
-		\draw[thick] (3,0) -- (4.8,2.4) -- (6.6,0);
-		\draw[thick] (5.5,0) -- (7.5,2.4) -- (9,2.4);
+		\draw[thick] (3.5,0) -- (4.5,2.4) -- (5.5,0);
+		\draw[thick] (5.5,0) -- (6.5,2.4) -- (10,2.4);
 		\node[lbl] at (1.5,2.7) {MUDA};
-		\node[lbl] at (4.8,2.7) {PAROBAYA};
-		\node[lbl] at (7.7,2.7) {TUA};
-		\node[font=\scriptsize\sffamily] at (4.0,1.2) {$0{,}25$};
-		\node[font=\scriptsize\sffamily] at (4.8,1.7) {$0{,}50$};
+		\node[lbl] at (4.5,2.7) {PAROBAYA};
+		\node[lbl] at (8.0,2.7) {TUA};
 		\draw[dashed] (4.0,0) -- (4.0,1.2);
-		\draw[dashed] (4.8,0) -- (4.8,1.7);
+		\draw[dashed] (4.0,0.6) -- (4.3,0.6);
+		\draw[dashed] (4.0,1.2) -- (4.3,1.2);
+		\node[font=\scriptsize\sffamily, anchor=west] at (4.4,0.6) {$0{,}25$};
+		\node[font=\scriptsize\sffamily, anchor=west] at (4.4,1.2) {$0{,}50$};
+		\node[font=\scriptsize\sffamily] at (4.0,-0.4) {40};
 	\end{tikzpicture}
 	\caption{Fungsi keanggotaan fuzzy untuk kategori usia.}
 	\label{fig:usia-fuzzy}
 \end{figure}
 
-Cara membaca Gambar~\ref{fig:usia-fuzzy}: gambar ini menampilkan satu grafik dengan sumbu horizontal berlabel "umur" dan sumbu vertikal berlabel "μ". Di dalam grafik ada tiga bentuk yang mewakili tiga kategori. Bentuk pertama adalah trapesium yang menutupi rentang umur rendah, berlabel MUDA di atasnya. Bentuk kedua adalah segitiga yang menutupi rentang umur tengah, berlabel PAROBAYA di atasnya. Bentuk ketiga adalah trapesium yang menutupi rentang umur tinggi, berlabel TUA di atasnya. Ketiga bentuk saling tumpang tindih di tepinya. Pada umur 40, ada dua garis putus-putus vertikal yang menunjukkan nilai keanggotaan MUDA sebesar 0,25 dan nilai keanggotaan PAROBAYA sebesar 0,50. Inti pesan gambar ini adalah pada umur 40, seseorang memiliki derajat keanggotaan di dua kategori sekaligus, dengan derajat yang berbeda.
+Cara membaca Gambar~\ref{fig:usia-fuzzy}: gambar ini menampilkan satu grafik dengan sumbu horizontal berlabel "umur" dan sumbu vertikal berlabel "μ". Di dalam grafik ada tiga bentuk yang mewakili tiga kategori. Bentuk pertama adalah trapesium yang menutupi rentang umur rendah, berlabel MUDA di atasnya. Bentuk kedua adalah segitiga yang menutupi rentang umur tengah, berlabel PAROBAYA di atasnya. Bentuk ketiga adalah trapesium yang menutupi rentang umur tinggi, berlabel TUA di atasnya. Ketiga bentuk saling tumpang tindih di tepinya. Pada umur 40, ada satu garis putus-putus vertikal yang naik dari sumbu horizontal. Garis itu bercabang mendatar di ketinggian 0,6 dan di ketinggian 1,2. Cabang bawah diberi label 0,25 yang menyatakan nilai keanggotaan MUDA. Cabang atas diberi label 0,50 yang menyatakan nilai keanggotaan PAROBAYA. Di bawah sumbu horizontal ada label 40 yang menyatakan umur. Inti pesan gambar ini adalah pada umur 40, seseorang memiliki derajat keanggotaan di dua kategori sekaligus, dengan derajat yang berbeda.
 
 \subsection{Contoh Peringkat Rekomendasi}
 
 Jika Film A memiliki derajat suka 0,7, Film B memiliki derajat netral 0,5, dan Film C memiliki derajat suka sangat 1, maka urutan rekomendasi dari paling disukai adalah Film C, Film A, lalu Film B. Himpunan fuzzy lebih tepat daripada himpunan crisp karena preferensi pengguna tidak selalu ya atau tidak. Nilai 0,7 dan 0,5 memberi urutan yang lebih kaya daripada hanya suka dan tidak suka \cite{zadeh}.
+
+\subsection{Kalau Salah: Apa yang Hilang Jika Memakai Crisp}
+
+Misalkan seorang pengguna memberi penilaian pada lima film: 1,0 untuk Film A, 0,9 untuk Film B, 0,5 untuk Film C, 0,4 untuk Film D, dan 0,3 untuk Film E.
+
+Jika sistem memakai crisp dengan ambang 0,6, maka sistem hanya menyimpan dua kategori: Film A dan Film B adalah suka, Film C sampai Film E adalah tidak suka. Sistem kehilangan informasi bahwa pengguna lebih menyukai Film C daripada Film D, dan Film D daripada Film E. Ketika sistem harus merekomendasikan satu film pengganti jika Film A sudah ditonton, ia akan memilih Film B karena Film B satu-satunya yang tersisa di kategori suka. Padahal pengguna mungkin lebih cocok dengan Film C yang hanya sedikit di bawah ambang.
+
+Jika sistem memakai fuzzy, urutan lengkap Film A sampai Film E tetap tersimpan. Sistem dapat merekomendasikan Film B sebagai pilihan utama dan Film C sebagai pilihan kedua. Pengguna menerima rekomendasi yang lebih masuk akal. Inilah nilai fuzzy: ia mempertahankan urutan yang hilang di crisp.
 
 \subsection{Mengapa Ini Penting}
 
