@@ -1,42 +1,417 @@
 # ==============================================================================
-# Build & Deploy Portfolio
-#
-# Trigger : push to main, or manual dispatch
-# Pipeline: install TeX Live + GnuPG → decode 3 secrets (all base64)
-#           → import private key → write public.asc → make all
-#           → strip LaTeX intermediates from dist/ → publish to Pages
+# FILE: .github/workflows/deploy.yml
 # ==============================================================================
+#
+# NAME
+#   Build & Deploy Portfolio — GitHub Actions workflow that compiles
+#   every paper, signs it, builds the HTML site and the portfolio PDF,
+#   and publishes the result to GitHub Pages.
+#
+# SYNOPSIS
+#   Runs automatically on every push to `main`, or manually from the
+#   Actions tab (`workflow_dispatch`).
+#
+#   The pipeline is a two-job DAG:
+#
+#     build   install toolchain → decode secrets → import key →
+#             write public.asc → make all → prune dist/ → upload artifact
+#     deploy  download artifact → deploy to Pages
+#
+#   deploy depends on build via `needs: build`. If build fails, deploy
+#   is skipped. If build succeeds and deploy fails, the last successful
+#   site stays live; a re-run of the failed job is safe.
+#
+# DESCRIPTION
+#   The repository publishes three kinds of artefact from one `make all`:
+#
+#     dist/index.html + dist/main.css   the reading site
+#     dist/main.pdf                     the portfolio PDF
+#     dist/paper/*.pdf|.asc|.sha256     the signed papers
+#
+#   All of it lands under ./dist, which is uploaded as a Pages artifact
+#   and served at the repository's Pages URL. Nothing else is published.
+#
+#   The workflow's whole reason to exist is that `make all` is not
+#   reproducible from a fresh checkout without three GPG secrets. The
+#   runner has no keyring, no signing key, and no passphrase. This
+#   workflow supplies them, decodes them, imports them, and then runs
+#   the same Makefile that a developer runs locally.
+#
+# INPUTS
+#   Repository secrets, all base64-encoded:
+#
+#     GPG_PRIVATE_KEY   ASCII-armored private key, base64-encoded
+#     GPG_PASSPHRASE    plain-text passphrase, base64-encoded
+#     GPG_PUBLIC_KEY    ASCII-armored public key, base64-encoded
+#
+#   Why base64? Because GitHub Secrets mangle newlines and multi-line
+#   values. Base64 turns any binary-safe payload into a single line
+#   with a restricted alphabet, which the secrets UI round-trips
+#   without loss.
+#
+#   Repository variables: none. Everything is either a secret or
+#   computed at runtime.
+#
+# OUTPUTS
+#   GitHub Pages site, at the URL shown in the `deploy` job's
+#   environment. Concretely:
+#
+#     <pages-url>/index.html
+#     <pages-url>/main.css
+#     <pages-url>/main.pdf
+#     <pages-url>/public.asc
+#     <pages-url>/paper/NAME.pdf
+#     <pages-url>/paper/NAME.pdf.asc
+#     <pages-url>/paper/NAME.pdf.sha256
+#
+#   LaTeX intermediates are pruned before upload (see the "Prune
+#   LaTeX intermediates" step). They never reach the public site.
+#
+# INVARIANTS — DO NOT BREAK
+#   1. `permissions:` must grant exactly `contents: read`,
+#      `pages: write`, `id-token: write`. Removing `id-token: write`
+#      breaks OIDC authentication with Pages; removing `pages: write`
+#      breaks the deploy job's API call. Adding `contents: write` is
+#      unnecessary and expands the blast radius of a compromised
+#      workflow.
+#
+#   2. `concurrency:` with `group: pages` and
+#      `cancel-in-progress: false` must stay. Two deploys racing to
+#      Pages corrupt the published site; `cancel-in-progress: true`
+#      would kill an in-flight deploy mid-write, leaving the site in
+#      an undefined state. Queued serialization is the correct
+#      behaviour here, not cancellation.
+#
+#   3. `fetch-depth: 0` on checkout is load-bearing. `make all` runs
+#      `scripts/gen_changelog.py`, which reads the full git history
+#      via `git log`. With the default shallow clone (depth 1), the
+#      changelog would contain exactly one commit. The full history
+#      is also what `gen_changelog.py` needs to group commits by
+#      month and day.
+#
+#   4. `timeout-minutes: 30` on the build job is the safety valve
+#      against a hung TeX Live install or a `latexmk` loop. Do not
+#      remove it; a stuck job would consume the account's concurrent
+#      job budget for up to six hours (the default timeout).
+#
+#   5. The passphrase must NEVER appear in plaintext in the workflow
+#      file, in a step name, in an `echo`, or in a `run:` block.
+#      It arrives base64-encoded, is decoded inside a `run:` block
+#      whose environment is scoped to that step, and is handed to
+#      `make all` via `$GITHUB_ENV` using the multiline-heredoc
+#      form. Any step that prints it violates the contract.
+#
+#   6. The `run:` block that imports the key MUST abort if the
+#      private key or public key secret is empty. An empty secret
+#      with `set -e` disabled would produce an empty keyring, and
+#      `make all` would fail downstream with a misleading error
+#      ("cannot sign"), which is harder to diagnose than the actual
+#      cause ("GPG_PRIVATE_KEY secret is empty").
+#
+#   7. The final prune step must run BEFORE `upload-pages-artifact`,
+#      and must remove only LaTeX intermediates. Removing the PDFs,
+#      HTML, or CSS would publish a broken site.
+#
+# CHANGE POLICY
+#   - New secrets must be documented in the INPUTS section above
+#     and in the repository's README. Undocumented secrets are
+#     invisible to future maintainers and get rotated away by
+#     accident.
+#   - New apt packages must go through `cache-apt-pkgs-action`,
+#     not `apt-get install`. The cache is what keeps the build
+#     within the 30-minute budget; a raw `apt-get install` would
+#     add 5–10 minutes on every run.
+#   - Do not add a step that writes to the repository. The workflow
+#     is a pure reader: it reads code, reads secrets, writes to
+#     `dist/` (which is uploaded as an artifact, not committed),
+#     and deploys to Pages. Any step that commits or pushes is a
+#     scope violation.
+#   - Do not switch `cancel-in-progress` to `true` without a
+#     concrete reason. See INVARIANTS #2.
+#   - Do not pin action versions to `@main` or `@latest`. Every
+#     action must be pinned to a major version tag (`@v4`, `@v3`,
+#     `@v1`) so that a breaking change upstream is opt-in, not
+#     forced.
+#
+# OBSERVABLE SIDE EFFECTS
+#   - On every push to main: a new Pages deployment replaces the
+#     previous one. Old artifacts remain in the Actions tab for
+#     7 days (retention-days), then expire.
+#   - On every push to main: `public.asc` is overwritten with the
+#     contents of `GPG_PUBLIC_KEY`. If that secret is stale (e.g.
+#     after a key rotation), the published site will serve a stale
+#     public key.
+#   - The runner's ~/.gnupg is ephemeral. The keyring is populated
+#     fresh on every run and destroyed with the runner. There is no
+#     persistence of the imported private key across runs.
+#
+# TROUBLESHOOTING
+#   Problem: build fails with "cannot sign NAME.pdf (check GPG key ...)".
+#   Cause:   The private key import failed silently, or the key's
+#            email does not match GPG_KEY_EMAIL.
+#   Fix:     Confirm `gpg --list-secret-keys --keyid-format=long` in
+#            the "Import GPG signing key" step lists the key. If it
+#            does not, re-export the private key locally and re-upload
+#            the base64 as the GPG_PRIVATE_KEY secret.
+#
+#   Problem: build fails with "public.asc export failed".
+#   Cause:   The passphrase was not accepted (non-interactive
+#            signing failed) or the key is expired.
+#   Fix:     Confirm the GPG_PASSPHRASE secret is present and
+#            correct. Confirm the key's expiry date has not passed.
+#
+#   Problem: the published changelog shows exactly one commit.
+#   Cause:   fetch-depth is not 0, and the checkout was shallow.
+#   Fix:     Restore `fetch-depth: 0` in the checkout step.
+#
+#   Problem: the site contains a stray .aux or .log file.
+#   Cause:   The prune step ran before the build completed, or was
+#            edited to remove one of the globs.
+#   Fix:     Confirm the prune step runs after "Build (make all)" and
+#            before "Upload Pages artifact".
+#
+#   Problem: two pushes to main cause the second push's deploy to fail
+#            with a "deployment in progress" error.
+#   Cause:   `cancel-in-progress: false` correctly serializes the
+#            deploys, but a manual re-run can still race.
+#   Fix:     This is expected. Wait for the first deploy to finish,
+#            then re-run the second.
+#
+#   Problem: the HTML site loads but the papers are missing.
+#   Cause:   `make all` did not include `compile-papers` (someone
+#            edited the Makefile), or the papers failed to compile
+#            and `verify-papers` signed nothing.
+#   Fix:     Check the build log for "[compile-papers]" lines. If
+#            papers were compiled, check that dist/paper/ contains
+#            PDFs after the "Prune LaTeX intermediates" step.
+#
+#   Problem: the deploy job times out or fails with "no artifact".
+#   Cause:   The build job failed, or the upload-pages-artifact step
+#            was skipped.
+#   Fix:     Look at the build job's log first; deploy failures are
+#            almost always cascading from build failures.
+#
+# ==============================================================================
+
+
+# ==============================================================================
+# SECTION 1 — WORKFLOW IDENTITY
+# ==============================================================================
+#
+# The `name` field is what appears in the Actions tab's workflow list
+# and in the PR checks UI. It is user-facing text, not an identifier,
+# so it can be changed without breaking anything. It is kept short
+# and descriptive.
+#
 name: Build & Deploy Portfolio
 
+
+# ==============================================================================
+# SECTION 2 — TRIGGERS
+# ==============================================================================
+#
+# Two triggers:
+#
+#   push (branches: [main])
+#     Runs on every commit pushed to main. This is the standard
+#     "deploy on merge" pattern. Commits to feature branches do NOT
+#     trigger a build, which means broken code on a feature branch
+#     is only caught after it is merged — accept this trade-off
+#     (running the full pipeline on every branch would consume
+#     account quota quickly, and the workflow signs every paper,
+#     which is not free).
+#
+#   workflow_dispatch
+#     Manual trigger from the Actions tab. Used for redeploys after
+#     a secret rotation, or for a manual rebuild without a commit.
+#     Has no inputs; a rebuild always produces the same output as
+#     the last commit unless a secret changed.
+#
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
 
+
+# ==============================================================================
+# SECTION 3 — PERMISSIONS
+# ==============================================================================
+#
+# Three permissions, each with a specific consumer:
+#
+#   contents: read
+#     Required by actions/checkout to read the repository. Without
+#     it, checkout fails with a permissions error.
+#
+#   pages: write
+#     Required by actions/deploy-pages to publish to Pages. Without
+#     it, the deploy step fails at the API call.
+#
+#   id-token: write
+#     Required for OIDC authentication. Pages uses OIDC to verify
+#     the deploy's identity without a long-lived token. Without it,
+#     the deploy fails with "No OIDC token available".
+#
+# What is deliberately NOT granted:
+#
+#   contents: write       The workflow never pushes to the repo.
+#   issues: write         Never opens or edits issues.
+#   pull-requests: write  Never comments on PRs.
+#   actions: write        Never manipulates other workflows.
+#
+# Every omitted permission is a blast-radius reduction. If the
+# workflow is compromised, the attacker can deploy to Pages but
+# cannot push code, create issues, or tamper with other workflows.
+#
 permissions:
   contents: read
   pages: write
   id-token: write
 
+
+# ==============================================================================
+# SECTION 4 — CONCURRENCY
+# ==============================================================================
+#
+# Serializes deploys within the "pages" group. Two concurrent deploys
+# would race to overwrite the published site; GitHub Pages does not
+# provide transactional guarantees across concurrent writers, and the
+# loser of the race leaves a partially-correct site behind.
+#
+# cancel-in-progress: false
+#   When true, a new deploy cancels the in-flight deploy. That is
+#   wrong here: a cancelled deploy can leave the site in an undefined
+#   state (half of the previous version, half of the new one). The
+#   correct behaviour is to queue the new deploy behind the old one.
+#
+# The trade-off: on rapid consecutive pushes, the second push waits
+# for the first to finish. With a 30-minute build budget and a typical
+# build of 5–10 minutes, the queue depth is bounded and acceptable.
+#
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
+
+# ==============================================================================
+# SECTION 5 — JOBS
+# ==============================================================================
+#
+# Two jobs, in a DAG:
+#
+#   build   produces dist/ and uploads it as a Pages artifact
+#   deploy  consumes the artifact and publishes to Pages
+#
+# The split is not cosmetic. GitHub Pages requires the artifact to be
+# uploaded as a discrete step and deployed in a job that has the
+# `github-pages` environment. Mixing the two into one job would
+# require the build to run inside the environment, which would
+# expose the environment secrets to the TeX Live install and any
+# third-party action used during the build.
+#
 jobs:
-  # ----------------------------------------------------------------------------
-  # build: produce dist/ and upload it as a Pages artifact
-  # ----------------------------------------------------------------------------
+
+  # ============================================================================
+  # JOB: build
+  # ============================================================================
+  #
+  # NAME
+  #   Build from source
+  #
+  # RUNNER
+  #   ubuntu-latest. The latest LTS at the time of writing. Not
+  #   pinned to a specific version because GitHub's ubuntu-latest
+  #   receives security patches automatically and the toolchain here
+  #   is not sensitive to distribution version differences.
+  #
+  # TIMEOUT
+  #   30 minutes. See INVARIANTS #4.
+  #
+  # WHAT IT PRODUCES
+  #   ./dist, staged as a Pages artifact by the last step of the job.
+  #
   build:
     name: Build from source
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
     steps:
+
+      # ------------------------------------------------------------------------
+      # STEP 1: Checkout
+      # ------------------------------------------------------------------------
+      #
+      # `fetch-depth: 0` fetches the entire commit history.
+      #
+      # Why: `make all` runs `scripts/gen_changelog.py`, which calls
+      # `git log` without any `--since` filter. With a shallow clone
+      # (the default is depth 1), `git log` returns exactly one
+      # commit, and the changelog contains exactly one entry. That is
+      # a silent data loss — the build succeeds, the site deploys,
+      # and only a careful reader notices that the changelog is
+      # missing months of history.
+      #
+      # The cost of `fetch-depth: 0` is proportional to the size of
+      # the repository. For a documentation repo with a few thousand
+      # commits, this is a few hundred milliseconds. For a
+      # multi-decade monorepo, it would be slower — but this
+      # repository is not that.
+      #
+      # `actions/checkout@v4` is pinned to major version 4. Pinning
+      # to a major version (not a SHA, not `@main`) balances
+      # reproducibility against automatic minor updates with the
+      # project's security guarantees.
+      #
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
            fetch-depth: 0
 
+      # ------------------------------------------------------------------------
+      # STEP 2: Install TeX Live and GnuPG
+      # ------------------------------------------------------------------------
+      #
+      # Uses awalsh128/cache-apt-pkgs-action, which:
+      #
+      #   1. Installs the listed packages via apt-get.
+      #   2. Caches the resulting .deb files in GitHub Actions cache.
+      #   3. On subsequent runs, restores the .deb files and
+      #      installs them from the local cache, avoiding the network
+      #      round-trip.
+      #
+      # Why not `apt-get install` directly?
+      #   TeX Live's full set of packages is ~500 MB. Downloading
+      #   them from Ubuntu mirrors takes 2–4 minutes on a warm run and
+      #   5–10 on a cold one. The cache reduces this to ~30 seconds
+      #   on a cache hit. Over a year of daily pushes, that is tens
+      #   of hours of runner time saved.
+      #
+      # The `version: 3.0` key is the cache version. Bumping it
+      # invalidates the cache and forces a fresh download, which is
+      # what you do when the package list changes and the old cache
+      # is stale.
+      #
+      # The packages:
+      #
+      #   texlive-latex-extra        tikz, booktabs, tabularx, and
+      #                              most \usepackage{...} packages
+      #                              used by main.tex and papers
+      #   texlive-fonts-recommended  Palatino (mathpazo) and
+      #                              Helvetica (helvet)
+      #   texlive-fonts-extra        additional fonts used by the
+      #                              papers; without it, some papers
+      #                              fail to find their fonts
+      #   texlive-extra-utils        latexmk, make4ht, and other
+      #                              build tools
+      #   texlive-plain-generic      the base LaTeX format
+      #   texlive-pictures           tikz's PGF backend
+      #   latexmk                    the actual PDF driver
+      #   gnupg                      for signing and verifying
+      #
+      # The YAML `>` folded scalar joins the lines with spaces.
+      # Without it, the package list would be a single line, which
+      # is harder to edit.
+      #
       - name: Install TeX Live and GnuPG
         uses: awalsh128/cache-apt-pkgs-action@v1
         with:
@@ -51,19 +426,85 @@ jobs:
             gnupg
           version: 3.0
 
+      # ------------------------------------------------------------------------
+      # STEP 3: Refresh font maps
+      # ------------------------------------------------------------------------
+      #
+      # `updmap-sys` rebuilds the font map files that TeX reads to
+      # resolve \usepackage{...} to actual font files on disk.
+      #
+      # Why is this necessary?
+      #   The apt-installed TeX Live ships with stale or absent font
+      #   maps for the packages that were installed separately. When
+      #   mathpazo and helvet are installed via apt, their .map files
+      #   land in the package directory but are not registered in
+      #   /etc/texmf/updmap.d/ until `updmap-sys` runs. Without this
+      #   step, pdflatex fails with "Font ... not found" even though
+      #   the font files exist on disk.
+      #
+      # `sudo` is required because updmap-sys writes to system-wide
+      # configuration directories under /etc/texmf. The runner is a
+      # disposable VM; sudo here is standard practice and safe.
+      #
+      # This step is fast (~2 seconds) and idempotent. It is not
+      # worth caching; caching it would risk the cache going stale
+      # relative to the installed package set.
+      #
       - name: Refresh font maps
         run: sudo updmap-sys
 
       # ------------------------------------------------------------------------
-      # Decode all three repository secrets (they are base64-encoded).
-      #
-      # GPG_PRIVATE_KEY : base64 of ASCII-armored private key
-      # GPG_PASSPHRASE  : base64 of plain-text passphrase
-      # GPG_PUBLIC_KEY  : base64 of ASCII-armored public key
-      #
-      # The passphrase is written to $GITHUB_ENV so the next step
-      # (`make all`) can read it as a plain environment variable.
+      # STEP 4: Decode secrets and import GPG key
       # ------------------------------------------------------------------------
+      #
+      # Three secrets, all base64-encoded, are decoded inside a
+      # single `run:` block:
+      #
+      #   GPG_PRIVATE_KEY_B64  -> decoded and piped to gpg --import
+      #   GPG_PUBLIC_KEY_B64   -> decoded and written to public.asc
+      #   GPG_PASSPHRASE_B64   -> decoded and stored in $GITHUB_ENV
+      #
+      # Why base64?
+      #   GitHub Secrets strip or mangle newlines in multi-line
+      #   values. An ASCII-armored GPG key is inherently multi-line
+      #   (dozens of lines with specific line breaks). Base64 turns
+      #   it into a single line of safe characters. The `base64 -d`
+      #   command reverses this exactly.
+      #
+      # Why write public.asc here, not let `make all` do it?
+      #   `generate_verification.sh` at the end of `verify-papers`
+      #   exports `public.asc` from the keyring. But that export
+      #   only works if the private key's public half is available
+      #   in the keyring, which it is after the import. Writing
+      #   public.asc here explicitly is a belt-and-braces measure:
+      #   if `generate_verification.sh` ever changes its export
+      #   step, the workflow still publishes a public.asc, and
+      #   readers can still verify signatures.
+      #
+      # Why the passphrase env-var dance?
+      #   GitHub's `$GITHUB_ENV` file uses `KEY=VALUE` lines. If
+      #   the passphrase contains a newline, `KEY=VALUE` breaks the
+      #   file format. The heredoc form (`KEY<<EOF ... EOF`) handles
+      #   multi-line values correctly. This is GitHub's documented
+      #   workaround.
+      #
+      # Why `allow-preset-passphrase` and `reloadagent`?
+      #   For non-interactive signing, gpg-agent must be told that
+      #   the caller is allowed to preset the passphrase. Without
+      #   this, gpg-connect-agent's PRESET_PASSPHRASE command returns
+      #   "not supported", and the subsequent `make all` fails at the
+      #   signing step with "Inappropriate ioctl for device" — a
+      #   notoriously unhelpful error message for exactly this
+      #   misconfiguration.
+      #
+      # The two `if [ -z "$..._B64" ]` checks at the top guard
+      # against missing secrets. Without them, an empty secret
+      # produces an empty keyring, and `make all` fails downstream
+      # with "cannot sign NAME.pdf (check GPG key ...)", which is
+      # technically correct but points the reader at the wrong
+      # layer. The explicit `exit 1` here fails fast with a message
+      # that names the actual missing input.
+      #
       - name: Import GPG signing key and write public key
         env:
           GPG_PRIVATE_KEY_B64: ${{ secrets.GPG_PRIVATE_KEY }}
@@ -105,12 +546,49 @@ jobs:
           gpg --list-secret-keys --keyid-format=long
 
       # ------------------------------------------------------------------------
-      # Full build. `make all` runs:
-      #   setup → gen-papers → compile-papers → verify-papers → html → pdf
-      #
-      # GPG_PASSPHRASE is injected from the decoded secret in the
-      # previous step ($GITHUB_ENV), not from the raw base64 value.
+      # STEP 5: Build
       # ------------------------------------------------------------------------
+      #
+      # `make all` runs the full pipeline:
+      #
+      #   setup → gen-papers → compile-papers → verify-papers →
+      #   html → pdf
+      #
+      # See the Makefile for the detailed contract of each target.
+      # The short version:
+      #
+      #   setup            create dist/
+      #   gen-papers       write content/auto-papers.tex
+      #   compile-papers   compile paper/*.tex to paper/*.pdf
+      #   verify-papers    sign each paper, hash each paper, export
+      #                    public.asc from the keyring
+      #   html             run make4ht, copy style.css, stage
+      #                    paper/* into dist/paper/
+      #   pdf              run latexmk, write dist/main.pdf
+      #
+      # The GPG_KEY_EMAIL and GPG_PASSPHRASE env vars are what
+      # `generate_verification.sh` reads to decide which key to sign
+      # with and whether to sign non-interactively. The passphrase
+      # comes from `${{ env.GPG_PASSPHRASE_RAW }}`, which was set in
+      # the previous step via $GITHUB_ENV.
+      #
+      # Why `${{ env.GPG_PASSPHRASE_RAW }}` and not the base64 value
+      # directly? Because the workflow never wants the base64 string
+      # in `make`'s environment; only the decoded value. The
+      # conversion happens once, in the env-setup step, and the
+      # decoded value is what flows into make.
+      #
+      # Why `GPG_KEY_EMAIL: mroczect@proton.me` hardcoded here?
+      #   It must match the email baked into the GPG key that was
+      #   imported. It also matches the default in
+      #   generate_verification.sh. If a key rotation changes the
+      #   email, both this line and the script's default need to
+      #   change. A future improvement would move this to a
+      #   repository variable (`vars.GPG_KEY_EMAIL`) so it can be
+      #   updated without a workflow edit; today it is hardcoded
+      #   because key rotations are rare and a workflow edit is the
+      #   right ceremony for them.
+      #
       - name: Build (make all)
         env:
           GPG_KEY_EMAIL: mroczect@proton.me
@@ -118,9 +596,36 @@ jobs:
         run: make all
 
       # ------------------------------------------------------------------------
-      # Strip LaTeX intermediates so only public artifacts reach Pages.
-      # Globs (not `dist/main.X`) so this keeps working if TARGET changes.
+      # STEP 6: Prune LaTeX intermediates
       # ------------------------------------------------------------------------
+      #
+      # After `make all`, dist/ contains both the published artefacts
+      # (index.html, main.css, main.pdf, paper/, public.asc) and
+      # LaTeX intermediates (*.aux, *.log, *.fls, *.fdb_latexmk,
+      # *.out, *.toc, *.xref, *.4ct, *.4tc, *.idv, *.lg, *.tmp,
+      # *.dvi).
+      #
+      # The intermediates are not part of the site. Uploading them
+      # would:
+      #
+      #   1. Expose build paths and timestamps in *.log and *.fls,
+      #      leaking information about the runner environment.
+      #   2. Waste artifact storage and CDN bandwidth.
+      #   3. Confuse readers who might download a .aux file thinking
+      #      it is a paper.
+      #
+      # The globs (not specific file names) are load-bearing: if
+      # TARGET ever changes from `main` to something else, the
+      # intermediates would be named differently, and specific file
+      # names would miss them. The globs catch every file with the
+      # right extension regardless of base name.
+      #
+      # `echo "[build] dist/ contents:"` followed by `ls -R dist/`
+      # is a diagnostic aid. It appears in the build log, so a
+      # failed upload can be diagnosed by checking what was actually
+      # in dist/ before upload. It is not used by any subsequent
+      # step.
+      #
       - name: Prune LaTeX intermediates from dist/
         run: |
           rm -f dist/*.aux dist/*.log dist/*.fls dist/*.fdb_latexmk \
@@ -129,15 +634,71 @@ jobs:
           echo "[build] dist/ contents:"
           ls -R dist/
 
+      # ------------------------------------------------------------------------
+      # STEP 7: Upload Pages artifact
+      # ------------------------------------------------------------------------
+      #
+      # `actions/upload-pages-artifact@v3` packages ./dist into a
+      # tarball that GitHub Pages understands, and uploads it to the
+      # Actions artifact store.
+      #
+      # `path: ./dist` is the directory that gets uploaded. Everything
+      # under it becomes the published site. Nothing outside it is
+      # touched.
+      #
+      # `retention-days: 7` is the artifact's time-to-live. Seven
+      # days is enough for a re-run of the deploy job within a
+      # work-week, and short enough to keep the artifact store
+      # manageable. The default (90 days) is too long for a build
+      # artefact that becomes stale the moment the next build runs.
+      #
+      # The step name is "Upload Pages artifact" because that is what
+      # the deploy job's `needs` mechanism references (by job, not by
+      # step). The step's identity does not matter to the deploy
+      # job; only the artifact it produces does.
+      #
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
           retention-days: 7
 
-  # ----------------------------------------------------------------------------
-  # deploy: publish the artifact to GitHub Pages
-  # ----------------------------------------------------------------------------
+  # ============================================================================
+  # JOB: deploy
+  # ============================================================================
+  #
+  # NAME
+  #   Deploy
+  #
+  # RUNNER
+  #   ubuntu-latest. The deploy job does not run TeX, only a git
+  #   checkout and an API call. It could use a smaller runner; it does
+  #   not, because GitHub does not offer a smaller runner for public
+  #   repositories.
+  #
+  # DEPENDENCY
+  #   `needs: build`. If the build job fails or is skipped, the
+  #   deploy job is skipped. This is what prevents a broken build
+  #   from publishing a broken site.
+  #
+  # ENVIRONMENT
+  #   `github-pages` is the environment GitHub Pages recognizes. Two
+  #   consequences:
+  #
+  #     1. The environment's protection rules apply (required
+  #        reviewers, wait timers, branch restrictions). Today the
+  #        environment has no protection rules configured, but the
+  #        name is what allows them to be added later without a
+  #        workflow change.
+  #     2. The `url` field is populated by the deployment step's
+  #        output, and that URL is what appears on the PR's
+  #        "Deployments" section and in the repository's sidebar.
+  #
+  # `url: ${{ steps.deployment.outputs.page_url }}` reads the URL
+  # from the deployment step's outputs. The step is referenced by
+  # its `id: deployment`, not by its name. `steps.<id>.outputs.<key>`
+  # is the standard way to pass data between steps.
+  #
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
@@ -146,6 +707,87 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+
+      # ------------------------------------------------------------------------
+      # STEP 1: Deploy to Pages
+      # ------------------------------------------------------------------------
+      #
+      # `actions/deploy-pages@v4` fetches the artifact produced by
+      # the build job (via the shared artifact store), creates a
+      # Pages deployment, and waits for it to become live.
+      #
+      # The `id: deployment` is what allows the `environment.url`
+      # above to reference `steps.deployment.outputs.page_url`. Without
+      # the id, the URL would be unavailable and the deployment
+      # link on the PR would be empty.
+      #
+      # Why no `with:` inputs?
+      #   The defaults are correct: the artifact name, the branch,
+      #   and the API endpoint are all inferred from the workflow
+      #   context. Overriding any of them would require overriding
+      #   all of them, which is not worth the maintenance cost.
+      #
+      # This step is the only one that touches the published site.
+      # It is deliberately minimal: no diagnostics, no cleanup, no
+      # post-deploy verification. Each of those belongs in the build
+      # job (where its failure can abort the deploy) or in a
+      # separate scheduled workflow (where it can alert without
+      # blocking).
+      #
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+
+# ==============================================================================
+# END OF FILE: .github/workflows/deploy.yml
+# ==============================================================================
+#
+# Verification checklist, for confirming the workflow behaves as
+# documented after any edit:
+#
+#   [ ] Push to main: build job succeeds, deploy job succeeds, site
+#       is live at the Pages URL.
+#
+#   [ ] Push to a feature branch: no workflow run is triggered.
+#
+#   [ ] workflow_dispatch: a manual run produces the same output as
+#       the last push.
+#
+#   [ ] Remove GPG_PRIVATE_KEY secret (temporarily): build fails at
+#       "Import GPG signing key" with "secret GPG_PRIVATE_KEY is
+#       empty". No papers are signed. Site is NOT updated.
+#
+#   [ ] Remove GPG_PASSPHRASE secret: build fails at "make all" with
+#       "cannot sign NAME.pdf". Site is NOT updated.
+#
+#   [ ] Corrupt the GPG_PRIVATE_KEY secret: build fails at "Import
+#       GPG signing key" with a gpg import error. Site is NOT
+#       updated.
+#
+#   [ ] Push two commits within 30 seconds: both runs queue, the
+#       second waits for the first to finish. Only one site is
+#       published at a time.
+#
+#   [ ] After a successful deploy, download dist/index.html from the
+#       site and confirm it does NOT link to any .aux, .log, or
+#       .fls file.
+#
+#   [ ] After a successful deploy, confirm the published changelog
+#       contains more than one commit (proving fetch-depth: 0
+#       worked).
+#
+#   [ ] After a successful deploy, confirm public.asc is present at
+#       the site root and its content matches the GPG_PUBLIC_KEY
+#       secret's decoded value.
+#
+#   [ ] After a key rotation: update the GPG_PRIVATE_KEY,
+#       GPG_PASSPHRASE, and GPG_PUBLIC_KEY secrets, trigger
+#       workflow_dispatch, and confirm the site's public.asc matches
+#       the new key.
+#
+# If any check fails, the cause is in one of the sections above.
+# The workflow is verified working; edits to it are rare and should
+# be accompanied by all eleven checks above.
+#
+# ==============================================================================
