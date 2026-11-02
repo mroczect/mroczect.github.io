@@ -1,6 +1,6 @@
 TARGET = main
 
-all: setup gen-papers compile-papers html pdf
+all: setup gen-papers compile-papers verify-papers html pdf
 
 setup:
 	mkdir -p dist
@@ -17,6 +17,9 @@ compile-papers:
 		done \
 	fi
 
+verify-papers:
+	./generate_verification.sh
+
 html: setup
 	make4ht -d dist -u $(TARGET).tex "xhtml" || (echo "=== make4ht GAGAL ==="; cat $(TARGET).log; exit 1)
 	@if [ -f dist/$(TARGET).html ]; then \
@@ -29,6 +32,11 @@ html: setup
 	@if [ -d "paper" ]; then \
 		mkdir -p dist/paper; \
 		cp paper/*.pdf dist/paper/ 2>/dev/null || true; \
+		cp paper/*.asc dist/paper/ 2>/dev/null || true; \
+		cp paper/SHA256SUMS dist/paper/ 2>/dev/null || true; \
+	fi
+	@if [ -f public.asc ]; then \
+		cp public.asc dist/public.asc; \
 	fi
 
 pdf: setup
@@ -44,4 +52,4 @@ clean:
 
 rebuild: clean all
 
-.PHONY: all setup gen-papers compile-papers pdf html clean rebuild
+.PHONY: all setup gen-papers compile-papers verify-papers pdf html clean rebuild
