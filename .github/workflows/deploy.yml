@@ -1,3 +1,11 @@
+# ==============================================================================
+# Build & Deploy Portfolio
+#
+# Trigger : push to main, or manual dispatch
+# Pipeline: install TeX Live + GnuPG → decode 3 secrets (all base64)
+#           → import private key → write public.asc → make all
+#           → strip LaTeX intermediates from dist/ → publish to Pages
+# ==============================================================================
 name: Build & Deploy Portfolio
 
 on:
@@ -15,16 +23,19 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # ----------------------------------------------------------------------------
+  # build: produce dist/ and upload it as a Pages artifact
+  # ----------------------------------------------------------------------------
   build:
-    name: Build from Source
+    name: Build from source
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install TeX Live & GnuPG
+      - name: Install TeX Live and GnuPG
         uses: awalsh128/cache-apt-pkgs-action@v1
         with:
           packages: >
@@ -41,53 +52,97 @@ jobs:
       - name: Refresh font maps
         run: sudo updmap-sys
 
-      - name: Import GPG Private Key
+      # ------------------------------------------------------------------------
+      # Decode all three repository secrets (they are base64-encoded).
+      #
+      # GPG_PRIVATE_KEY : base64 of ASCII-armored private key
+      # GPG_PASSPHRASE  : base64 of plain-text passphrase
+      # GPG_PUBLIC_KEY  : base64 of ASCII-armored public key
+      #
+      # The passphrase is written to $GITHUB_ENV so the next step
+      # (`make all`) can read it as a plain environment variable.
+      # ------------------------------------------------------------------------
+      - name: Import GPG signing key and write public key
         env:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GPG_PRIVATE_KEY_B64: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE_B64:  ${{ secrets.GPG_PASSPHRASE }}
+          GPG_PUBLIC_KEY_B64:  ${{ secrets.GPG_PUBLIC_KEY }}
         run: |
-          if [ -z "$GPG_PRIVATE_KEY" ]; then
-            echo "❌ Secret GPG_PRIVATE_KEY kosong."
+          if [ -z "$GPG_PRIVATE_KEY_B64" ]; then
+            echo "[gpg] ERROR: secret GPG_PRIVATE_KEY is empty"
             exit 1
           fi
-          echo "Mengimpor GPG Key..."
-          echo "$GPG_PRIVATE_KEY" | base64 -d | gpg --batch --import
-          
-          if [ -n "$GPG_PASSPHRASE" ]; then
-            echo "Setting passphrase..."
+          if [ -z "$GPG_PUBLIC_KEY_B64" ]; then
+            echo "[gpg] ERROR: secret GPG_PUBLIC_KEY is empty"
+            exit 1
+          fi
+
+          echo "[gpg] decoding and importing private key"
+          echo "$GPG_PRIVATE_KEY_B64" | base64 -d | gpg --batch --import
+
+          echo "[gpg] writing public.asc from secret"
+          echo "$GPG_PUBLIC_KEY_B64" | base64 -d > public.asc
+
+          if [ -n "$GPG_PASSPHRASE_B64" ]; then
+            echo "[gpg] decoding passphrase"
+            GPG_PASSPHRASE_RAW=$(echo "$GPG_PASSPHRASE_B64" | base64 -d)
+            # Use multiline GITHUB_ENV syntax so special characters
+            # in the passphrase do not break the env file.
+            {
+              echo 'GPG_PASSPHRASE_RAW<<EOF'
+              echo "$GPG_PASSPHRASE_RAW"
+              echo 'EOF'
+            } >> "$GITHUB_ENV"
+
+            echo "[gpg] passphrase secret present; enabling preset-passphrase"
             echo "allow-preset-passphrase" >> ~/.gnupg/gpg-agent.conf
             gpg-connect-agent reloadagent /bye
           fi
-          echo "--- Secret key tersedia: ---"
+
+          echo "[gpg] secret keys available:"
           gpg --list-secret-keys --keyid-format=long
 
-      - name: Run Build (make all)
+      # ------------------------------------------------------------------------
+      # Full build. `make all` runs:
+      #   setup → gen-papers → compile-papers → verify-papers → html → pdf
+      #
+      # GPG_PASSPHRASE is injected from the decoded secret in the
+      # previous step ($GITHUB_ENV), not from the raw base64 value.
+      # ------------------------------------------------------------------------
+      - name: Build (make all)
         env:
           GPG_KEY_EMAIL: mroczect@proton.me
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GPG_PASSPHRASE: ${{ env.GPG_PASSPHRASE_RAW }}
         run: make all
 
-      - name: Clean dist/ directory (remove LaTeX junk)
+      # ------------------------------------------------------------------------
+      # Strip LaTeX intermediates so only public artifacts reach Pages.
+      # Globs (not `dist/main.X`) so this keeps working if TARGET changes.
+      # ------------------------------------------------------------------------
+      - name: Prune LaTeX intermediates from dist/
         run: |
-          rm -f dist/main.aux dist/main.log dist/main.fdb_latexmk dist/main.fls \
-                dist/main.out dist/main.toc dist/main.xref dist/*.4ct dist/*.4tc \
+          rm -f dist/*.aux dist/*.log dist/*.fls dist/*.fdb_latexmk \
+                dist/*.out dist/*.toc dist/*.xref dist/*.4ct dist/*.4tc \
                 dist/*.idv dist/*.lg dist/*.tmp dist/*.dvi
-          echo "📂 Isi dist/:"
+          echo "[build] dist/ contents:"
           ls -R dist/
 
-      - name: Upload Pages Artifact
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
           retention-days: 7
 
+  # ----------------------------------------------------------------------------
+  # deploy: publish the artifact to GitHub Pages
+  # ----------------------------------------------------------------------------
   deploy:
     name: Deploy
+    runs-on: ubuntu-latest
+    needs: build
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
