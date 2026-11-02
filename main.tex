@@ -1,25 +1,29 @@
 \documentclass[11pt,a4paper]{article}
 
-\usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{mathpazo}
 \usepackage[scaled=0.92]{helvet}
 \usepackage[margin=1in]{geometry}
 \usepackage{listings}
-\usepackage{xcolor}
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{float}
 \usepackage[hidelinks]{hyperref}
 
+\hypersetup{
+  pdftitle={Personal Documentation and Paper Publishing},
+  pdfauthor={Muhammad Riduwan Khafidi},
+  pdfsubject={Portfolio: documentation and signed papers}
+}
+
 \lstdefinestyle{knr}{
-	basicstyle=\ttfamily\small,
-	keywordstyle=\bfseries,
-	commentstyle=\itshape,
-	breaklines=true,
-	numbers=left,
-	numberstyle=\tiny,
-	frame=none
+  basicstyle=\ttfamily\small,
+  keywordstyle=\bfseries,
+  commentstyle=\itshape,
+  breaklines=true,
+  numbers=left,
+  numberstyle=\tiny,
+  frame=none
 }
 \lstset{style=knr}
 
@@ -27,7 +31,7 @@
   \special{t4ht=<link rel="stylesheet" type="text/css" href="style.css">}
 \fi
 
-\title{\textbf{Personal Documentation And Paper Publishing}}
+\title{Personal Documentation and Paper Publishing}
 \author{Muhammad Riduwan Khafidi}
 \date{\today}
 
@@ -38,5 +42,8 @@
 \newpage
 
 \input{content/my-porto.tex}
+
+\input{content/auto-papers.tex}
+\input{content/auto-verification-table.tex}
 
 \end{document}
