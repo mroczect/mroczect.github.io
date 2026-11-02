@@ -55,9 +55,9 @@ clean:
 	@latexmk -C
 	@if [ -d "paper" ]; then \
 		cd paper && latexmk -C; \
-		rm -f *.pdf *.asc *.aux *.log *.fls *.fdb_latexmk *.out *.toc; \
+		rm -f *.pdf *.asc *.aux *.log *.fls *.fdb_latexmk *.out *.toc *.sha256 ; \
 	fi
-	@rm -rf dist *.html *.css *.4ct *.4tc *.idv *.lg *.tmp *.xref *.dvi *.pdf \
+	@rm -rf dist *.html *.css *.4ct *.4tc *.idv *.lg *.tmp *.xref *.dvi *.pdf *.sha256 \
 		main.pdf public.asc paper/SHA256SUMS
 	@echo "[clean] Done."
 
