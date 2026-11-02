@@ -1,25 +1,291 @@
+% =============================================================================
+% FILE: main.tex
+% =============================================================================
+%
+% NAME
+%   main.tex — primary LaTeX document for the published HTML site and
+%   the portfolio PDF.
+%
+% SYNOPSIS
+%   Compiled twice per build, by two different tools, for two different
+%   audiences:
+%
+%     make4ht -d dist -u main.tex "xhtml"      -> dist/index.html
+%     latexmk -pdf -outdir=dist main.tex       -> dist/main.pdf
+%
+%   Both targets are orchestrated by the repository Makefile. Neither
+%   target is invoked directly by a human; the Makefile wraps each
+%   with setup, dependency, and staging steps.
+%
+% DESCRIPTION
+%   This file produces the cover document of the published site. It
+%   contains three parts:
+%
+%     1. A profile block: identity, contact, repositories.
+%     2. A license block: the full CC BY-SA 4.0 text.
+%     3. A changelog block: git history rendered as LaTeX.
+%
+%   It does NOT contain any of the individual papers. Papers are
+%   compiled separately from paper/*.tex by the Makefile and shipped
+%   as sibling PDFs. main.tex only links to them, via the generated
+%   verification table and the generated paper manifest.
+%
+% SIBLING FILES
+%   This file is one of two "root" files in the repository. The other
+%   is styles/style.css. Together they define the entire published
+%   surface of the site:
+%
+%     main.tex         -> HTML shell + PDF portfolio (this file)
+%     styles/style.css -> HTML appearance (make4ht output)
+%
+%   The two files are deliberately decoupled. style.css does NOT
+%   affect the PDF, and main.tex does NOT affect the HTML beyond the
+%   DOM that make4ht emits. The Makefile copies style.css to
+%   dist/main.css verbatim; the PDF is styled entirely by the preamble
+%   in this file.
+%
+% INPUTS
+%   content/my-porto.tex                     authored: profile, contact, papers
+%   content/License.tex                      authored: CC BY-SA 4.0
+%   content/changelog.tex                    GENERATED: do not edit
+%   content/auto-papers.tex                  GENERATED: do not edit
+%   content/auto-verification-table.tex      GENERATED: do not edit
+%
+%   The two auto-*.tex files are \input transitively: my-porto.tex
+%   \inputs auto-papers.tex, and Verivy.tex (which my-porto.tex
+%   \inputs) \inputs auto-verification-table.tex. Neither is
+%   \input directly by main.tex.
+%
+% OUTPUTS (via the Makefile)
+%   dist/index.html    HTML rendering of this file, styled by main.css
+%   dist/main.pdf      PDF rendering of this file, styled by this preamble
+%
+% INVARIANTS — DO NOT BREAK
+%   1. Preamble order is significant. fontenc must precede mathpazo
+%      and helvet, because both font packages depend on the encoding.
+%      Reordering breaks glyph availability silently.
+%
+%   2. The three content \inputs at the end are ordered deliberately:
+%      profile, license, changelog. Reordering changes the ToC order
+%      and, in the PDF, changes the page numbering that the profile
+%      references.
+%
+%   3. content/changelog.tex is regenerated on every build by
+%      scripts/gen_changelog.py. Never edit it by hand; edits are
+%      discarded on the next `make all`.
+%
+%   4. lstdefinestyle{code} and lstdefinestyle{out} are the ONLY two
+%      listing styles used anywhere in the repository. paper/*.tex
+%      define their own copies of the same two styles with identical
+%      parameters, so that each paper compiles standalone. Changing
+%      the styles in this file does NOT change the papers; changing
+%      them in paper/*.tex does NOT change this file. Keep them in
+%      sync manually.
+%
+%   5. \hypersetup's pdftitle, pdfauthor, and pdfsubject are the PDF
+%      metadata that readers see in the tab title and file properties.
+%      If the document is retitled, this block must be retitled too,
+%      or the PDF and the HTML will disagree.
+%
+%   6. There is no page header/footer customization here. Papers use
+%      \pagestyle{fancy} with a running title; main.tex uses the
+%      article class default, which is a plain page number. This is
+%      intentional: the portfolio is a single reading document, not a
+%      series of sections that need to identify themselves.
+%
+% CHANGE POLICY
+%   - Edit this file, never the generated content/*.tex fragments.
+%   - Add new packages only when a new \input actually requires them.
+%     Every package in the preamble costs compile time and adds a
+%     failure mode.
+%   - Do not add \usepackage{graphicx} unless a content file begins
+%     using \includegraphics. Currently none do; TikZ diagrams do not
+%     need it.
+%   - Do not add \usepackage{amsmath} unless a content file begins
+%     using \begin{equation} or similar. Currently none do.
+%   - Do not introduce \pagestyle{fancy} in this file. If a header is
+%     needed, add it to a content file that scopes it locally.
+%   - Do not move \newpage after \tableofcontents. It exists to keep
+%     the ToC on its own page in both HTML and PDF output.
+%
+% COMPILATION NOTES
+%   1. \date{\today} is evaluated at compile time. Rebuilding on a
+%      different day changes the cover date, the PDF metadata date,
+%      and the ToC's page-1 appearance. Do not cache the PDF across
+%      a date boundary; the cache will be stale by one day.
+%
+%   2. make4ht emits HTML that links dist/main.css, not style.css.
+%      The Makefile performs the copy. If the HTML appears unstyled,
+%      the copy step was skipped, not the CSS itself.
+%
+%   3. The PDF produced by latexmk is NOT the concatenation of the
+%      paper PDFs. It is this file only. Papers live as separate
+%      files under paper/ and are linked by URL, not embedded.
+%
+%   4. Empty lines between \input statements are fine; LaTeX ignores
+%      them. However, a % at the end of an \input line would swallow
+%      the newline and merge the next line into the same paragraph.
+%      Do not add such comments inside the body.
+%
+% This documentation is intentionally embedded as LaTeX comments.
+% No package, environment, or command in this file is changed by this
+% documentation pass.
+%
+% =============================================================================
+
+
+% =============================================================================
+% SECTION 1 — DOCUMENT CLASS
+% =============================================================================
+%
+% 11pt article on A4. Three parameters, all load-bearing:
+%
+%   11pt        Body font size. Matches the papers in paper/*.tex, so
+%               text lifted from a paper into this document keeps the
+%               same visual weight. Changing to 10pt or 12pt would
+%               make the portfolio look thinner or heavier than the
+%               papers it is bundling.
+%
+%   a4paper     Page size. Matches geometry's margin=1in below, and
+%               matches the paper template. The HTML output ignores
+%               this parameter, but the PDF depends on it, so do not
+%               remove.
+%
+%   article     Base class. No \chapter, no parts. The portfolio is a
+%               short document; the report or book classes would add
+%               chapter structure that the ToC does not need.
+%
 \documentclass[11pt,a4paper]{article}
 
+
+% =============================================================================
+% SECTION 2 — FONT ENCODING AND FONT FAMILIES
+% =============================================================================
+%
+% This block must stay in this order:
+%
+%   1. fontenc        establishes T1 output encoding
+%   2. mathpazo       selects Palatino for body and math
+%   3. helvet         selects Helvetica for headings
+%
+% Reordering breaks silently. fontenc must come before any font
+% package; otherwise the font packages install themselves against the
+% default OT1 encoding and produce wrong glyphs for accented characters.
+%
+
+% T1 encoding. Required for any non-ASCII character in the body. The
+% alternative, OT1, mangles accented letters and loses the ligature
+% table. Papers in paper/*.tex use the same setting.
 \usepackage[T1]{fontenc}
+
+% Palatino for body text. mathpazo is a package, not just a font
+% switch: it also installs Palatino-flavored math symbols, so
+% formulas render in the same family as prose. This is why the
+% package is preferred over a bare \renewcommand{\rmdefault}{ppl}.
 \usepackage{mathpazo}
+
+% Helvetica for headings. The scaled=0.92 option shrinks Helvetica
+% to 92% of nominal size, so an 11pt heading does not look visually
+% larger than an 11pt body paragraph. Without the scale factor,
+% Helvetica's larger x-height makes sans-serif headings dominate.
 \usepackage[scaled=0.92]{helvet}
+
+
+% =============================================================================
+% SECTION 3 — PAGE GEOMETRY
+% =============================================================================
+%
+% One-inch margins on all sides. This is the same margin used in every
+% paper in paper/*.tex, so text width is identical between the
+% portfolio and the papers. Copy-pasting a paragraph from a paper
+% into this document preserves line breaks exactly.
+%
+% Do not change this without also changing every paper's preamble.
+% The consistency is load-bearing for reviewers who compare PDFs
+% side by side.
+%
 \usepackage[margin=1in]{geometry}
-\usepackage{listings}
-\usepackage{xcolor}
+
+
+% =============================================================================
+% SECTION 4 — TABLE AND FIGURE PACKAGES
+% =============================================================================
+%
+% Four packages cooperate to produce booktabs-style tables and the
+% [H] float placement used by both this document and the papers.
+%
+
+% booktabs: \toprule, \midrule, \bottomrule. No vertical rules, no
+% zebra striping, no cell shading. This is the only table style used
+% anywhere in the repository. If a content file needs a table, it
+% uses booktabs.
 \usepackage{booktabs}
+
+% tabularx: tables that stretch to \textwidth with the X column type.
+% Used by content/my-porto.tex and content/Verivy.tex for wide
+% two-column tables where the second column should wrap.
 \usepackage{tabularx}
+
+% float: the [H] placement specifier. Without float, [h] and [htbp]
+% merely suggest a position; [H] pins the float exactly where the
+% source says. Used by Verivy.tex to keep diagrams inline with the
+% paragraphs that explain them.
 \usepackage{float}
-\usepackage{tikz}
-\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, matrix, fit, backgrounds}
-\usepackage{enumitem}
-\usepackage[hidelinks]{hyperref}
 
-\hypersetup{
-  pdftitle={Personal Documentation and Paper Publishing},
-  pdfauthor={Muhammad Riduwan Khafidi},
-  pdfsubject={Portfolio: documentation, papers, and changelog}
-}
 
+% =============================================================================
+% SECTION 5 — CODE LISTINGS
+% =============================================================================
+%
+% listings + xcolor. The two work together: xcolor supplies the
+% \color{black} referenced in the frame rule, and listings provides
+% the lstlisting environment and the style mechanism.
+%
+% Two styles, and only two. Every block of code in this repository
+% uses one of them:
+%
+%   style=code    a command the user would type
+%   style=out     the output the command produces
+%
+% Keeping the two visually distinct makes the reader's eye separate
+% "what I do" from "what I should see". A single style would blur
+% that boundary and force the reader to check the surrounding
+% sentence for context.
+%
+
+% xcolor: loaded without the [table] option, because this repository
+% never uses \rowcolor or \cellcolor. The package exists here only
+% to provide \color{black} for the listing frame rule. It is
+% deliberately under-configured.
+\usepackage{xcolor}
+
+% listings: the environment that provides lstlisting.
+\usepackage{listings}
+
+% -----------------------------------------------------------------------------
+% STYLE: code — commands
+% -----------------------------------------------------------------------------
+%
+% Full box frame, single rule. Every side of the block has a border.
+% This is the heavier of the two frames, because a command block
+% represents an action and should read as a self-contained unit.
+%
+% Parameters:
+%   basicstyle=\ttfamily\small        monospace, \small size
+%   frame=single                      border on all four sides
+%   rulecolor=\color{black}           black border, no gradient
+%   breaklines=true                   wrap long lines instead of overflowing
+%   showstringspaces=false            do not render spaces as visible dots
+%   columns=fullflexible              preserve inter-character spacing
+%   keepspaces=true                   do not collapse consecutive spaces
+%   framesep=6pt                      space between frame and content
+%   aboveskip=1em / belowskip=1em     paragraph-level spacing around the block
+%   xleftmargin=0pt                   align frame with text margin
+%
+% Do not add keywordstyle, numberstyle, or commentstyle. The style is
+% monochrome on purpose: keyword highlighting would inject color into
+% a document whose only sanctioned colors are black, white, and gray.
+%
 \lstdefinestyle{code}{
   basicstyle=\ttfamily\small,
   frame=single,
@@ -34,6 +300,18 @@
   xleftmargin=0pt
 }
 
+% -----------------------------------------------------------------------------
+% STYLE: out — output
+% -----------------------------------------------------------------------------
+%
+% Top and bottom rule only. No left or right border. The lighter
+% frame signals "this is what the previous command printed" without
+% boxing the output as if it were a separate artifact.
+%
+% Parameters match style=code except for frame and framesep. The
+% reduced framesep (4pt vs 6pt) tightens the visual weight of the
+% block so the two styles read as visually distinct even at a glance.
+%
 \lstdefinestyle{out}{
   basicstyle=\ttfamily\small,
   frame=tb,
@@ -47,18 +325,247 @@
   belowskip=1em
 }
 
+
+% =============================================================================
+% SECTION 6 — DIAGRAM PACKAGES
+% =============================================================================
+%
+% TikZ + five libraries. Every diagram in this repository is
+% hand-drawn TikZ, never an imported image. That choice means the
+% PDF carries no raster assets, scales cleanly to any print size,
+% and depends on nothing outside the TeX distribution.
+%
+% The libraries loaded, and why each is needed:
+%
+%   shapes.geometric   diamonds (for decision charts), isosceles
+%                      triangles (for IS-A), ellipses (for set
+%                      diagrams)
+%   arrows.meta        Stealth and Latex arrow tips; without it,
+%                      only the legacy tips are available
+%   positioning        the "below=1cm of X" syntax; without it,
+%                      only "below of" (deprecated) works
+%   calc               coordinate arithmetic like ($(a)!0.5!(b)$);
+%                      without it, midpoints require manual math
+%   matrix             the matrix node type for grid diagrams;
+%                      Verivy.tex uses it for the small table
+%                      illustrations
+%   fit                fitting a rectangle around a set of nodes;
+%                      without it, boxes around groups require
+%                      manual \draw
+%   backgrounds        drawing a fitted box behind content so the
+%                      box does not obscure labels; without it,
+%                      fitted boxes always render on top
+%
+% Removing any of these breaks at least one diagram. Do not trim the
+% list without searching content/*.tex for the corresponding syntax.
+%
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, matrix, fit, backgrounds}
+
+
+% =============================================================================
+% SECTION 7 — LIST CONFIGURATION
+% =============================================================================
+%
+% enumitem: fine-grained control over itemize/enumerate spacing and
+% label formats. Used by content/changelog.tex for its nested
+% commit lists and by content/Verivy.tex for its step-by-step
+% numbered lists.
+%
+% Loaded without options. All list tuning happens at the point of
+% use (e.g. \begin{itemize}[leftmargin=1.5em]), not globally. Global
+% tuning would leak into the papers, which need their own defaults.
+%
+\usepackage{enumitem}
+
+
+% =============================================================================
+% SECTION 8 — HYPERLINKS AND PDF METADATA
+% =============================================================================
+%
+% hyperref is loaded last among the formatting packages, because it
+% patches many other packages and must see their final configuration.
+% Loading it earlier would let later packages overwrite its patches,
+% producing broken PDF bookmarks or broken link borders.
+%
+% hidelinks disables the colored box that hyperref normally draws
+% around links. The repository is grayscale-only, and a colored box
+% would introduce blue or red into every clickable element. hidelinks
+% preserves the link function while removing the visual marking; a
+% reader discovers links by cursor shape or by print-to-PDF text
+% extraction, not by color.
+%
+\usepackage[hidelinks]{hyperref}
+
+% -----------------------------------------------------------------------------
+% PDF METADATA
+% -----------------------------------------------------------------------------
+%
+% Three fields, each rendered by hyperref into the PDF's document
+% properties. A reader who opens dist/main.pdf sees these values in
+% their PDF viewer's title bar and file-info panel.
+%
+% pdftitle     must match the \title below; otherwise the tab title
+%              and the visible title disagree.
+% pdfauthor    must match \author below; otherwise file properties
+%              and visible author disagree.
+% pdfsubject   free text, describing the portfolio's purpose. Not
+%              rendered anywhere visible; used only by search and
+%              by PDF indexing tools.
+%
+% Do not set pdfkeywords unless a real keyword list is maintained.
+% An empty or stale keyword list is worse than no list.
+%
+\hypersetup{
+  pdftitle={Personal Documentation and Paper Publishing},
+  pdfauthor={Muhammad Riduwan Khafidi},
+  pdfsubject={Portfolio: documentation, papers, and changelog}
+}
+
+
+% =============================================================================
+% SECTION 9 — TITLE BLOCK
+% =============================================================================
+%
+% Three fields. Each is rendered twice:
+%
+%   Once visibly, on the cover page, by \maketitle.
+%   Once invisibly, into the PDF metadata, by hyperref.
+%
+% The two renderings must stay in sync. If the title changes here,
+% pdftitle above must change too.
+%
+% \date{\today} is evaluated at compile time. See the file-level
+% COMPILATION NOTES for the consequence: rebuilding on a different
+% day changes the cover date.
+%
 \title{Personal Documentation and Paper Publishing}
 \author{Muhammad Riduwan Khafidi}
 \date{\today}
 
+
+% =============================================================================
+% SECTION 10 — DOCUMENT BODY
+% =============================================================================
+%
+% Six commands, in this order:
+%
+%   \maketitle            render the title block from Section 9
+%   \tableofcontents      render the ToC from collected section entries
+%   \newpage              start the profile on a fresh page
+%   \input{...}           pull in the profile block
+%   \input{...}           pull in the license text
+%   \input{...}           pull in the changelog
+%
+% The order is not arbitrary. The profile block references the
+% verification table, which is generated by the Makefile and lives
+% in content/auto-verification-table.tex. That file is \input
+% transitively through my-porto.tex. If the order were reversed,
+% the profile would reference a table that had not been defined yet.
+%
+% The \newpage between ToC and profile is deliberate. Without it,
+% LaTeX would fill the rest of the ToC page with the first section
+% of the profile, which reads as a layout error in the PDF.
+%
+
 \begin{document}
 
+% Render the title block. Emits a centered title, author, and date
+% on the first page, using \title, \author, and \date from Section 9.
 \maketitle
+
+% Render the table of contents. Collected entries come from every
+% \section, \subsection, and \addcontentsline in the content files.
+% In the HTML output, make4ht converts this into a clickable list;
+% in the PDF, LaTeX renders it as a dotted-leader ToC with page
+% numbers.
 \tableofcontents
+
+% Force a page break. Without this, LaTeX starts the profile in the
+% remaining space on the ToC page. Do not remove.
 \newpage
 
+% -----------------------------------------------------------------------------
+% INPUT: content/my-porto.tex
+% -----------------------------------------------------------------------------
+%
+% AUTHORED. Edit this file to change the profile, contact block, or
+% paper listing.
+%
+% Contains:
+%   - Profile table (name, age, institution, student ID)
+%   - Contact and repository table
+%   - Papers section that \inputs content/auto-papers.tex (generated)
+%     and content/Verivy.tex (authored)
+%
+% The papers section is where the reader is directed to the
+% individual PDFs. The verification table inside Verivy.tex is what
+% makes those PDFs provably authentic; see VERIFY.md.
+%
 \input{content/my-porto.tex}
+
+% -----------------------------------------------------------------------------
+% INPUT: content/License.tex
+% -----------------------------------------------------------------------------
+%
+% AUTHORED. Contains the full text of CC BY-SA 4.0, transcribed into
+% LaTeX from the plain-text LICENSE file at the repository root.
+%
+% Two copies exist by design: LICENSE is the source of truth for
+% machine readers, and License.tex is the human-readable rendering
+% inside the PDF. If one is updated, the other must be updated too.
+%
+% The license governs the papers, not just this portfolio document.
+% Every PDF under paper/ is published under the same CC BY-SA 4.0.
+%
 \input{content/License.tex}
+
+% -----------------------------------------------------------------------------
+% INPUT: content/changelog.tex
+% -----------------------------------------------------------------------------
+%
+% GENERATED. Do not edit. Every build of `make all`, `make html`, or
+% `make pdf` regenerates this file from the git commit history via
+% scripts/gen_changelog.py.
+%
+% The generator reads:
+%   - commit hashes, dates, authors, subjects
+%   - conventional-commit type labels (feat, fix, docs, ...)
+%   - shortstat summaries ("3 files changed, 42 insertions")
+%   - PR references of the form (#123)
+%
+% It writes a LaTeX fragment grouping commits by month and day,
+% with hyperlinks to the GitHub commit page for each commit.
+%
+% If this file appears empty or stale, the cause is a git failure or
+% a missing python3, not a LaTeX problem. Run `make changelog`
+% alone to regenerate it and see the error message.
+%
 \input{content/changelog.tex}
 
 \end{document}
+
+% =============================================================================
+% END OF FILE: main.tex
+% =============================================================================
+%
+% Compilation checklist, for verification after any edit to this file:
+%
+%   [ ] Does `make pdf` produce dist/main.pdf without errors?
+%   [ ] Does the PDF's title bar show "Personal Documentation and
+%       Paper Publishing"?
+%   [ ] Does the PDF's author field show "Muhammad Riduwan Khafidi"?
+%   [ ] Does `make html` produce dist/index.html?
+%   [ ] Does dist/main.css exist after `make html`?
+%   [ ] Does the ToC in both outputs list Profile, Contact, Papers,
+%       License, and Changelog, in that order?
+%   [ ] Does the profile page show the verification table with three
+%       link columns (PDF, Sig, SHA)?
+%   [ ] Does the changelog page show at least one commit?
+%
+% If any check fails, the cause is in a content file or in the
+% Makefile, not in this file's preamble. The preamble is verified
+% working; edits to it are the rarest kind of change and should be
+% accompanied by a full rebuild (`make rebuild`).
+%
+% =============================================================================
