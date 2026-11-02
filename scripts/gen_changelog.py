@@ -130,22 +130,21 @@ def collect_commits(limit: int, since: str | None) -> list[dict]:
     return commits
 
 
+_LATEX_ESCAPE = {
+    "\\": r"\textbackslash{}",
+    "&": r"\&",
+    "%": r"\%",
+    "$": r"\$",
+    "#": r"\#",
+    "_": r"\_",
+    "{": r"\{",
+    "}": r"\}",
+    "~": r"\textasciitilde{}",
+    "^": r"\textasciicircum{}",
+}
+
 def escape_latex(s: str) -> str:
-    s = s.replace("\\", "__BACKSLASH__")
-    replacements = [
-        ("&", r"\&"),
-        ("%", r"\%"),
-        ("$", r"\$"),
-        ("#", r"\#"),
-        ("_", r"\_"),
-        ("{", r"\{"),
-        ("}", r"\}"),
-        ("~", r"\textasciitilde{}"),
-        ("^", r"\textasciicircum{}"),
-    ]
-    for orig, repl in replacements:
-        s = s.replace(orig, repl)
-    return s.replace("__BACKSLASH__", r"\textbackslash{}")
+    return "".join(_LATEX_ESCAPE.get(c, c) for c in s)
 
 
 def render_commit(commit: dict, gh_repo: str) -> str:

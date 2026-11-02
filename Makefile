@@ -25,7 +25,7 @@ verify-papers:
 	@echo "[verify-papers] Signing and verifying papers..."
 	@bash generate_verification.sh
 
-html: setup gen-papers verify-papers changelog
+html: setup gen-papers verify-papers
 	@echo "[html] Building HTML with make4ht..."
 	@make4ht -d dist -u $(TARGET).tex "xhtml" || \
 		(echo "[html] ERROR: make4ht failed"; cat $(TARGET).log; exit 1)
@@ -46,7 +46,7 @@ html: setup gen-papers verify-papers changelog
 		cp public.asc dist/public.asc; \
 	fi
 
-pdf: setup gen-papers verify-papers changelog
+pdf: setup gen-papers verify-papers
 	@echo "[pdf] Building portfolio PDF..."
 	@latexmk -pdf -interaction=nonstopmode -file-line-error -outdir=dist $(TARGET).tex > /dev/null
 
