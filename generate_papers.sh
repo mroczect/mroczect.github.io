@@ -1,44 +1,38 @@
 #!/usr/bin/env bash
-# ==============================================================================
-# generate_papers.sh - Generate LaTeX list of papers
-# Strict mode: Exit on error, undefined variables, or pipe failures.
-# ==============================================================================
 set -euo pipefail
 IFS=$'\n\t'
 
 OUTPUT="content/auto-papers.tex"
+TMP="${OUTPUT}.tmp"
 
-echo "⏳ Memulai generasi daftar paper..."
+trap 'rm -f "${TMP}"' EXIT
+
+echo "[gen-papers] Building ${OUTPUT}..."
 mkdir -p content
 
-# Trap untuk memastikan output tidak corrupt jika script dihentikan paksa
-trap 'rm -f "${OUTPUT}.tmp"' EXIT
+printf '%s\n' '\section*{My Paper Publish}' >  "${TMP}"
+printf '%s\n' '\begin{itemize}'             >> "${TMP}"
 
-echo "\section*{My Paper Publish}" > "${OUTPUT}.tmp"
-echo "\begin{itemize}" >> "${OUTPUT}.tmp"
-
-count=0
-# Gunakan nullglob agar jika tidak ada file .tex, loop tidak error
 shopt -s nullglob
+count=0
 for file in paper/*.tex; do
     filename=$(basename "$file" .tex)
-    
-    # Cross-platform safe: Hanya replace underscore dengan escaped underscore
-    # Menggunakan parameter expansion bawaan bash (lebih cepat & aman dari sed)
+
     escaped_filename="${filename//_/\\_}"
-    
-    echo "	\item \href{paper/${filename}.pdf}{${escaped_filename}}" >> "${OUTPUT}.tmp"
+
+    printf '  \\item \\href{paper/%s.pdf}{%s}\n' \
+        "${filename}" "${escaped_filename}" >> "${TMP}"
+
     count=$((count + 1))
 done
 shopt -u nullglob
 
-echo "\end{itemize}" >> "${OUTPUT}.tmp"
+printf '%s\n' '\end{itemize}' >> "${TMP}"
 
-# Atomically move hasil akhir
-mv "${OUTPUT}.tmp" "$OUTPUT"
+mv "${TMP}" "${OUTPUT}"
 
 if [ "$count" -eq 0 ]; then
-    echo "⚠️  PERINGATAN: Tidak ada file .tex ditemukan di folder paper/."
+    echo "[gen-papers] WARN: no paper/*.tex found; wrote empty list"
 else
-    echo "✅ Sukses! ${count} paper didaftarkan ke ${OUTPUT}"
+    echo "[gen-papers] Wrote ${count} entries to ${OUTPUT}"
 fi
