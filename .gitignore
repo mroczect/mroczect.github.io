@@ -13,6 +13,7 @@
 *.cb2
 .*.lb
 
+
 ## Intermediate documents:
 *.dvi
 *.xdv
@@ -339,3 +340,8 @@ main.css
 main.html
 /dist
 a.md
+
+paper/*.asc
+paper/SHA256SUMS
+content/auto-papers.tex
+content/auto-verification-table.tex
