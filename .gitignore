@@ -1,33 +1,35 @@
-# ==========================================
-# KEAMANAN: JANGAN PERNAH COMMIT INI
-# ==========================================
+# ==============================================================================
+# Secrets — never commit
+# ==============================================================================
 gpg-private.b64
 *.key
 *.pem
 .env
 
-# ==========================================
-# ARTEFAK BUILD (Dihasilkan oleh CI / make all)
-# ==========================================
-# Abaikan hasil kompilasi PDF dan tanda tangan
+# ==============================================================================
+# Build artifacts — produced by `make all` or CI
+# ==============================================================================
+# Compiled PDFs and detached signatures
 paper/*.pdf
 paper/*.asc
 paper/SHA256SUMS
 public.asc
 
-# Abaikan file auto-generated LaTeX
+# Auto-generated LaTeX (see generate_papers.sh, generate_verification.sh)
 content/auto-papers.tex
 content/auto-verification-table.tex
 
-# Abaikan folder deploy
+# ==============================================================================
+# Deploy output
+# ==============================================================================
 dist/
 main.pdf
 main.html
 main.css
 
-# ==========================================
-# SAMPAH LATEX (Standard TeX .gitignore)
-# ==========================================
+# ==============================================================================
+# LaTeX intermediates — standard TeX .gitignore
+# ==============================================================================
 *.aux
 *.lof
 *.log
@@ -80,12 +82,21 @@ latex.out/
 *.auxlock
 *.ptc
 
-# ==========================================
-# EDITOR / OS SAMPAH
-# ==========================================
+# ==============================================================================
+# Editor / OS
+# ==============================================================================
 .DS_Store
 Thumbs.db
 *.swp
 *~
+
+# ==============================================================================
+# Repo-specific scratch — local-only, not shared
+# ==============================================================================
 a.md
 backup/
+
+paper/*.pdf
+paper/*.asc
+paper/*.sha256
+public.asc
