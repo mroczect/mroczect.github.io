@@ -1,0 +1,116 @@
+\section*{Overview}
+\addcontentsline{toc}{section}{Paper Verification}
+
+All papers in this repository are cryptographically signed using GnuPG. This process allows readers to verify three things:
+
+\begin{enumerate}
+	\item The PDF file genuinely originates from the author.
+	\item The PDF file has not been altered since it was signed.
+	\item The signature creation date can be verified.
+\end{enumerate}
+
+Each paper consists of three sibling files. All three must be downloaded to complete the verification process.
+
+\begin{table}[H]
+	\centering
+	\small
+	\begin{tabularx}{\textwidth}{@{} l X @{}}
+		\toprule
+		File                     & Description              \\
+		\midrule
+		\texttt{NAME.pdf}        & The document itself      \\
+		\texttt{NAME.pdf.asc}    & Detached GnuPG signature \\
+		\texttt{NAME.pdf.sha256} & SHA-256 checksum         \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\section*{Prerequisites}
+\addcontentsline{toc}{section}{Prerequisites}
+
+Install GnuPG based on your operating system. If GnuPG is already installed, skip this section.
+
+\begin{lstlisting}[style=code]
+# Debian / Ubuntu
+sudo apt install gnupg
+
+# Arch Linux
+sudo pacman -S gnupg
+
+# macOS
+brew install gnupg
+
+# Windows (PowerShell)
+winget install GnuPG.GnuPG
+\end{lstlisting}
+
+\section*{Verification Steps}
+\addcontentsline{toc}{section}{Verification Steps}
+
+\subsection*{Step 1: Import the author's public key}
+
+The public key is provided as \texttt{public.asc} in the root of the repository. Import it once; it does not need to be imported again for subsequent verifications.
+
+\begin{lstlisting}[style=code]
+gpg --import public.asc
+\end{lstlisting}
+
+\subsection*{Step 2: Download the three paper files}
+
+Download \texttt{NAME.pdf}, \texttt{NAME.pdf.asc}, and \texttt{NAME.pdf.sha256} for the paper you want to verify.
+
+\subsection*{Step 3: Verify the SHA-256 checksum}
+
+The checksum confirms that the file was not corrupted during download.
+
+\begin{lstlisting}[style=code]
+# Linux
+sha256sum -c NAME.pdf.sha256
+
+# macOS
+shasum -a 256 -c NAME.pdf.sha256
+
+# Windows (PowerShell)
+certutil -hashfile NAME.pdf SHA256
+# Manually compare the output with the content of NAME.pdf.sha256
+\end{lstlisting}
+
+A successful check produces the following output on Linux or macOS:
+
+\begin{lstlisting}[style=out]
+NAME.pdf: OK
+\end{lstlisting}
+
+\subsection*{Step 4: Verify the GnuPG signature}
+
+The signature confirms that the file was signed by the author and has not been modified since.
+
+\begin{lstlisting}[style=code]
+gpg --verify NAME.pdf.asc NAME.pdf
+\end{lstlisting}
+
+A successful verification produces the following output. The exact key ID and date will match your downloaded files.
+
+\begin{lstlisting}[style=out]
+gpg: Signature made Sun Nov  2 23:10:00 2026 WIB
+gpg:                using RSA key 3D0E79F1565AC46E9EEB3F49B0B3DDCEB6CEF796
+gpg: Good signature from "Muhammad Riduwan Khafidi <mroczect@proton.me>" [ultimate]
+\end{lstlisting}
+
+\section*{Troubleshooting}
+\addcontentsline{toc}{section}{Troubleshooting}
+
+\begin{table}[H]
+	\centering
+	\small
+	\begin{tabularx}{\textwidth}{@{} l X @{}}
+		\toprule
+		Message                                       & Cause and remedy                                                                                                                           \\
+		\midrule
+		\texttt{BAD signature}                        & The PDF file has been altered after signing, or the download is corrupted. Do not trust the contents. Contact the author for a valid copy. \\
+		\texttt{Can't check signature: No public key} & The public key has not been imported. Repeat Step 1.                                                                                       \\
+		\texttt{sha256sum: FAILED}                    & The file is corrupted or tampered with. Re-download the file. If the error persists, contact the author.                                   \\
+		\texttt{No such file or directory}            & The three files are not in the same directory. Move them into one directory before running the commands.                                   \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
