@@ -312,7 +312,7 @@ guide.
 		\texttt{Good signature ... [expired]}         & The key that made the signature has passed its expiration date                      & Check the fingerprint per Step 1. Contact the author for an updated key if needed      \\
 		\texttt{Good signature ... [revoked]}         & The key has been revoked by its owner; signature must not be trusted                & Contact the author through a channel other than email. Do not use the file             \\
 		\texttt{sha256sum: FAILED}                    & The computed checksum differs from the recorded one                                 & Re-download. If the failure persists, the file on the server has been altered          \\
-		\texttt{gpg: no valid OpenPGP data found}     & The \texttt{.asc} file is corrupt, empty, or not an armored signature               & Re-download. Confirm the file begins with \texttt{-----BEGIN PGP SIGNATURE-----}       \\
+		\texttt{gpg: no valid OpenPGP data found}     & The \texttt{.asc} file is corrupt, empty, or not an armored signature               & Re-download. Confirm the file begins with \verb|-----BEGIN PGP SIGNATURE-----|       \\
 		\texttt{gpg: CRC error}                       & The armored signature was truncated or corrupted in transit                         & Re-download \texttt{NAME.pdf.asc}                                                      \\
 		\texttt{No such file or directory}            & The three files are in different directories, or a filename has a typo              & Move all three files into the same directory. Confirm exact filenames with \texttt{ls} \\
 		\bottomrule
@@ -360,13 +360,13 @@ For a single paper, use the full command from Step 4.
 		\midrule
 		Install GnuPG on Debian or Ubuntu & \texttt{sudo apt install gnupg}                         \\
 		Install GnuPG on macOS            & \texttt{brew install gnupg}                             \\
-		Import the author's public key    & \texttt{gpg --import public.asc}                        \\
-		Print the key fingerprint         & \texttt{gpg --fingerprint mroczect@proton.me}           \\
-		Mark the key as trusted           & \texttt{gpg --edit-key mroczect@proton.me trust}        \\
+		Import the author's public key    & \texttt{gpg -{}-import public.asc}                        \\
+		Print the key fingerprint         & \texttt{gpg -{}-fingerprint mroczect@proton.me}           \\
+		Mark the key as trusted           & \texttt{gpg -{}-edit-key mroczect@proton.me trust}        \\
 		Verify SHA-256 on Linux           & \texttt{sha256sum -c NAME.pdf.sha256}                   \\
 		Verify SHA-256 on macOS           & \texttt{shasum -a 256 -c NAME.pdf.sha256}               \\
-		Verify the GnuPG signature        & \texttt{gpg --verify NAME.pdf.asc NAME.pdf}             \\
-		Read the signature creation date  & \texttt{gpg --list-packets NAME.pdf.asc | grep created} \\
+		Verify the GnuPG signature        & \texttt{gpg -{}-verify NAME.pdf.asc NAME.pdf}             \\
+		Read the signature creation date  & \texttt{gpg -{}-list-packets NAME.pdf.asc | grep created} \\
 		Verify every paper in one pass    & loop shown in the Batch Verification section            \\
 		\bottomrule
 	\end{tabularx}
@@ -374,6 +374,6 @@ For a single paper, use the full command from Step 4.
 
 The whole procedure fits in a single sentence: import the key,
 verify its fingerprint against an independent source, then run
-\texttt{gpg --verify} on each paper. Everything else in this guide
+\texttt{gpg -{}-verify} on each paper. Everything else in this guide
 exists to explain why each of those three steps matters and what
 can go wrong at each one.
