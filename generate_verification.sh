@@ -142,7 +142,7 @@ for pdf_file in paper/*.pdf; do
     sha_link="\\href{paper/$(basename "$sha_file")}{\\texttt{sha}}"
 
     # 6. Emit one table row.
-    printf '%s & %s & \\texttt{\\scriptsize %s} & %s & %s & %s \\\\\n' \
+    printf '%s & %s & \\texttt{%s} & %s & %s & %s \\\\\n' \
         "$i" "$timestamp" "$esc_name" \
         "$pdf_link" "$sig_link" "$sha_link" >> "${TMP}"
 
