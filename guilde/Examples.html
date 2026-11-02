@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="id">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Anatomi Gaya Paper Akademik — Referensi Visual</title>
+		<link rel="stylesheet" href="Examples.css" />
+	</head>
+	<body>
+		<aside class="sidebar">
+			<div class="sidebar-header">
+				<span class="sidebar-title">Anatomi Paper</span>
+				<span class="sidebar-subtitle">Referensi Visual</span>
+			</div>
+			<nav class="sidebar-nav">
+				<a href="#intro" class="nav-item">Pendahuluan</a>
+				<a href="#hierarchy" class="nav-item">Hierarki</a>
+				<a href="#cycle" class="nav-item">Siklus</a>
+				<a href="#timeline" class="nav-item">Timeline</a>
+				<a href="#comparison" class="nav-item">Perbandingan</a>
+				<a href="#procedure" class="nav-item">Prosedur</a>
+				<a href="#memory" class="nav-item">Memori</a>
+				<a href="#code" class="nav-item">Kode</a>
+				<a href="#table" class="nav-item">Tabel</a>
+				<a href="#mistakes" class="nav-item">Kesalahan</a>
+			</nav>
+			<div class="sidebar-footer">
+				<button id="toggle-all">Tampilkan Semua Sumber</button>
+			</div>
+		</aside>
+
+		<main class="main-content">
+			<div class="page">
+				<header class="page-header">
+					<span>Anatomi Gaya Paper Akademik</span>
+					<span>1</span>
+				</header>
+
+				<div class="title-block">
+					<h1 class="paper-title">Anatomi Gaya Paper Akademik</h1>
+					<p class="paper-subtitle">
+						Contoh Lengkap dengan Delapan Visualisasi
+					</p>
+					<div class="author-block">
+						<strong>Muhammad Riduwan Khafidi</strong><br />
+						<span class="small"
+							>Program Studi Teknik Rekayasa Perangkat Lunak</span
+						><br />
+						<span class="small">Politeknik Negeri Batam</span><br />
+						<code>4342611034@students.polibatam.ac.id</code>
+					</div>
+					<div class="date-block">2 November 2026</div>
+				</div>
+
+				<section id="intro">
+					<div class="abstract">
+						<h2 class="abstract-title">Abstrak</h2>
+						<blockquote>
+							Makalah ini berfungsi sebagai contoh lengkap bagi
+							seluruh aturan gaya yang telah dibekukan dalam
+							skill. Ia mendemonstrasikan delapan visualisasi TikZ
+							yang mewakili tipe utama, dua gaya blok kode,
+							anatomi tabel booktabs, serta seluruh struktur
+							bagian wajib dari Pendahuluan hingga Referensi.
+							Melalui contoh ini, pembaca dapat melihat bagaimana
+							setiap aturan gaya diwujudkan dalam satu makalah
+							utuh yang dapat dikompilasi.
+						</blockquote>
+					</div>
+
+					<h2>1. Pendahuluan</h2>
+					<h3>1.1 Analogi Pembuka</h3>
+					<p>
+						Bayangkan seorang tukang kayu yang hendak membuat meja.
+						Ia tidak mulai dengan memotong kayu sembarangan. Ia
+						membuka cetak biru dulu: berapa tinggi meja, berapa
+						lebar, di mana kaki meja diletakkan. Cetak biru itu
+						bukan hasil akhir, tetapi ia menentukan apakah hasil
+						akhir akan kokoh atau goyah.
+					</p>
+					<p>
+						Makalah akademik juga punya cetak birunya. Cetak biru
+						itu adalah struktur, gaya, dan visualisasi.
+					</p>
+				</section>
+
+				<section id="hierarchy">
+					<h2>2. Visual Tipe A: Hierarki Pohon</h2>
+					<p>
+						Hierarki dipakai untuk menunjukkan struktur bertingkat.
+						Perhatikan Gambar 1.
+					</p>
+
+					<figure class="figure">
+						<div class="diagram diagram-hierarchy">
+							<div class="node node-root">Paper Akademik</div>
+							<div class="branch-row">
+								<div class="node node-level-1">Pendahuluan</div>
+								<div class="node node-level-2">Isi</div>
+								<div class="node node-level-3">Penutup</div>
+							</div>
+						</div>
+						<figcaption>
+							Gambar 1. Hierarki tiga bagian utama paper.
+						</figcaption>
+					</figure>
+
+					<button class="source-toggle" data-target="src-hierarchy">
+						Lihat LaTeX
+					</button>
+					<pre
+						class="latex-source"
+						id="src-hierarchy"
+					><code>\begin{tikzpicture}[
+    node distance=0.5cm and 0.8cm,
+    cat/.style={rectangle, draw=black, thick,
+        minimum width=3.2cm, minimum height=0.9cm,
+        align=center, font=\sffamily\small},
+    line/.style={draw, thick}
+]
+    \node[font=\sffamily] (root) at (0, 1) {Paper Akademik};
+    \node[cat, fill=white, below left=1cm and 2.2cm of root] (a) {Pendahuluan};
+    \node[cat, fill=black!10, below=1cm of root] (b) {Isi};
+    \node[cat, fill=black!20, below right=1cm and 2.2cm of root] (c) {Penutup};
+
+    \draw[line] (root) -- (a);
+    \draw[line] (root) -- (b);
+    \draw[line] (root) -- (c);
+\end{tikzpicture}</code></pre>
+				</section>
+
+				<section id="cycle">
+					<h2>3. Visual Tipe B: Siklus</h2>
+					<p>
+						Siklus dipakai untuk proses yang berulang. Perhatikan
+						Gambar 2.
+					</p>
+
+					<figure class="figure">
+						<div class="diagram diagram-cycle">
+							<div class="cycle-row">
+								<div class="node">Rencana</div>
+								<span class="arrow">→</span>
+								<div class="node">Tulis</div>
+							</div>
+							<div class="cycle-row">
+								<div class="node">Revisi</div>
+								<span class="arrow dashed-arrow">←</span>
+								<div class="node">Verifikasi</div>
+							</div>
+						</div>
+						<figcaption>
+							Gambar 2. Siklus empat tahap penulisan paper.
+						</figcaption>
+					</figure>
+
+					<button class="source-toggle" data-target="src-cycle">
+						Lihat LaTeX
+					</button>
+					<pre
+						class="latex-source"
+						id="src-cycle"
+					><code>\begin{tikzpicture}[
+    node distance=2cm,
+    box/.style={rectangle, draw=black, thick, fill=black!10,
+        minimum width=2.8cm, minimum height=1cm,
+        align=center, font=\sffamily\small},
+    line/.style={draw, thick, -latex}
+]
+    \node[box] (plan) {Rencana};
+    \node[box, right=of plan] (write) {Tulis};
+    \node[box, below=of write] (verify) {Verifikasi};
+    \node[box, left=of verify] (revise) {Revisi};
+
+    \draw[line] (plan) -- (write);
+    \draw[line] (write) -- (verify);
+    \draw[line] (verify) -- (revise);
+    \draw[line, dashed] (revise) -- (plan);
+\end{tikzpicture}</code></pre>
+				</section>
+
+				<section id="timeline">
+					<h2>4. Visual Tipe E: Timeline</h2>
+					<p>
+						Timeline dipakai untuk menunjukkan urutan waktu.
+						Perhatikan Gambar 3.
+					</p>
+
+					<figure class="figure">
+						<div class="diagram diagram-timeline">
+							<div class="timeline-axis"></div>
+							<div class="timeline-event event-above">
+								<span class="event-dot"></span>
+								<span class="event-label"
+									>Versi 0.1<br /><small
+										>skill dasar</small
+									></span
+								>
+							</div>
+							<div class="timeline-event event-below">
+								<span class="event-dot"></span>
+								<span class="event-label"
+									>Versi 0.5<br /><small
+										>tambah TikZ</small
+									></span
+								>
+							</div>
+							<div class="timeline-event event-above">
+								<span class="event-dot"></span>
+								<span class="event-label"
+									>Versi 1.0<br /><small
+										>dibekukan</small
+									></span
+								>
+							</div>
+						</div>
+						<figcaption>
+							Gambar 3. Timeline evolusi skill.
+						</figcaption>
+					</figure>
+
+					<button class="source-toggle" data-target="src-timeline">
+						Lihat LaTeX
+					</button>
+					<pre
+						class="latex-source"
+						id="src-timeline"
+					><code>\begin{tikzpicture}[
+    ev/.style={rectangle, draw=black, thick, fill=black!5,
+        minimum width=2cm, minimum height=0.8cm,
+        align=center, font=\scriptsize},
+    line/.style={draw, thick}
+]
+    \draw[line, -latex] (-6, 0) -- (6, 0);
+
+    \draw[thick] (-4.5, 0.1) -- (-4.5, -0.1);
+    \node[ev, above=0.2cm] at (-4.5, 0.2) {Versi 0.1 \\ skill dasar};
+
+    \draw[thick] (0, 0.1) -- (0, -0.1);
+    \node[ev, below=0.2cm] at (0, -0.2) {Versi 0.5 \\ tambah TikZ};
+
+    \draw[thick] (4.5, 0.1) -- (4.5, -0.1);
+    \node[ev, above=0.2cm] at (4.5, 0.2) {Versi 1.0 \\ dibekukan};
+\end{tikzpicture}</code></pre>
+				</section>
+
+				<section id="comparison">
+					<h2>5. Visual Tipe F: Perbandingan</h2>
+					<p>
+						Perbandingan berdampingan menampilkan dua konsep yang
+						berlawanan.
+					</p>
+
+					<figure class="figure">
+						<div class="diagram diagram-comparison">
+							<div class="comparison-box">
+								<strong>Gaya Bebas</strong>
+								<p>
+									Penulis memilih sendiri struktur, gaya, dan
+									visual. Hasilnya bervariasi.
+								</p>
+							</div>
+							<div class="comparison-box comparison-box-shaded">
+								<strong>Gaya Dibekukan</strong>
+								<p>
+									Semua aturan sudah ditetapkan. Hasilnya
+									konsisten.
+								</p>
+							</div>
+						</div>
+						<figcaption>
+							Gambar 4. Perbandingan gaya bebas dan gaya
+							dibekukan.
+						</figcaption>
+					</figure>
+
+					<button class="source-toggle" data-target="src-comparison">
+						Lihat LaTeX
+					</button>
+					<pre
+						class="latex-source"
+						id="src-comparison"
+					><code>\begin{tikzpicture}[
+    box/.style={rectangle, draw=black, thick, text width=6cm,
+        align=left, font=\sffamily\small, inner sep=10pt}
+]
+    \node[box, fill=white] (a) {
+        Gaya Bebas \\
+        Penulis memilih sendiri struktur, gaya, dan visual.
+    };
+    \node[box, fill=black!10, right=0.8cm of a] (b) {
+        Gaya Dibekukan \\
+        Semua aturan sudah ditetapkan.
+    };
+\end{tikzpicture}</code></pre>
+				</section>
+
+				<section id="procedure">
+					<h2>6. Visual Tipe H: Prosedur Bertahap</h2>
+					<p>
+						Prosedur bertahap dipakai untuk menunjukkan
+						langkah-langkah berurutan.
+					</p>
+
+					<figure class="figure">
+						<div class="diagram diagram-procedure">
+							<div class="step">
+								1. Tentukan topik dan cakupan
+							</div>
+							<div class="step-arrow">↓</div>
+							<div class="step">
+								2. Rencanakan 5 sampai 12 visual
+							</div>
+							<div class="step-arrow">↓</div>
+							<div class="step">
+								3. Pilih analogi untuk setiap konsep
+							</div>
+							<div class="step-arrow">↓</div>
+							<div class="step">4. Tulis bertahap per bagian</div>
+							<div class="step-arrow">↓</div>
+							<div class="step">
+								5. Jalankan lima Quality Gates
+							</div>
+						</div>
+						<figcaption>
+							Gambar 5. Prosedur lima langkah menulis paper.
+						</figcaption>
+					</figure>
+
+					<button class="source-toggle" data-target="src-procedure">
+						Lihat LaTeX
+					</button>
+					<pre
+						class="latex-source"
+						id="src-procedure"
+					><code>\begin{tikzpicture}[
+    step/.style={rectangle, draw=black, thick, fill=black!5,
+        text width=9cm, align=left, minimum height=0.7cm,
+        font=\sffamily\small, inner sep=8pt},
+    line/.style={draw, thick, -latex}
+]
+    \node[step] (s1) {\textbf{1.} Tentukan topik dan cakupan};
+    \node[step, below=0.3cm of s1] (s2) {\textbf{2.} Rencanakan visual};
+    \node[step, below=0.3cm of s2] (s3) {\textbf{3.} Pilih analogi};
+    \node[step, below=0.3cm of s3] (s4) {\textbf{4.} Tulis bertahap};
+    \node[step, below=0.3cm of s4] (s5) {\textbf{5.} Quality Gates};
+
+    \draw[line] (s1) -- (s2);
+    \draw[line] (s2) -- (s3);
+    \draw[line] (s3) -- (s4);
+    \draw[line] (s4) -- (s5);
+\end{tikzpicture}</code></pre>
+				</section>
+
+				<section id="memory">
+					<h2>7. Visual Tipe I: Alokasi Memori</h2>
+					<p>
+						Alokasi memori menampilkan ukuran relatif antar tipe
+						data.
+					</p>
+
+					<figure class="figure">
+						<div class="diagram diagram-memory">
+							<div class="memory-row">
+								<span class="memory-label">INT (4 byte):</span>
+								<div class="memory-cells">
+									<span class="cell cell-filled">4</span>
+									<span class="cell"></span>
+									<span class="cell"></span>
+									<span class="cell"></span>
+								</div>
+								<span class="memory-note">hemat</span>
+							</div>
+							<div class="memory-row">
+								<span class="memory-label"
+									>BIGINT (8 byte):</span
+								>
+								<div class="memory-cells">
+									<span class="cell cell-filled">4</span>
+									<span class="cell cell-filled">4</span>
+									<span class="cell"></span>
+									<span class="cell"></span>
+								</div>
+								<span class="memory-note">boros dua kali</span>
+							</div>
+						</div>
+						<figcaption>
+							Gambar 6. Alokasi memori untuk primary key 4 byte
+							dan 8 byte.
+						</figcaption>
+					</figure>
+
+					<button class="source-toggle" data-target="src-memory">
+						Lihat LaTeX
+					</button>
+					<pre
+						class="latex-source"
+						id="src-memory"
+					><code>\begin{tikzpicture}[
+    cell/.style={rectangle, draw=black, minimum width=0.8cm,
+        minimum height=0.7cm, font=\ttfamily\scriptsize, align=center},
+    lbl/.style={font=\sffamily\small}
+]
+    \node[lbl, anchor=east] at (-1, 1.5) {\texttt{INT} (4 byte):};
+    \node[cell, fill=black!15] (a1) at (0, 1.5) {4};
+    \node[cell, fill=white]    (a2) at (0.8, 1.5) { };
+    \node[cell, fill=white]    (a3) at (1.6, 1.5) { };
+    \node[cell, fill=white]    (a4) at (2.4, 1.5) { };
+    \node[font=\scriptsize\sffamily, right=0.2cm of a4] {hemat};
+
+    \node[lbl, anchor=east] at (-1, 0) {\texttt{BIGINT} (8 byte):};
+    \node[cell, fill=black!15] (b1) at (0, 0) {4};
+    \node[cell, fill=black!15] (b2) at (0.8, 0) {4};
+    \node[cell, fill=white]    (b3) at (1.6, 0) { };
+    \node[cell, fill=white]    (b4) at (2.4, 0) { };
+    \node[font=\scriptsize\sffamily, right=0.2cm of b4] {boros};
+\end{tikzpicture}</code></pre>
+				</section>
+
+				<section id="code">
+					<h2>8. Pola Kode</h2>
+
+					<h3>8.1 Blok Kode Perintah</h3>
+					<pre class="code-block"><code>CREATE TABLE contoh (
+    id BIGINT UNSIGNED DEFAULT (UUID_SHORT()) PRIMARY KEY,
+    nama VARCHAR(100) NOT NULL
+);</code></pre>
+
+					<button class="source-toggle" data-target="src-code-1">
+						Lihat LaTeX
+					</button>
+					<pre
+						class="latex-source"
+						id="src-code-1"
+					><code>\begin{lstlisting}[style=code]
+CREATE TABLE contoh (
+    id BIGINT UNSIGNED DEFAULT (UUID_SHORT()) PRIMARY KEY,
+    nama VARCHAR(100) NOT NULL
+);
+\end{lstlisting}</code></pre>
+
+					<h3>8.2 Blok Kode Keluaran</h3>
+					<pre class="out-block"><code>+-------+---------------+
+| Field | Type          |
++-------+---------------+
+| id    | bigint(20)    |
+| nama  | varchar(100)  |
++-------+---------------+
+2 rows in set</code></pre>
+
+					<button class="source-toggle" data-target="src-code-2">
+						Lihat LaTeX
+					</button>
+					<pre
+						class="latex-source"
+						id="src-code-2"
+					><code>\begin{lstlisting}[style=out]
++-------+---------------+
+| Field | Type          |
++-------+---------------+
+| id    | bigint(20)    |
+| nama  | varchar(100)  |
++-------+---------------+
+2 rows in set
+\end{lstlisting}</code></pre>
+				</section>
+
+				<section id="table">
+					<h2>9. Pola Tabel Booktabs</h2>
+					<p>
+						Semua tabel memakai <code>booktabs</code>, tanpa garis
+						vertikal dan tanpa warna latar.
+					</p>
+
+					<figure class="figure">
+						<table class="booktabs">
+							<caption>
+								Tabel 1. Contoh tabel booktabs.
+							</caption>
+							<thead>
+								<tr>
+									<th>Kolom 1</th>
+									<th>Kolom 2</th>
+									<th>Kolom 3</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>baris 1</td>
+									<td>isi 1</td>
+									<td>isi 2</td>
+								</tr>
+								<tr>
+									<td>baris 2</td>
+									<td>isi 3</td>
+									<td>isi 4</td>
+								</tr>
+								<tr>
+									<td>baris 3</td>
+									<td>isi 5</td>
+									<td>isi 6</td>
+								</tr>
+							</tbody>
+						</table>
+					</figure>
+
+					<button class="source-toggle" data-target="src-table">
+						Lihat LaTeX
+					</button>
+					<pre
+						class="latex-source"
+						id="src-table"
+					><code>\begin{table}[H]
+    \centering
+    \caption{Contoh tabel booktabs.}
+    \label{tab:example}
+    \small
+    \begin{tabular}{l l l}
+        \toprule
+        Kolom 1 & Kolom 2 & Kolom 3 \\
+        \midrule
+        baris 1 & isi 1   & isi 2   \\
+        baris 2 & isi 3   & isi 4   \\
+        baris 3 & isi 5   & isi 6   \\
+        \bottomrule
+    \end{tabular}
+\end{table}</code></pre>
+				</section>
+
+				<section id="mistakes">
+					<h2>10. Kesalahan Umum</h2>
+
+					<figure class="figure">
+						<table class="booktabs">
+							<caption>
+								Tabel 2. Kesalahan umum pada penulisan paper.
+							</caption>
+							<thead>
+								<tr>
+									<th>Kesalahan</th>
+									<th>Akibat</th>
+									<th>Perbaikan</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><code>%</code> tertinggal</td>
+									<td>melanggar aturan skill</td>
+									<td>hapus semua komentar</td>
+								</tr>
+								<tr>
+									<td>warna eksplisit di TikZ</td>
+									<td>melanggar palet</td>
+									<td>pakai <code>black!N</code> saja</td>
+								</tr>
+								<tr>
+									<td><code>\rowcolor</code> di tabel</td>
+									<td>tidak konsisten</td>
+									<td>
+										pakai <code>booktabs</code> tanpa warna
+									</td>
+								</tr>
+								<tr>
+									<td>blok kode gaya campuran</td>
+									<td>tampilan tidak konsisten</td>
+									<td>
+										pilih <code>code</code> atau
+										<code>out</code> saja
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</figure>
+				</section>
+
+				<footer class="page-footer">
+					<p class="end-note">Akhir dokumen.</p>
+				</footer>
+			</div>
+		</main>
+
+		<script src="Examples.js"></script>
+	</body>
+</html>

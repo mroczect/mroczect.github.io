@@ -1,0 +1,684 @@
+:root {
+	--black: #000;
+	--white: #fff;
+	--gray-page-bg: #555;
+	--gray-5: #f2f2f2;
+	--gray-10: #e6e6e6;
+	--gray-15: #d9d9d9;
+	--gray-20: #cccccc;
+	--gray-24: #c2c2c2;
+	--gray-30: #b3b3b3;
+	--serif: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+	--sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	--mono: "Courier New", Consolas, "DejaVu Sans Mono", monospace;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background: var(--gray-page-bg);
+	font-family: var(--serif);
+	color: var(--black);
+	display: flex;
+	min-height: 100vh;
+}
+
+/* ============ SIDEBAR ============ */
+
+.sidebar {
+	width: 240px;
+	background: #2b2b2b;
+	color: #ddd;
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	padding: 20px 0;
+	overflow-y: auto;
+	font-family: var(--sans);
+	z-index: 100;
+}
+
+.sidebar-header {
+	padding: 0 20px 20px 20px;
+	border-bottom: 1px solid #444;
+	margin-bottom: 16px;
+}
+
+.sidebar-title {
+	display: block;
+	font-size: 15px;
+	font-weight: bold;
+	color: #fff;
+}
+
+.sidebar-subtitle {
+	display: block;
+	font-size: 12px;
+	color: #999;
+	margin-top: 4px;
+}
+
+.sidebar-nav {
+	display: flex;
+	flex-direction: column;
+}
+
+.nav-item {
+	color: #ccc;
+	text-decoration: none;
+	padding: 8px 20px;
+	font-size: 13px;
+	border-left: 3px solid transparent;
+	transition: all 0.15s;
+}
+
+.nav-item:hover {
+	color: #fff;
+	background: #383838;
+}
+
+.nav-item.active {
+	color: #fff;
+	border-left-color: #fff;
+	background: #383838;
+}
+
+.sidebar-footer {
+	padding: 20px;
+	margin-top: 24px;
+	border-top: 1px solid #444;
+}
+
+#toggle-all {
+	width: 100%;
+	padding: 8px 12px;
+	background: #383838;
+	color: #ddd;
+	border: 1px solid #555;
+	cursor: pointer;
+	font-family: var(--sans);
+	font-size: 12px;
+}
+
+#toggle-all:hover {
+	background: #444;
+	color: #fff;
+}
+
+/* ============ MAIN ============ */
+
+.main-content {
+	margin-left: 240px;
+	flex: 1;
+	padding: 20px 20px 60px 20px;
+	min-width: 0;
+}
+
+.page {
+	width: 21cm;
+	min-height: 29.7cm;
+	padding: 2.54cm;
+	margin: 0 auto;
+	background: var(--white);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+	font-size: 11pt;
+	line-height: 1.15;
+}
+
+/* ============ HEADER ============ */
+
+.page-header {
+	display: flex;
+	justify-content: space-between;
+	border-bottom: 0.4pt solid var(--black);
+	padding-bottom: 4px;
+	margin-bottom: 24px;
+	font-family: var(--sans);
+	font-size: 10pt;
+}
+
+/* ============ TITLE BLOCK ============ */
+
+.title-block {
+	text-align: center;
+	margin-bottom: 36px;
+}
+
+.paper-title {
+	font-family: var(--sans);
+	font-size: 20pt;
+	font-weight: bold;
+	margin: 0 0 6px 0;
+	line-height: 1.2;
+}
+
+.paper-subtitle {
+	font-family: var(--sans);
+	font-size: 16pt;
+	font-weight: bold;
+	margin: 0 0 24px 0;
+}
+
+.author-block {
+	font-family: var(--sans);
+	font-size: 11pt;
+	line-height: 1.5;
+	margin-bottom: 12px;
+}
+
+.author-block .small {
+	font-size: 10pt;
+}
+
+.author-block code {
+	font-family: var(--mono);
+	font-size: 10pt;
+}
+
+.date-block {
+	font-family: var(--sans);
+	font-size: 10pt;
+}
+
+/* ============ HEADINGS ============ */
+
+h2 {
+	font-family: var(--sans);
+	font-size: 13pt;
+	font-weight: bold;
+	margin: 28px 0 12px 0;
+	page-break-after: avoid;
+}
+
+h3 {
+	font-family: var(--sans);
+	font-size: 11pt;
+	font-weight: bold;
+	margin: 20px 0 8px 0;
+	page-break-after: avoid;
+}
+
+p {
+	margin: 0 0 11px 0;
+	text-align: justify;
+}
+
+/* ============ ABSTRACT ============ */
+
+.abstract {
+	margin-bottom: 24px;
+}
+
+.abstract-title {
+	text-align: center;
+	font-family: var(--sans);
+	font-size: 12pt;
+	font-weight: bold;
+	margin: 0 0 8px 0;
+}
+
+.abstract blockquote {
+	margin: 0;
+	padding: 0 24px;
+	font-size: 10pt;
+	font-style: normal;
+}
+
+/* ============ CODE BLOCKS ============ */
+
+.code-block,
+.out-block,
+.latex-source {
+	font-family: var(--mono);
+	font-size: 10pt;
+	line-height: 1.35;
+	padding: 8px;
+	white-space: pre-wrap;
+	word-break: break-word;
+	margin: 0 0 12px 0;
+	overflow-x: auto;
+}
+
+.code-block {
+	border: 1px solid var(--black);
+	background: var(--white);
+}
+
+.out-block {
+	border-top: 1px solid var(--black);
+	border-bottom: 1px solid var(--black);
+	background: var(--white);
+}
+
+.latex-source {
+	border: 1px dashed var(--gray-30);
+	background: var(--gray-5);
+	font-size: 9pt;
+	display: none;
+}
+
+.latex-source.visible {
+	display: block;
+}
+
+code {
+	font-family: var(--mono);
+	font-size: 0.92em;
+}
+
+/* ============ TABLES ============ */
+
+.booktabs {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 10pt;
+	margin-bottom: 8px;
+}
+
+.booktabs caption {
+	text-align: left;
+	font-family: var(--sans);
+	font-size: 10pt;
+	margin-bottom: 6px;
+	caption-side: top;
+}
+
+.booktabs thead {
+	border-top: 1px solid var(--black);
+	border-bottom: 0.5pt solid var(--black);
+}
+
+.booktabs tbody tr:last-child {
+	border-bottom: 1px solid var(--black);
+}
+
+.booktabs th,
+.booktabs td {
+	padding: 4px 8px;
+	text-align: left;
+	vertical-align: top;
+}
+
+.booktabs th {
+	font-weight: normal;
+}
+
+/* ============ FIGURES ============ */
+
+.figure {
+	margin: 16px 0;
+	text-align: center;
+}
+
+.figure figcaption {
+	font-family: var(--sans);
+	font-size: 10pt;
+	margin-top: 8px;
+	text-align: center;
+}
+
+/* ============ DIAGRAM BASE ============ */
+
+.diagram {
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 12px;
+}
+
+.node {
+	border: 1.2px solid var(--black);
+	padding: 8px 16px;
+	font-family: var(--sans);
+	font-size: 10pt;
+	text-align: center;
+	min-width: 100px;
+}
+
+.node-root {
+	min-width: 140px;
+}
+
+/* ============ DIAGRAM HIERARCHY ============ */
+
+.branch-row {
+	display: flex;
+	gap: 24px;
+	position: relative;
+	padding-top: 16px;
+}
+
+.branch-row::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	height: 16px;
+	border-left: 1.2px solid var(--black);
+}
+
+.branch-row::after {
+	content: "";
+	position: absolute;
+	top: 16px;
+	left: 20%;
+	right: 20%;
+	border-top: 1.2px solid var(--black);
+}
+
+.branch-row .node {
+	position: relative;
+	margin-top: 12px;
+}
+
+.branch-row .node::before {
+	content: "";
+	position: absolute;
+	top: -12px;
+	left: 50%;
+	height: 12px;
+	border-left: 1.2px solid var(--black);
+}
+
+.node-level-1 {
+	background: var(--white);
+}
+.node-level-2 {
+	background: var(--gray-10);
+}
+.node-level-3 {
+	background: var(--gray-20);
+}
+
+/* ============ DIAGRAM CYCLE ============ */
+
+.diagram-cycle {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	align-items: center;
+}
+
+.cycle-row {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.cycle-row .node {
+	min-width: 100px;
+	background: var(--gray-10);
+}
+
+.arrow {
+	font-size: 18pt;
+	font-family: var(--sans);
+	color: var(--black);
+}
+
+.dashed-arrow {
+	opacity: 0.6;
+}
+
+/* ============ DIAGRAM TIMELINE ============ */
+
+.diagram-timeline {
+	position: relative;
+	height: 180px;
+	width: 100%;
+	max-width: 500px;
+}
+
+.timeline-axis {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	right: 0;
+	height: 1.2px;
+	background: var(--black);
+}
+
+.timeline-axis::after {
+	content: "";
+	position: absolute;
+	right: 0;
+	top: -4px;
+	border-top: 4px solid transparent;
+	border-bottom: 4px solid transparent;
+	border-left: 8px solid var(--black);
+}
+
+.timeline-event {
+	position: absolute;
+	left: 0;
+	right: 0;
+	height: 2px;
+}
+
+.event-above {
+	top: calc(50% - 1px);
+}
+.event-below {
+	top: calc(50% - 1px);
+}
+
+.timeline-event:nth-child(2) {
+	--x: 15%;
+}
+.timeline-event:nth-child(3) {
+	--x: 50%;
+}
+.timeline-event:nth-child(4) {
+	--x: 85%;
+}
+
+.timeline-event {
+	--x: 50%;
+}
+
+.event-dot {
+	position: absolute;
+	left: var(--x);
+	transform: translateX(-50%);
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: var(--black);
+	top: -4px;
+}
+
+.event-label {
+	position: absolute;
+	left: var(--x);
+	transform: translateX(-50%);
+	border: 1px solid var(--black);
+	padding: 4px 10px;
+	font-family: var(--sans);
+	font-size: 9pt;
+	text-align: center;
+	background: var(--white);
+	white-space: nowrap;
+}
+
+.event-above .event-label {
+	top: -60px;
+}
+.event-below .event-label {
+	top: 20px;
+}
+
+.event-label small {
+	font-size: 8pt;
+	color: var(--gray-page-bg);
+}
+
+/* ============ DIAGRAM COMPARISON ============ */
+
+.diagram-comparison {
+	display: flex;
+	gap: 20px;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: stretch;
+	width: 100%;
+}
+
+.comparison-box {
+	border: 1.2px solid var(--black);
+	padding: 12px 16px;
+	flex: 1;
+	max-width: 260px;
+	text-align: left;
+	font-family: var(--sans);
+	font-size: 10pt;
+	background: var(--white);
+}
+
+.comparison-box strong {
+	display: block;
+	margin-bottom: 6px;
+}
+
+.comparison-box p {
+	margin: 0;
+	font-size: 9.5pt;
+}
+
+.comparison-box-shaded {
+	background: var(--gray-10);
+}
+
+/* ============ DIAGRAM PROCEDURE ============ */
+
+.diagram-procedure {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0;
+}
+
+.step {
+	border: 1.2px solid var(--black);
+	padding: 8px 16px;
+	background: var(--gray-5);
+	font-family: var(--sans);
+	font-size: 10pt;
+	width: 100%;
+	max-width: 420px;
+	text-align: left;
+}
+
+.step-arrow {
+	font-size: 14pt;
+	padding: 4px 0;
+}
+
+/* ============ DIAGRAM MEMORY ============ */
+
+.diagram-memory {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	align-items: flex-start;
+}
+
+.memory-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.memory-label {
+	font-family: var(--sans);
+	font-size: 10pt;
+	min-width: 120px;
+}
+
+.memory-cells {
+	display: flex;
+	gap: 2px;
+}
+
+.cell {
+	display: inline-block;
+	width: 26px;
+	height: 22px;
+	border: 1px solid var(--black);
+	font-family: var(--mono);
+	font-size: 9pt;
+	text-align: center;
+	line-height: 22px;
+}
+
+.cell-filled {
+	background: var(--gray-15);
+}
+
+.memory-note {
+	font-family: var(--sans);
+	font-size: 9pt;
+	margin-left: 8px;
+}
+
+/* ============ SOURCE TOGGLE ============ */
+
+.source-toggle {
+	display: inline-block;
+	padding: 5px 10px;
+	background: var(--white);
+	border: 1px solid var(--black);
+	font-family: var(--sans);
+	font-size: 9pt;
+	cursor: pointer;
+	margin-bottom: 8px;
+}
+
+.source-toggle:hover {
+	background: var(--gray-5);
+}
+
+.source-toggle.active {
+	background: var(--gray-15);
+}
+
+/* ============ FOOTER ============ */
+
+.page-footer {
+	margin-top: 40px;
+	padding-top: 20px;
+	border-top: 0.4pt solid var(--black);
+	font-family: var(--sans);
+	font-size: 10pt;
+	text-align: center;
+}
+
+.end-note {
+	font-style: italic;
+	margin: 0;
+}
+
+/* ============ RESPONSIVE ============ */
+
+@media (max-width: 1000px) {
+	.sidebar {
+		display: none;
+	}
+	.main-content {
+		margin-left: 0;
+	}
+	.page {
+		width: 100%;
+		padding: 1cm;
+	}
+}
