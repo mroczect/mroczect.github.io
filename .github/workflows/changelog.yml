@@ -5,7 +5,6 @@ on:
     branches: [main]
     paths-ignore:
       - "content/changelog.tex"
-      - "dist/changelog.pdf"
 
 permissions:
   contents: write
@@ -16,9 +15,9 @@ concurrency:
 
 jobs:
   changelog:
-    name: Regenerate LaTeX Changelog
+    name: Regenerate LaTeX changelog
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
 
     steps:
       - name: Checkout
@@ -32,18 +31,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install TeX Live
-        uses: awalsh128/cache-apt-pkgs-action@v1
-        with:
-          packages: >
-            texlive-latex-extra
-            texlive-fonts-recommended
-            texlive-fonts-extra
-            latexmk
-          version: 3.0
-
-      - name: Generate and Compile Changelog
-        run: python3 scripts/gen_changelog.py --compile
+      - name: Generate changelog fragment
+        run: python3 scripts/gen_changelog.py
 
       - name: Commit changes
         run: |

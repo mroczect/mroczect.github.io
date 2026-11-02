@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """
-Generate content/changelog.tex from git history and compile to PDF.
+Generate content/changelog.tex from git history.
+
+The output is a LaTeX fragment intended to be \\input by main.tex.
+It is NOT a standalone document.
 
 Usage:
-    python3 scripts/gen_changelog.py [--since YYYY-MM-DD] [--limit N] [--compile]
+    python3 scripts/gen_changelog.py [--since YYYY-MM-DD] [--limit N]
 """
 
 from __future__ import annotations
@@ -172,7 +175,8 @@ def render_commit(commit: dict, gh_repo: str) -> str:
         parts.append(f"\\texttt{{{escape_latex(scope)}}} ")
 
     parts.append(
-        f"\\href{{https://github.com/{gh_repo}/commit/{full}}}{{{escape_latex(message)}}}"
+        f"\\href{{https://github.com/{gh_repo}/commit/{full}}}"
+        f"{{{escape_latex(message)}}}"
     )
 
     if pr:
@@ -183,7 +187,11 @@ def render_commit(commit: dict, gh_repo: str) -> str:
 
     if stats:
         stats_esc = escape_latex(stats)
-        line += f"\n  \\begin{{itemize}}[leftmargin=1.5em]\n    \\item \\small\\textit{{{stats_esc}}}\n  \\end{{itemize}}"
+        line += (
+            f"\n  \\begin{{itemize}}[leftmargin=1.5em]\n"
+            f"    \\item \\small\\textit{{{stats_esc}}}\n"
+            f"  \\end{{itemize}}"
+        )
 
     return line
 
@@ -220,10 +228,11 @@ def build_latex(commits: list[dict], gh_repo: str, gh_branch: str) -> str:
     total = len(commits)
 
     out = [
-        "\\section*{Overview}",
+        "\\section*{Changelog}",
         "\\addcontentsline{toc}{section}{Changelog}",
         "",
-        "All notable changes to this project, generated automatically from the git commit history.",
+        "All notable changes to this project, generated automatically "
+        "from the git commit history.",
         "",
         "\\begin{table}[H]",
         "  \\centering",
@@ -255,27 +264,6 @@ def build_latex(commits: list[dict], gh_repo: str, gh_branch: str) -> str:
     return "\n".join(out)
 
 
-def compile_pdf(tex_path: Path, pdf_outdir: Path) -> None:
-    print(f"Compiling {tex_path} ...")
-    cmd = [
-        "latexmk",
-        "-pdf",
-        "-interaction=nonstopmode",
-        "-file-line-error",
-        f"-outdir={pdf_outdir}",
-        str(tex_path),
-    ]
-    try:
-        subprocess.run(
-            cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT
-        )
-        expected_pdf = pdf_outdir / tex_path.with_suffix(".pdf").name
-        if expected_pdf.exists():
-            print(f"Generated {expected_pdf}")
-    except subprocess.CalledProcessError:
-        print(f"Warning: latexmk failed to compile {tex_path}", file=sys.stderr)
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Generate LaTeX changelog from git history."
@@ -284,7 +272,10 @@ def main() -> int:
         "--limit", type=int, default=500, help="Max commits to include."
     )
     parser.add_argument(
-        "--since", type=str, default=None, help="Only commits since YYYY-MM-DD."
+        "--since",
+        type=str,
+        default=None,
+        help="Only commits since YYYY-MM-DD.",
     )
     parser.add_argument(
         "--output", type=str, default=None, help="Override output path."
