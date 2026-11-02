@@ -9,7 +9,7 @@
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{float}
-\usepackage{enumitem} % Tambahan untuk list di Changelog
+\usepackage{enumitem}
 \usepackage[hidelinks]{hyperref}
 
 \hypersetup{
@@ -29,7 +29,6 @@
 }
 \lstset{style=knr}
 
-% Gaya ini dipakai oleh Verivy.tex dan auto-verification-table.tex
 \lstdefinestyle{code}{
   basicstyle=\ttfamily\small,
   frame=single,
@@ -56,9 +55,6 @@
   aboveskip=1em,
   belowskip=1em
 }
-\ifdefined\HCode
-  \special{t4ht=<link rel="stylesheet" type="text/css" href="style.css">}
-\fi
 
 \title{Personal Documentation and Paper Publishing}
 \author{Muhammad Riduwan Khafidi}
@@ -72,8 +68,6 @@
 
 \input{content/my-porto.tex}
 
-\input{content/Verivy.tex}
-
-\input{content/changelog.tex} 
+\input{content/changelog.tex}
 
 \end{document}

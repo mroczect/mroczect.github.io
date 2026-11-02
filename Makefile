@@ -35,7 +35,7 @@ html: setup gen-papers verify-papers
 		echo "[html] ERROR: dist/$(TARGET).html not found"; \
 		exit 1; \
 	fi
-	@cp styles/style.css dist/style.css
+	@cp styles/style.css dist/main.css
 	@if [ -d "paper" ]; then \
 			mkdir -p dist/paper; \
 			cp paper/*.pdf    dist/paper/ 2>/dev/null || true; \

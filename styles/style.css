@@ -16,11 +16,16 @@ body {
 	font-size: 1.1rem;
 }
 
+/* Gabungkan heading standar dengan class buatan TeX4ht */
 h1,
+h1.titleHead,
 h2,
 h3,
+h3.likesectionHead,
 h4,
+h4.likesubsectionHead,
 h5,
+h5.likesubsubsectionHead,
 h6 {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	color: #111 !important;
@@ -29,16 +34,30 @@ h6 {
 	line-height: 1.2;
 }
 
-h1 {
+h1,
+h1.titleHead {
 	font-size: 2.2rem;
 	border-bottom: 2px solid #eaeaea;
 	padding-bottom: 0.5rem;
 }
 
 h2,
-h3 {
+h3,
+h3.likesectionHead {
+	font-size: 1.5rem;
 	border-bottom: 1px solid #eaeaea;
 	padding-bottom: 0.3rem;
+}
+
+h4,
+h4.likesubsectionHead {
+	font-size: 1.15rem;
+}
+
+h5,
+h5.likesubsubsectionHead {
+	font-size: 1rem;
+	color: #555;
 }
 
 p {
@@ -70,8 +89,14 @@ li {
 	margin-bottom: 0.5rem;
 }
 
+/* TeX4ht membungkus code dengan span class aneh */
 pre,
-code {
+code,
+pre.lstlisting,
+span.ectt-1095,
+span.ectt-1000,
+span.ectt-0900,
+span.ectt-0800 {
 	font-family:
 		"SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
 	background-color: #f1f3f5;
@@ -79,42 +104,100 @@ code {
 	border-radius: 4px;
 }
 
-code {
+code,
+span.ectt-1095,
+span.ectt-1000,
+span.ectt-0900,
+span.ectt-0800 {
 	padding: 0.2em 0.4em;
 	font-size: 0.9em;
 }
 
-pre {
+pre,
+pre.lstlisting {
 	padding: 1.25rem;
 	overflow-x: auto;
 	border: 1px solid #e1e4e8;
 	margin-bottom: 1.5rem;
 	line-height: 1.5;
+	display: block;
 }
 
-pre code {
+pre code,
+pre.lstlisting code,
+pre.lstlisting span {
 	padding: 0;
-	background-color: transparent;
+	background-color: transparent !important;
 	border: none;
 }
 
-table {
+/* TeX4ht menggunakan table.tabular */
+table,
+table.tabular {
 	border-collapse: collapse;
 	width: 100%;
 	margin-bottom: 1.5rem;
+	display: block;
+	overflow-x: auto;
 }
 
 th,
-td {
+td,
+table.tabular td {
 	padding: 0.75rem;
 	border: 1px solid #dee2e6;
 	text-align: left;
+	white-space: normal;
 }
 
-th {
+th,
+table.tabular td:first-child {
 	background-color: #f8f9fa;
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-weight: bold;
+}
+
+/* TOC TeX4ht */
+div.tableofcontents {
+	background: #f8f9fa;
+	border: 1px solid #dee2e6;
+	border-radius: 6px;
+	padding: 1.5rem 2rem;
+	margin-bottom: 2rem;
+}
+
+div.tableofcontents span.sectionToc {
+	display: block;
+	padding: 0.2rem 0;
+}
+
+/* Caption & Gambar */
+figcaption.caption {
+	font-size: 0.9rem;
+	color: #666;
+	margin-top: 0.5rem;
+	text-align: center;
+}
+
+figcaption.caption span.id {
+	font-weight: bold;
+	color: #111;
+}
+
+/* Maketitle Block */
+div.maketitle {
+	text-align: center;
+	padding: 3rem 0;
+	border-bottom: 1px solid #eaeaea;
+	margin-bottom: 2rem;
+}
+
+div.author,
+div.date {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: #666;
+	font-size: 0.95rem;
+	margin-top: 0.5rem;
 }
 
 /* Responsif untuk Mobile */
@@ -123,7 +206,8 @@ th {
 		padding: 2rem 1rem;
 		font-size: 1rem;
 	}
-	h1 {
+	h1,
+	h1.titleHead {
 		font-size: 1.8rem;
 	}
 }
