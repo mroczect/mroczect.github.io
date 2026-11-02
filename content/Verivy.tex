@@ -1,5 +1,4 @@
-\section*{Overview}
-\addcontentsline{toc}{section}{Paper Verification}
+\subsection*{Overview}
 
 All papers in this repository are cryptographically signed using GnuPG. This process allows readers to verify three things:
 
@@ -25,8 +24,7 @@ Each paper consists of three sibling files. All three must be downloaded to comp
 	\end{tabularx}
 \end{table}
 
-\section*{Prerequisites}
-\addcontentsline{toc}{section}{Prerequisites}
+\subsection*{Prerequisites}
 
 Install GnuPG based on your operating system. If GnuPG is already installed, skip this section.
 
@@ -44,10 +42,9 @@ brew install gnupg
 winget install GnuPG.GnuPG
 \end{lstlisting}
 
-\section*{Verification Steps}
-\addcontentsline{toc}{section}{Verification Steps}
+\subsection*{Verification Steps}
 
-\subsection*{Step 1: Import the author's public key}
+\subsubsection*{Step 1: Import the author's public key}
 
 The public key is provided as \texttt{public.asc} in the root of the repository. Import it once; it does not need to be imported again for subsequent verifications.
 
@@ -55,11 +52,11 @@ The public key is provided as \texttt{public.asc} in the root of the repository.
 gpg --import public.asc
 \end{lstlisting}
 
-\subsection*{Step 2: Download the three paper files}
+\subsubsection*{Step 2: Download the three paper files}
 
 Download \texttt{NAME.pdf}, \texttt{NAME.pdf.asc}, and \texttt{NAME.pdf.sha256} for the paper you want to verify.
 
-\subsection*{Step 3: Verify the SHA-256 checksum}
+\subsubsection*{Step 3: Verify the SHA-256 checksum}
 
 The checksum confirms that the file was not corrupted during download.
 
@@ -81,7 +78,7 @@ A successful check produces the following output on Linux or macOS:
 NAME.pdf: OK
 \end{lstlisting}
 
-\subsection*{Step 4: Verify the GnuPG signature}
+\subsubsection*{Step 4: Verify the GnuPG signature}
 
 The signature confirms that the file was signed by the author and has not been modified since.
 
@@ -97,8 +94,7 @@ gpg:                using RSA key 3D0E79F1565AC46E9EEB3F49B0B3DDCEB6CEF796
 gpg: Good signature from "Muhammad Riduwan Khafidi <mroczect@proton.me>" [ultimate]
 \end{lstlisting}
 
-\section*{Troubleshooting}
-\addcontentsline{toc}{section}{Troubleshooting}
+\subsection*{Troubleshooting}
 
 \begin{table}[H]
 	\centering
