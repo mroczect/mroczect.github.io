@@ -25,7 +25,7 @@ verify-papers:
 	@echo "[verify-papers] Signing and verifying papers..."
 	@bash generate_verification.sh
 
-html: setup gen-papers verify-papers
+html: setup gen-papers verify-papers changelog
 	@echo "[html] Building HTML with make4ht..."
 	@make4ht -d dist -u $(TARGET).tex "xhtml" || \
 		(echo "[html] ERROR: make4ht failed"; cat $(TARGET).log; exit 1)
@@ -46,7 +46,7 @@ html: setup gen-papers verify-papers
 		cp public.asc dist/public.asc; \
 	fi
 
-pdf: setup gen-papers verify-papers
+pdf: setup gen-papers verify-papers changelog
 	@echo "[pdf] Building portfolio PDF..."
 	@latexmk -pdf -interaction=nonstopmode -file-line-error -outdir=dist $(TARGET).tex > /dev/null
 
@@ -62,8 +62,8 @@ clean:
 	@echo "[clean] Done."
 
 changelog:
-	@echo "[changelog] Generating LaTeX and PDF..."
-	@python3 scripts/gen_changelog.py --compile
+	@echo "[changelog] Generating LaTeX fragment..."
+	@python3 scripts/gen_changelog.py
 	
 rebuild: clean all
 
