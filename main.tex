@@ -27,6 +27,20 @@
 }
 \lstset{style=knr}
 
+\lstdefinestyle{code}{
+  basicstyle=\ttfamily\small,
+  frame=single,
+  rulecolor=\color{black},
+  breaklines=true,
+  showstringspaces=false,
+  columns=fullflexible,
+  keepspaces=true,
+  framesep=6pt,
+  aboveskip=1em,
+  belowskip=1em,
+  xleftmargin=0pt
+}
+
 \ifdefined\HCode
   \special{t4ht=<link rel="stylesheet" type="text/css" href="style.css">}
 \fi
@@ -42,8 +56,5 @@
 \newpage
 
 \input{content/my-porto.tex}
-
-\input{content/auto-papers.tex}
-\input{content/auto-verification-table.tex}
 
 \end{document}
