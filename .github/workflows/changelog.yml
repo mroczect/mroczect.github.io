@@ -43,20 +43,18 @@ jobs:
           version: 3.0
 
       - name: Generate and Compile Changelog
-        run: |
-          python3 scripts/gen_changelog.py --limit 1000 --compile
+        run: python3 scripts/gen_changelog.py --compile
 
       - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          if git diff --quiet content/changelog.tex dist/changelog.pdf; then
+          if git diff --quiet content/changelog.tex; then
             echo "No changelog changes"
             exit 0
           fi
 
           git add content/changelog.tex
-          git add -f dist/changelog.pdf
-          git commit -m "chore(changelog): auto-update LaTeX and PDF [skip ci]"
+          git commit -m "chore(changelog): auto-update LaTeX fragment [skip ci]"
           git push

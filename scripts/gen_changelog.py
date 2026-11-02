@@ -289,9 +289,6 @@ def main() -> int:
     parser.add_argument(
         "--output", type=str, default=None, help="Override output path."
     )
-    parser.add_argument(
-        "--compile", action="store_true", help="Compile the .tex to PDF."
-    )
     args = parser.parse_args()
 
     repo_root = get_repo_root()
@@ -310,11 +307,6 @@ def main() -> int:
     tex = build_latex(commits, gh_repo, gh_branch)
     output.write_text(tex, encoding="utf-8")
     print(f"Wrote {output} ({len(commits)} commits)")
-
-    if args.compile:
-        dist_dir = repo_root / "dist"
-        dist_dir.mkdir(exist_ok=True)
-        compile_pdf(output, dist_dir)
 
     return 0
 
