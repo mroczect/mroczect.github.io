@@ -5,16 +5,17 @@
 \usepackage[scaled=0.92]{helvet}
 \usepackage[margin=1in]{geometry}
 \usepackage{listings}
+\usepackage{xcolor}
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{float}
-\usepackage{xcolor}
+\usepackage{enumitem} % Tambahan untuk list di Changelog
 \usepackage[hidelinks]{hyperref}
 
 \hypersetup{
   pdftitle={Personal Documentation and Paper Publishing},
   pdfauthor={Muhammad Riduwan Khafidi},
-  pdfsubject={Portfolio: documentation and signed papers}
+  pdfsubject={Portfolio: documentation, papers, and changelog}
 }
 
 \lstdefinestyle{knr}{
@@ -28,6 +29,7 @@
 }
 \lstset{style=knr}
 
+% Gaya ini dipakai oleh Verivy.tex dan auto-verification-table.tex
 \lstdefinestyle{code}{
   basicstyle=\ttfamily\small,
   frame=single,
@@ -57,5 +59,9 @@
 \newpage
 
 \input{content/my-porto.tex}
+
+\input{content/Verivy.tex}
+
+\input{content/changelog.tex} 
 
 \end{document}
