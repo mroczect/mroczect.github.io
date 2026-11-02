@@ -100,3 +100,4 @@ paper/*.pdf
 paper/*.asc
 paper/*.sha256
 public.asc
+.velodiff_dist.diff
