@@ -1,8 +1,9 @@
-name: Build LaTeX SSG and Deploy
+name: Build & Deploy Portfolio
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -10,18 +11,21 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: false
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Cache APT Packages and Install TeX Live
-        uses: awalsh128/cache-apt-pkgs-action@latest
+      - name: Install TeX Live + GnuPG (cached)
+        uses: awalsh128/cache-apt-pkgs-action@v1
         with:
           packages: >
             texlive-latex-extra
@@ -29,34 +33,85 @@ jobs:
             texlive-fonts-extra
             texlive-extra-utils
             texlive-plain-generic
+            texlive-pictures
             latexmk
-          version: 1.2
+            gnupg
+          version: 2.0
 
-      - name: Fix Font Maps (updmap)
+      - name: Refresh font maps
         run: sudo updmap-sys
 
-      - name: Build Site (Verbose)
+      - name: Verify committed artifacts exist
         run: |
-          chmod +x generate_papers.sh
-          make all
+          missing=0
+          [ -d "paper" ]                                 || { echo "❌ folder paper/ tidak ada";                     missing=1; }
+          ls paper/*.pdf >/dev/null 2>&1                || { echo "❌ tidak ada paper/*.pdf (jalankan 'make all' lokal)"; missing=1; }
+          [ -f public.asc ]                              || { echo "❌ public.asc tidak ada di root";                missing=1; }
+          [ -f content/auto-papers.tex ]                 || { echo "❌ content/auto-papers.tex belum di-commit";      missing=1; }
+          [ -f content/auto-verification-table.tex ]     || { echo "❌ content/auto-verification-table.tex belum di-commit"; missing=1; }
+          exit $missing
 
-      - name: Debug - Print LaTeX Logs if Failed
+      - name: Verify GPG signatures match committed PDFs
+        run: |
+          gpg --import public.asc
+          failed=0
+          checked=0
+          for pdf in paper/*.pdf; do
+            asc="${pdf}.asc"
+            if [ -e "$asc" ]; then
+              checked=$((checked + 1))
+              if ! gpg --verify "$asc" "$pdf" 2>/dev/null; then
+                echo "❌ Signature mismatch: $pdf"
+                failed=1
+              fi
+            else
+              echo "⚠️  Tidak ada .asc untuk $pdf"
+            fi
+          done
+          echo "Diperiksa: $checked tanda tangan"
+          if [ $failed -eq 1 ]; then
+            echo ""
+            echo "Signature tidak cocok. Penyebab paling umum:"
+            echo "  paper/*.pdf di-recompile tapi paper/*.asc belum diperbarui."
+            echo "Solusi lokal: make all, lalu commit paper/*.pdf dan paper/*.asc."
+            exit 1
+          fi
+          echo "✅ Semua tanda tangan valid"
+
+      - name: Build site with make ci-deploy
+        run: make ci-deploy
+
+      - name: Sanity-check dist/
+        run: |
+          [ -f dist/index.html ] || { echo "❌ dist/index.html tidak ada"; exit 1; }
+          [ -f dist/public.asc ] || { echo "❌ dist/public.asc tidak ada"; exit 1; }
+          pdf_count=$(ls dist/paper/*.pdf 2>/dev/null | wc -l)
+          asc_count=$(ls dist/paper/*.asc 2>/dev/null | wc -l)
+          echo "PDF: $pdf_count, ASC: $asc_count"
+          [ "$pdf_count" -eq "$asc_count" ] || { echo "❌ jumlah PDF dan .asc tidak cocok"; exit 1; }
+          [ "$pdf_count" -gt 0 ] || { echo "❌ dist/paper/ kosong"; exit 1; }
+
+      - name: Print logs on failure
         if: failure()
         run: |
-          echo "=== MENCETAK LOG ERROR ==="
-          find . -name "*.log" -exec echo "--- Log file: {} ---" \; -exec cat {} \;
+          echo "=== main.log ==="
+          cat main.log 2>/dev/null || true
+          echo "=== paper/*.log ==="
+          find paper -name "*.log" -exec sh -c 'echo "--- $1 ---"; tail -n 80 "$1"' _ {} \; 2>/dev/null || true
 
-      - name: Upload Artifact
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'
+          path: ./dist
+          retention-days: 7
 
   deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: build
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
