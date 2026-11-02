@@ -139,26 +139,26 @@ Himpunan menghapus duplikat secara otomatis. Himpunan dari larik di atas adalah 
 \begin{figure}[H]
 	\centering
 	\resizebox{\textwidth}{!}{%
-	\begin{tikzpicture}[
-			cell/.style={rectangle, draw=black, minimum width=1.5cm, minimum height=0.75cm, align=center, font=\ttfamily\small}
-		]
-		\node[font=\sffamily\small, anchor=east] at (-3.3, 1.5) {Larik mentah:};
-		\node[cell, fill=black!5] at (-2.2, 1.5) {USR01};
-		\node[cell, fill=black!5] at (-0.7, 1.5) {USR02};
-		\node[cell, fill=black!5] at (0.8, 1.5) {USR01};
-		\node[cell, fill=black!5] at (2.3, 1.5) {USR03};
-		\node[cell, fill=black!5] at (3.8, 1.5) {USR01};
-		\node[font=\scriptsize\sffamily, anchor=west] at (4.7, 1.5) {5 posisi};
+		\begin{tikzpicture}[
+				cell/.style={rectangle, draw=black, minimum width=1.5cm, minimum height=0.75cm, align=center, font=\ttfamily\small}
+			]
+			\node[font=\sffamily\small, anchor=east] at (-3.3, 1.5) {Larik mentah:};
+			\node[cell, fill=black!5] at (-2.2, 1.5) {USR01};
+			\node[cell, fill=black!5] at (-0.7, 1.5) {USR02};
+			\node[cell, fill=black!5] at (0.8, 1.5) {USR01};
+			\node[cell, fill=black!5] at (2.3, 1.5) {USR03};
+			\node[cell, fill=black!5] at (3.8, 1.5) {USR01};
+			\node[font=\scriptsize\sffamily, anchor=west] at (4.7, 1.5) {5 posisi};
 
-		\node[font=\sffamily\small, anchor=east] at (-3.3, -0.5) {Himpunan:};
-		\node[cell, fill=black!15] at (-2.2, -0.5) {USR01};
-		\node[cell, fill=black!15] at (-0.7, -0.5) {USR02};
-		\node[cell, fill=black!15] at (0.8, -0.5) {USR03};
-		\node[font=\scriptsize\sffamily, anchor=west] at (1.7, -0.5) {3 elemen unik};
+			\node[font=\sffamily\small, anchor=east] at (-3.3, -0.5) {Himpunan:};
+			\node[cell, fill=black!15] at (-2.2, -0.5) {USR01};
+			\node[cell, fill=black!15] at (-0.7, -0.5) {USR02};
+			\node[cell, fill=black!15] at (0.8, -0.5) {USR03};
+			\node[font=\scriptsize\sffamily, anchor=west] at (1.7, -0.5) {3 elemen unik};
 
-		\draw[thick, -latex] (0.8, 1.0) -- (0.8, 0.0);
-		\node[font=\scriptsize\sffamily, anchor=west] at (1.1, 0.5) {hapus duplikat};
-	\end{tikzpicture}}
+			\draw[thick, -latex] (0.8, 1.0) -- (0.8, 0.0);
+			\node[font=\scriptsize\sffamily, anchor=west] at (1.1, 0.5) {hapus duplikat};
+		\end{tikzpicture}}
 	\caption{Larik mentah dengan duplikat dan himpunan unik yang dihasilkannya.}
 	\label{fig:larik-vs-himpunan}
 \end{figure}
@@ -190,14 +190,14 @@ Tabel~\ref{tab:larik-himpunan} menyandingkan larik dan himpunan pada aspek yang 
 	\small
 	\begin{tabularx}{\textwidth}{l X X}
 		\toprule
-		Aspek & Larik & Himpunan \\
+		Aspek        & Larik         & Himpunan           \\
 		\midrule
-		Duplikat & boleh ada & tidak boleh ada \\
-		Urutan & penting & tidak penting \\
-		Pertanyaan & posisi mana & anggota mana \\
+		Duplikat     & boleh ada     & tidak boleh ada    \\
+		Urutan       & penting       & tidak penting      \\
+		Pertanyaan   & posisi mana   & anggota mana       \\
 		Kardinalitas & panjang larik & banyak elemen unik \\
-		Analogi & daftar kursi & daftar tamu \\
-		Contoh kode & \texttt{list} & \texttt{set} \\
+		Analogi      & daftar kursi  & daftar tamu        \\
+		Contoh kode  & \texttt{list} & \texttt{set}       \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
@@ -251,12 +251,12 @@ Tabel~\ref{tab:penyajian} merangkum kapan setiap cara dipakai.
 	\small
 	\begin{tabularx}{\textwidth}{l X X}
 		\toprule
-		Cara & Kapan dipakai & Padanan di basis data \\
+		Cara             & Kapan dipakai                & Padanan di basis data \\
 		\midrule
-		Enumerasi & himpunan kecil & tabel eksplisit \\
-		Simbol baku & himpunan yang sudah dikenal & view bernama \\
-		Notasi pembentuk & himpunan besar dengan aturan & SELECT WHERE \\
-		Diagram Venn & hubungan antar himpunan & diagram relasi tabel \\
+		Enumerasi        & himpunan kecil               & tabel eksplisit       \\
+		Simbol baku      & himpunan yang sudah dikenal  & view bernama          \\
+		Notasi pembentuk & himpunan besar dengan aturan & SELECT WHERE          \\
+		Diagram Venn     & hubungan antar himpunan      & diagram relasi tabel  \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
@@ -314,12 +314,12 @@ Tabel~\ref{tab:kardinalitas} merangkum istilah dan contoh.
 	\small
 	\begin{tabularx}{\textwidth}{l X X}
 		\toprule
-		Istilah & Makna & Contoh \\
+		Istilah       & Makna                            & Contoh                        \\
 		\midrule
-		Larik mentah & posisi berurutan, boleh duplikat & 9 baris log \\
-		Himpunan unik & elemen berbeda tanpa duplikat & 5 pengguna \\
-		Kardinalitas & banyak elemen unik & $|U|=5$ \\
-		Operator SQL & DISTINCT & \texttt{SELECT DISTINCT user} \\
+		Larik mentah  & posisi berurutan, boleh duplikat & 9 baris log                   \\
+		Himpunan unik & elemen berbeda tanpa duplikat    & 5 pengguna                    \\
+		Kardinalitas  & banyak elemen unik               & $|U|=5$                       \\
+		Operator SQL  & DISTINCT                         & \texttt{SELECT DISTINCT user} \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
@@ -400,13 +400,13 @@ Himpunan $A$ sama dengan $B$ jika dan hanya jika $A \subseteq B$ dan $B \subsete
 	\small
 	\begin{tabularx}{\textwidth}{l X X}
 		\toprule
-		Relasi & Syarat & Contoh \\
+		Relasi         & Syarat                              & Contoh                                           \\
 		\midrule
-		Subset & setiap elemen $A$ ada di $B$ & $\{1,2\} \subseteq \{1,2,3\}$ \\
-		Superset & $B$ memuat semua elemen $A$ & $\{1,2,3\} \supseteq \{1,2\}$ \\
-		Sama & $A \subseteq B$ dan $B \subseteq A$ & $\{0,1\}=\{x \mid x(x-1)=0\}$ \\
-		Ekivalen & $|A|=|B|$ & $\{1,3,5,7\}$ dan $\{a,b,c,d\}$ \\
-		Himpunan kuasa & semua subset dari $A$ & $P(\{a,b\})=\{\varnothing,\{a\},\{b\},\{a,b\}\}$ \\
+		Subset         & setiap elemen $A$ ada di $B$        & $\{1,2\} \subseteq \{1,2,3\}$                    \\
+		Superset       & $B$ memuat semua elemen $A$         & $\{1,2,3\} \supseteq \{1,2\}$                    \\
+		Sama           & $A \subseteq B$ dan $B \subseteq A$ & $\{0,1\}=\{x \mid x(x-1)=0\}$                    \\
+		Ekivalen       & $|A|=|B|$                           & $\{1,3,5,7\}$ dan $\{a,b,c,d\}$                  \\
+		Himpunan kuasa & semua subset dari $A$               & $P(\{a,b\})=\{\varnothing,\{a\},\{b\},\{a,b\}\}$ \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
@@ -496,24 +496,24 @@ Produk kartesian $A \times B$ adalah himpunan semua pasangan berurutan $(a,b)$ d
 \begin{figure}[H]
 	\centering
 	\resizebox{\textwidth}{!}{%
-	\begin{tikzpicture}[
-			cell/.style={rectangle, draw=black, minimum width=2.4cm, minimum height=0.65cm, align=center, font=\ttfamily\small},
-			hdr/.style={font=\sffamily\small}
-		]
-		\node[hdr] at (-2,1.1) {$A$};
-		\node[hdr] at (1,1.1) {$B$};
-		\node[cell, fill=black!5] at (-2,0.3) {Chrome};
-		\node[cell, fill=black!5] at (-2,-0.5) {Firefox};
-		\node[cell, fill=black!10] at (1,0.7) {Windows};
-		\node[cell, fill=black!10] at (1,-0.1) {Linux};
-		\node[cell, fill=black!10] at (1,-0.9) {MacOS};
-		\node[font=\ttfamily\small, anchor=west] at (3,0.7) {(Chrome,Windows)};
-		\node[font=\ttfamily\small, anchor=west] at (3,-0.1) {(Chrome,Linux)};
-		\node[font=\ttfamily\small, anchor=west] at (3,-0.9) {(Chrome,MacOS)};
-		\node[font=\ttfamily\small, anchor=west] at (3,-1.7) {(Firefox,Windows)};
-		\node[font=\ttfamily\small, anchor=west] at (3,-2.5) {(Firefox,Linux)};
-		\node[font=\ttfamily\small, anchor=west] at (3,-3.3) {(Firefox,MacOS)};
-	\end{tikzpicture}}
+		\begin{tikzpicture}[
+				cell/.style={rectangle, draw=black, minimum width=2.4cm, minimum height=0.65cm, align=center, font=\ttfamily\small},
+				hdr/.style={font=\sffamily\small}
+			]
+			\node[hdr] at (-2,1.1) {$A$};
+			\node[hdr] at (1,1.1) {$B$};
+			\node[cell, fill=black!5] at (-2,0.3) {Chrome};
+			\node[cell, fill=black!5] at (-2,-0.5) {Firefox};
+			\node[cell, fill=black!10] at (1,0.7) {Windows};
+			\node[cell, fill=black!10] at (1,-0.1) {Linux};
+			\node[cell, fill=black!10] at (1,-0.9) {MacOS};
+			\node[font=\ttfamily\small, anchor=west] at (3,0.7) {(Chrome,Windows)};
+			\node[font=\ttfamily\small, anchor=west] at (3,-0.1) {(Chrome,Linux)};
+			\node[font=\ttfamily\small, anchor=west] at (3,-0.9) {(Chrome,MacOS)};
+			\node[font=\ttfamily\small, anchor=west] at (3,-1.7) {(Firefox,Windows)};
+			\node[font=\ttfamily\small, anchor=west] at (3,-2.5) {(Firefox,Linux)};
+			\node[font=\ttfamily\small, anchor=west] at (3,-3.3) {(Firefox,MacOS)};
+		\end{tikzpicture}}
 	\caption{Produk kartesian browser dan sistem operasi.}
 	\label{fig:produk-kartesian}
 \end{figure}
@@ -537,14 +537,14 @@ Tabel~\ref{tab:operasi-himpunan} merangkum semua operasi.
 	\small
 	\begin{tabularx}{\textwidth}{l l X X}
 		\toprule
-		Operasi & Notasi & Makna & Padanan SQL \\
+		Operasi          & Notasi         & Makna                                & Padanan SQL \\
 		\midrule
-		Irisan & $A \cap B$ & elemen yang ada di $A$ dan $B$ & INNER JOIN \\
-		Gabungan & $A \cup B$ & elemen yang ada di $A$ atau $B$ & UNION \\
-		Komplemen & $\overline{A}$ & elemen semesta yang bukan $A$ & NOT IN \\
-		Selisih & $A-B$ & elemen $A$ yang bukan $B$ & EXCEPT \\
-		Beda simetris & $A \oplus B$ & elemen di salah satu, tidak keduanya & XOR \\
-		Produk kartesian & $A \times B$ & semua pasangan berurutan & CROSS JOIN \\
+		Irisan           & $A \cap B$     & elemen yang ada di $A$ dan $B$       & INNER JOIN  \\
+		Gabungan         & $A \cup B$     & elemen yang ada di $A$ atau $B$      & UNION       \\
+		Komplemen        & $\overline{A}$ & elemen semesta yang bukan $A$        & NOT IN      \\
+		Selisih          & $A-B$          & elemen $A$ yang bukan $B$            & EXCEPT      \\
+		Beda simetris    & $A \oplus B$   & elemen di salah satu, tidak keduanya & XOR         \\
+		Produk kartesian & $A \times B$   & semua pasangan berurutan             & CROSS JOIN  \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
@@ -614,12 +614,12 @@ Tabel~\ref{tab:inklusi} merangkum rumus dan kesalahan umum.
 	\small
 	\begin{tabularx}{\textwidth}{l X}
 		\toprule
-		Kasus & Rumus dan makna \\
+		Kasus          & Rumus dan makna                                                                    \\
 		\midrule
-		Dua himpunan & $|A \cup B|=|A|+|B|-|A \cap B|$ \\
-		Tiga himpunan & $|A \cup B \cup C|=|A|+|B|+|C|-|A \cap B|-|A \cap C|-|B \cap C|+|A \cap B \cap C|$ \\
-		Tujuan & menghindari penghitungan ganda pada daerah irisan \\
-		Kesalahan umum & menjumlahkan semua kategori tanpa mengurangi irisan \\
+		Dua himpunan   & $|A \cup B|=|A|+|B|-|A \cap B|$                                                    \\
+		Tiga himpunan  & $|A \cup B \cup C|=|A|+|B|+|C|-|A \cap B|-|A \cap C|-|B \cap C|+|A \cap B \cap C|$ \\
+		Tujuan         & menghindari penghitungan ganda pada daerah irisan                                  \\
+		Kesalahan umum & menjumlahkan semua kategori tanpa mengurangi irisan                                \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
@@ -731,13 +731,13 @@ Tabel~\ref{tab:crisp-fuzzy} merangkum perbedaan crisp dan fuzzy.
 	\small
 	\begin{tabularx}{\textwidth}{l X X}
 		\toprule
-		Aspek & Crisp & Fuzzy \\
+		Aspek              & Crisp                & Fuzzy                              \\
 		\midrule
-		Nilai keanggotaan & 0 atau 1 & bilangan real pada $[0,1]$ \\
-		Batas kategori & tegas & bertahap \\
-		Contoh suhu & dingin atau panas & sebagian dingin dan sebagian panas \\
-		Contoh rekomendasi & suka atau tidak suka & derajat suka 0,7 \\
-		Kegunaan & aturan biner & penilaian bertingkat \\
+		Nilai keanggotaan  & 0 atau 1             & bilangan real pada $[0,1]$         \\
+		Batas kategori     & tegas                & bertahap                           \\
+		Contoh suhu        & dingin atau panas    & sebagian dingin dan sebagian panas \\
+		Contoh rekomendasi & suka atau tidak suka & derajat suka 0,7                   \\
+		Kegunaan           & aturan biner         & penilaian bertingkat               \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
@@ -753,13 +753,13 @@ Tabel~\ref{tab:sintesis} menyandingkan semua konsep dalam satu pandangan. Kolom 
 	\footnotesize
 	\begin{tabularx}{\textwidth}{l X X X}
 		\toprule
-		Lapisan & Pertanyaan & Alat & Contoh penerapan \\
+		Lapisan        & Pertanyaan                                       & Alat                             & Contoh penerapan        \\
 		\midrule
-		Dasar & apa saja anggota kumpulan ini & notasi himpunan dan kardinalitas & daftar pengguna unik \\
-		Relasi & apakah satu kumpulan bagian dari kumpulan lain & subset dan superset & hierarki hak akses \\
-		Operasi & bagaimana menggabungkan atau memisahkan kumpulan & irisan, gabungan, selisih & filter pengguna aktif \\
-		Hitung & berapa total unik tanpa penghitungan ganda & inklusi-eksklusi & pengguna Mobile dan Web \\
-		Ketidakpastian & seberapa kuat elemen masuk kategori & himpunan fuzzy & skor rekomendasi film \\
+		Dasar          & apa saja anggota kumpulan ini                    & notasi himpunan dan kardinalitas & daftar pengguna unik    \\
+		Relasi         & apakah satu kumpulan bagian dari kumpulan lain   & subset dan superset              & hierarki hak akses      \\
+		Operasi        & bagaimana menggabungkan atau memisahkan kumpulan & irisan, gabungan, selisih        & filter pengguna aktif   \\
+		Hitung         & berapa total unik tanpa penghitungan ganda       & inklusi-eksklusi                 & pengguna Mobile dan Web \\
+		Ketidakpastian & seberapa kuat elemen masuk kategori              & himpunan fuzzy                   & skor rekomendasi film   \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
@@ -835,16 +835,16 @@ Cara membaca Gambar~\ref{fig:alur-studi-kasus}: gambar ini menampilkan delapan k
 	\small
 	\begin{tabularx}{\textwidth}{l X l}
 		\toprule
-		Langkah & Operasi & Hasil \\
+		Langkah & Operasi                    & Hasil                              \\
 		\midrule
-		1 & data mentah & 10.000 pengguna \\
-		2 & bentuk $M$, $W$, $P$ & $|M|=6000$, $|W|=4500$, $|P|=5500$ \\
-		3 & irisan $M \cap W$ & 2.000 \\
-		4 & gabungan $M \cup W$ & 8.500 \\
-		5 & hanya Mobile & 4.000 \\
-		6 & hanya Web & 2.500 \\
-		7 & beda simetris $M \oplus W$ & 6.500 \\
-		8 & gabungan tiga himpunan & belum final karena data kurang \\
+		1       & data mentah                & 10.000 pengguna                    \\
+		2       & bentuk $M$, $W$, $P$       & $|M|=6000$, $|W|=4500$, $|P|=5500$ \\
+		3       & irisan $M \cap W$          & 2.000                              \\
+		4       & gabungan $M \cup W$        & 8.500                              \\
+		5       & hanya Mobile               & 4.000                              \\
+		6       & hanya Web                  & 2.500                              \\
+		7       & beda simetris $M \oplus W$ & 6.500                              \\
+		8       & gabungan tiga himpunan     & belum final karena data kurang     \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
@@ -860,17 +860,17 @@ Tabel~\ref{tab:kesalahan} memuat kesalahan yang paling sering muncul saat memaka
 	\footnotesize
 	\begin{tabularx}{\textwidth}{l X X}
 		\toprule
-		Kesalahan & Akibat & Perbaikan \\
+		Kesalahan                                & Akibat                    & Perbaikan                             \\
 		\midrule
-		menghitung larik mentah sebagai himpunan & duplikat ikut terhitung & bentuk himpunan unik lebih dahulu \\
-		menjumlahkan $|A|+|B|$ tanpa irisan & hasil terlalu besar & kurangi $|A \cap B|$ \\
-		menganggap subset sama dengan elemen & relasi salah & bedakan $x \in A$ dan $A \subseteq B$ \\
-		lupa mendefinisikan semesta & komplemen tidak sah & tulis $U$ secara eksplisit \\
-		mencampur notasi crisp dan fuzzy & makna nilai kabur & tetapkan domain nilai keanggotaan \\
-		menghitung $|P(A)|=n$ & hasil salah & gunakan $2^n$ \\
-		mengabaikan data irisan tiga himpunan & gabungan tidak final & tandai data yang kurang \\
-		memakai warna untuk membedakan daerah & tidak terbaca hitam-putih & pakai label dan gradasi abu-abu \\
-		menulis $A-B$ sebagai $B-A$ & arah selisih salah & periksa elemen mana yang dikurangi \\
+		menghitung larik mentah sebagai himpunan & duplikat ikut terhitung   & bentuk himpunan unik lebih dahulu     \\
+		menjumlahkan $|A|+|B|$ tanpa irisan      & hasil terlalu besar       & kurangi $|A \cap B|$                  \\
+		menganggap subset sama dengan elemen     & relasi salah              & bedakan $x \in A$ dan $A \subseteq B$ \\
+		lupa mendefinisikan semesta              & komplemen tidak sah       & tulis $U$ secara eksplisit            \\
+		mencampur notasi crisp dan fuzzy         & makna nilai kabur         & tetapkan domain nilai keanggotaan     \\
+		menghitung $|P(A)|=n$                    & hasil salah               & gunakan $2^n$                         \\
+		mengabaikan data irisan tiga himpunan    & gabungan tidak final      & tandai data yang kurang               \\
+		memakai warna untuk membedakan daerah    & tidak terbaca hitam-putih & pakai label dan gradasi abu-abu       \\
+		menulis $A-B$ sebagai $B-A$              & arah selisih salah        & periksa elemen mana yang dikurangi    \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
@@ -888,26 +888,26 @@ Tabel~\ref{tab:rujukan-cepat} adalah lembar rujukan untuk ujian atau kerja. Bari
 	\footnotesize
 	\begin{tabularx}{\textwidth}{l X}
 		\toprule
-		Kebutuhan & Notasi atau langkah \\
+		Kebutuhan                      & Notasi atau langkah                                                                \\
 		\midrule
-		menyatakan elemen & $x \in A$ \\
-		menyatakan bukan elemen & $x \notin A$ \\
-		menulis himpunan & $A=\{a,b,c\}$ \\
-		menulis aturan & $A=\{x \mid \text{syarat}\}$ \\
-		kardinalitas & $|A|$ \\
-		himpunan kosong & $\varnothing$ \\
-		subset & $A \subseteq B$ \\
-		superset & $B \supseteq A$ \\
-		himpunan kuasa & $P(A)$ dan $|P(A)|=2^{|A|}$ \\
-		irisan & $A \cap B$ \\
-		gabungan & $A \cup B$ \\
-		komplemen & $\overline{A}$ \\
-		selisih & $A-B$ \\
-		beda simetris & $A \oplus B$ \\
-		produk kartesian & $A \times B$ \\
-		inklusi-eksklusi dua himpunan & $|A \cup B|=|A|+|B|-|A \cap B|$ \\
+		menyatakan elemen              & $x \in A$                                                                          \\
+		menyatakan bukan elemen        & $x \notin A$                                                                       \\
+		menulis himpunan               & $A=\{a,b,c\}$                                                                      \\
+		menulis aturan                 & $A=\{x \mid \text{syarat}\}$                                                       \\
+		kardinalitas                   & $|A|$                                                                              \\
+		himpunan kosong                & $\varnothing$                                                                      \\
+		subset                         & $A \subseteq B$                                                                    \\
+		superset                       & $B \supseteq A$                                                                    \\
+		himpunan kuasa                 & $P(A)$ dan $|P(A)|=2^{|A|}$                                                        \\
+		irisan                         & $A \cap B$                                                                         \\
+		gabungan                       & $A \cup B$                                                                         \\
+		komplemen                      & $\overline{A}$                                                                     \\
+		selisih                        & $A-B$                                                                              \\
+		beda simetris                  & $A \oplus B$                                                                       \\
+		produk kartesian               & $A \times B$                                                                       \\
+		inklusi-eksklusi dua himpunan  & $|A \cup B|=|A|+|B|-|A \cap B|$                                                    \\
 		inklusi-eksklusi tiga himpunan & $|A \cup B \cup C|=|A|+|B|+|C|-|A \cap B|-|A \cap C|-|B \cap C|+|A \cap B \cap C|$ \\
-		keanggotaan fuzzy & $\mu_A(x) \in [0,1]$ \\
+		keanggotaan fuzzy              & $\mu_A(x) \in [0,1]$                                                               \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
