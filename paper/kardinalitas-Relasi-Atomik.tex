@@ -17,6 +17,7 @@
 \usepackage{microtype}
 \usepackage{tikz}
 \usepackage{xcolor}
+\usepackage{listings}
 \usepackage[hidelinks]{hyperref}
 
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, matrix, fit, backgrounds}
@@ -32,7 +33,7 @@
 
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small\sffamily Atomik dan Kardinalitas dalam Basis Data}
+\fancyhead[L]{\small\sffamily Atomik dan Kardinalitas}
 \fancyhead[R]{\small\sffamily\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
@@ -86,18 +87,20 @@
 \thispagestyle{empty}
 
 \begin{abstract}
-	Dua konsep yang sering tertukar dalam perancangan basis data relasional adalah atomik dan kardinalitas. Atomik berbicara tentang isi satu sel, sedangkan kardinalitas berbicara tentang aturan hubungan antar tabel. Makalah ini meluruskan kesalahpahaman yang lazim muncul: bahwa 1:1 berarti foreign key hanya ditulis satu kali, dan 1:N berarti foreign key boleh ditulis berkali-kali. Intuisi tersebut sebenarnya hampir benar, tetapi perlu diperjelas karena yang membatasi bukan jumlah penulisan, melainkan ada atau tidaknya constraint \texttt{UNIQUE} pada foreign key. Makalah ini menyajikan sepuluh visualisasi, mulai dari perbandingan atomik dan non-atomik, anatomi tiga jenis kardinalitas, hingga simulasi insert yang menunjukkan kapan constraint menolak data. Studi kasus sembilan langkah membangun skema dosen-mahasiswa dari nol melengkapi pembahasan.
+	Atomik dan kardinalitas adalah dua konsep yang sering tertukar dalam perancangan basis data relasional. Atomik berbicara tentang isi satu sel, sedangkan kardinalitas berbicara tentang aturan hubungan antar tabel. Makalah ini meluruskan kesalahpahaman yang lazim muncul: bahwa 1:1 berarti foreign key hanya ditulis satu kali, dan 1:N berarti foreign key boleh ditulis berkali-kali. Intuisi tersebut hampir benar, tetapi mekanisme penegaknya perlu diperjelas, yaitu constraint \texttt{UNIQUE} untuk 1:1 dan ketiadaan \texttt{UNIQUE} untuk 1:N. Makalah ini menyajikan sembilan visualisasi: perbandingan atomik dan non-atomik, peta posisi kedua konsep, intuisi kemunculan foreign key, anatomi tiga jenis kardinalitas, simulasi insert yang menunjukkan kapan constraint menolak, pohon keputusan pemilihan kardinalitas, dan timeline studi kasus delapan langkah. Melalui kerangka ini, pembaca memperoleh mental model yang dapat dipakai untuk menjawab soal ujian maupun merancang skema basis data yang benar.
 \end{abstract}
 
 \section{Pendahuluan}
 
 \subsection{Analogi Pembuka: Loker Kantor dan Aturan Tamu}
 
-Bayangkan sebuah kantor dengan dua hal yang perlu diatur. Pertama, loker karyawan. Setiap loker punya satu pintu, satu kunci, satu label nama. Seorang karyawan tidak boleh menaruh dua tas di satu loker, karena nanti tas kedua akan tertumpuk dan sulit diambil. Aturan "satu loker satu barang" inilah yang disebut atomik.
+Bayangkan sebuah kantor dengan dua hal yang perlu diatur. Pertama, loker karyawan. Setiap loker punya satu pintu, satu kunci, satu label nama. Seorang karyawan tidak boleh menaruh dua tas di satu loker, karena tas kedua akan tertumpuk dan sulit diambil. Aturan ``satu loker satu barang'' inilah yang disebut atomik.
 
-Kedua, aturan tamu. Ada perusahaan yang menerapkan aturan "satu direktur hanya boleh punya satu sekretaris pribadi". Ada perusahaan lain yang menerapkan "satu manajer boleh punya banyak staf, tetapi satu staf hanya dilayani satu manajer". Ada juga perusahaan konsultan yang menerapkan "banyak konsultan boleh mengerjakan banyak proyek, dan banyak proyek boleh dikerjakan banyak konsultan". Aturan "siapa boleh berpasangan dengan siapa" inilah yang disebut kardinalitas.
+Kedua, aturan tamu. Ada perusahaan yang menerapkan ``satu direktur hanya boleh punya satu sekretaris pribadi''. Ada perusahaan lain yang menerapkan ``satu manajer boleh punya banyak staf, tetapi satu staf hanya dilayani satu manajer''. Ada juga firma konsultan yang menerapkan ``banyak konsultan boleh mengerjakan banyak proyek, dan banyak proyek boleh dikerjakan banyak konsultan''. Aturan ``siapa boleh berpasangan dengan siapa'' inilah yang disebut kardinalitas.
 
 Dua hal ini berbeda. Loker adalah soal isi satu sel. Kardinalitas adalah soal hubungan antar tabel. Keduanya sering tertukar karena seorang pemula yang mencoba membuat relasi 1:N kadang menyelesaikannya dengan menaruh daftar nama di satu sel, yang justru melanggar atomik.
+
+\textbf{Tesis makalah ini: atomik adalah batasan pada level sel, sedangkan kardinalitas adalah batasan pada level relasi, dan keduanya ditegakkan oleh mekanisme yang berbeda di dalam perintah \texttt{CREATE TABLE}.}
 
 \subsection{Mengapa Topik Ini Penting}
 
@@ -107,15 +110,15 @@ Selain itu, ada kesalahpahaman konseptual yang lebih dalam: mengira bahwa 1:1 be
 
 \subsection{Peta Pembahasan}
 
-Makalah ini dibagi menjadi empat bagian utama. Bagian kedua membahas atomik dan mengapa ia adalah fondasi yang tidak bisa ditawar. Bagian ketiga membahas kardinalitas dan meluruskan tiga kesalahpahaman umum. Bagian keempat menyajikan anatomi tiga jenis kardinalitas dengan simulasi insert yang menunjukkan kapan constraint menolak data. Bagian kelima menyandingkan ketiganya dalam satu tabel perbandingan. Bagian keenam membawa seluruh konsep ke studi kasus sembilan langkah membangun skema dosen-mahasiswa.
+Makalah ini dibagi menjadi delapan bagian utama. Bagian kedua membahas atomik dan mengapa ia adalah fondasi yang tidak bisa ditawar. Bagian ketiga membahas kardinalitas dan meluruskan tiga kesalahpahaman umum. Bagian keempat menyajikan anatomi tiga jenis kardinalitas dengan simulasi insert yang menunjukkan kapan constraint menolak data. Bagian kelima menyandingkan ketiganya dalam satu tabel perbandingan dan satu pohon keputusan. Bagian keenam membawa seluruh konsep ke studi kasus delapan langkah membangun skema dosen-mahasiswa. Bagian ketujuh dan kedelapan merangkum kesalahan umum dan lembar rujukan cepat. Bagian kesembilan menutup dengan tiga prinsip penutup.
 
 \section{Atomik: Fondasi yang Sering Terlupakan}
 
-\subsection{Definisi Atomik}
+\subsection{Definisi dan Mengapa Ia Hadir}
 
 Atomik berarti tidak dapat dibagi lagi. Dalam konteks basis data relasional, atomik berarti setiap sel dalam tabel hanya boleh berisi satu nilai dari tipe yang telah ditentukan. Bukan daftar, bukan objek, bukan array, bukan JSON bertumpuk. Satu sel berisi satu nama, atau satu angka, atau satu tanggal. Tidak lebih.
 
-Aturan ini adalah syarat pertama dari Normal Form pertama (1NF). Tanpa atomik, seluruh operasi SQL menjadi tidak dapat diandalkan: pencarian menjadi lambat, pengurutan menjadi tidak mungkin, dan agregasi menjadi tidak akurat.
+Aturan ini adalah syarat pertama dari Normal Form pertama (1NF). Tanpa atomik, seluruh operasi SQL menjadi tidak dapat diandalkan. Pencarian menjadi lambat karena harus memindai isi sel, bukan mencocokkan nilai. Pengurutan menjadi tidak mungkin karena tidak ada cara membandingkan daftar dengan daftar secara konsisten. Agregasi menjadi tidak akurat karena fungsi seperti \texttt{COUNT} hanya melihat baris, bukan elemen di dalam sel.
 
 \subsection{Perbandingan Atomik dan Non-Atomik}
 
@@ -129,12 +132,12 @@ Gambar~\ref{fig:atomic} membandingkan dua tabel yang menyimpan data mahasiswa. T
 		]
 		\node[lbl] at (-2.8, 2) {Atomik (BENAR)};
 		\node[tbl, fill=black!5] (ok) at (-2.8, 0) {
-			id | nama   | mk \\
-			---|--------|---- \\
-			1  | Budi   | BD \\
-			2  | Budi   | AL \\
-			3  | Budi   | JR \\
-			4  | Ani    | BD \\
+			id | nama | mk \\
+			---|------|---- \\
+			1  | Budi | BD \\
+			2  | Budi | AL \\
+			3  | Budi | JR \\
+			4  | Ani  | BD \\
 		};
 		\node[font=\scriptsize\sffamily, below=0.1cm of ok, text width=4.6cm, align=center] {satu mata kuliah per baris};
 
@@ -151,7 +154,7 @@ Gambar~\ref{fig:atomic} membandingkan dua tabel yang menyimpan data mahasiswa. T
 	\label{fig:atomic}
 \end{figure}
 
-Tabel kanan menyimpan daftar di dalam satu sel. Ini terlihat hemat karena hanya ada dua baris, tetapi menimbulkan tiga masalah. Pertama, pencarian "siapa saja yang mengambil Algoritma" harus membaca seluruh sel, bukan sekadar mencocokkan nilai. Kedua, tidak mungkin menambahkan indeks pada sel yang berisi daftar. Ketiga, tidak ada cara mudah untuk menghapus satu mata kuliah tanpa menulis ulang seluruh sel.
+Tabel kanan menyimpan daftar di dalam satu sel. Ini terlihat hemat karena hanya ada dua baris, tetapi menimbulkan tiga masalah. Pertama, pencarian ``siapa saja yang mengambil Algoritma'' harus membaca seluruh sel, bukan sekadar mencocokkan nilai. Kedua, tidak mungkin menambahkan indeks pada sel yang berisi daftar. Ketiga, tidak ada cara mudah untuk menghapus satu mata kuliah tanpa menulis ulang seluruh sel.
 
 \subsection{Mengapa Atomik Bukan Kardinalitas}
 
@@ -180,7 +183,7 @@ Gambar~\ref{fig:tree} memetakan posisi keduanya dalam perancangan basis data.
 	\label{fig:tree}
 \end{figure}
 
-Atomik adalah batasan pada level sel: satu sel satu nilai. Kardinalitas adalah batasan pada level relasi: berapa banyak baris dari tabel A boleh berpasangan dengan baris dari tabel B. Keduanya bisa dilanggar secara terpisah. Sebuah tabel bisa atomik tetapi kardinalitasnya salah (misalnya 1:1 yang seharusnya 1:N), atau sebaliknya.
+Atomik adalah batasan pada level sel: satu sel satu nilai. Kardinalitas adalah batasan pada level relasi: berapa banyak baris dari tabel A boleh berpasangan dengan baris dari tabel B. Keduanya bisa dilanggar secara terpisah. Sebuah tabel bisa atomik tetapi kardinalitasnya salah, atau sebaliknya.
 
 Namun ada satu titik temu. Ketika seseorang mencoba membuat relasi 1:N tetapi tidak tahu caranya, ia sering menyelesaikannya dengan menaruh daftar nama mahasiswa di satu sel tabel dosen. Solusi ini melanggar atomik. Jadi pelanggaran atomik sering kali adalah gejala dari kesalahpahaman kardinalitas. Cara yang benar untuk membuat 1:N adalah dengan foreign key, bukan dengan daftar.
 
@@ -188,7 +191,7 @@ Namun ada satu titik temu. Ketika seseorang mencoba membuat relasi 1:N tetapi ti
 
 \subsection{Definisi Kardinalitas}
 
-Kardinalitas adalah aturan yang menentukan berapa banyak baris dari satu tabel boleh berpasangan dengan baris dari tabel lain. Ada tiga jenis yang perlu dikuasai, yaitu 1:1, 1:N, dan N:M.
+Kardinalitas adalah aturan yang menentukan berapa banyak baris dari satu tabel boleh berpasangan dengan baris dari tabel lain. Ada tiga jenis yang perlu dikuasai, yaitu 1:1, 1:N, dan N:M. Dalam makalah ini, istilah ``foreign key'' dan ``primary key'' dipakai di dalam prosa, sedangkan singkatan ``FK'' dan ``PK'' dipakai di dalam tabel dan diagram agar ringkas.
 
 Yang dibatasi oleh kardinalitas bukan primary key, karena primary key selalu unik di dalam tabelnya sendiri. Yang dibatasi adalah pasangan relasinya. Contohnya, dalam relasi dosen-mahasiswa, yang menjadi pertanyaan kardinalitas adalah: bolehkah satu dosen berpasangan dengan banyak mahasiswa, dan bolehkah satu mahasiswa berpasangan dengan banyak dosen.
 
@@ -247,9 +250,12 @@ CREATE TABLE mahasiswa (
     id_mahasiswa INT PRIMARY KEY,
     nama VARCHAR(100) NOT NULL,
     id_ktm INT UNIQUE,
-    FOREIGN KEY (id_ktm)
-        REFERENCES ktm(id_ktm)
+    FOREIGN KEY (id_ktm) REFERENCES ktm(id_ktm)
 );
+\end{lstlisting}
+
+\begin{lstlisting}[style=out]
+Query OK, 0 rows affected
 \end{lstlisting}
 
 Kata kunci \texttt{UNIQUE} pada kolom \texttt{id\_ktm} inilah yang membuat relasinya menjadi 1:1. Tanpa \texttt{UNIQUE}, kolom tersebut bisa berisi nilai yang sama berkali-kali, dan relasinya menjadi 1:N. Gambar~\ref{fig:one-one} menunjukkan anatomi lengkapnya.
@@ -295,9 +301,12 @@ CREATE TABLE mahasiswa (
     id_mahasiswa INT PRIMARY KEY,
     nama VARCHAR(100) NOT NULL,
     id_dosen INT,
-    FOREIGN KEY (id_dosen)
-        REFERENCES dosen(id_dosen)
+    FOREIGN KEY (id_dosen) REFERENCES dosen(id_dosen)
 );
+\end{lstlisting}
+
+\begin{lstlisting}[style=out]
+Query OK, 0 rows affected
 \end{lstlisting}
 
 Perhatikan bahwa tidak ada \texttt{UNIQUE} pada kolom \texttt{id\_dosen}. Inilah yang memungkinkan satu dosen muncul berkali-kali di kolom tersebut, sesuai dengan relasi 1:N. Gambar~\ref{fig:one-n} menunjukkan anatomi lengkapnya.
@@ -355,6 +364,10 @@ CREATE TABLE krs (
 );
 \end{lstlisting}
 
+\begin{lstlisting}[style=out]
+Query OK, 0 rows affected
+\end{lstlisting}
+
 Primary key komposit \texttt{(id\_mahasiswa, id\_mk)} mencegah pasangan yang sama muncul dua kali. Gambar~\ref{fig:n-m} menunjukkan tiga tabel yang terhubung.
 
 \begin{figure}[H]
@@ -400,7 +413,7 @@ Primary key komposit \texttt{(id\_mahasiswa, id\_mk)} mencegah pasangan yang sam
 
 \subsection{Simulasi Insert: Kapan Constraint Menolak}
 
-Untuk melihat langsung bagaimana constraint bekerja, mari simulasikan insert ke tiga skenario. Gambar~\ref{fig:simul} menampilkan hasilnya.
+Untuk melihat langsung bagaimana constraint bekerja, mari simulasikan insert ke dua skenario. Gambar~\ref{fig:simul} menampilkan hasilnya.
 
 \begin{figure}[H]
 	\centering
@@ -435,16 +448,18 @@ Untuk melihat langsung bagaimana constraint bekerja, mari simulasikan insert ke 
 
 Perhatikan dua hal. Pertama, insert ke skema 1:1 dengan nilai \texttt{id\_ktm} yang sudah ada akan ditolak dengan pesan \texttt{Duplicate entry}. Kedua, insert ke skema 1:N dengan nilai \texttt{id\_dosen} yang sudah ada akan berhasil. Inilah bukti bahwa \texttt{UNIQUE} adalah penegak kardinalitas 1:1.
 
-\section{Perbandingan Lintas Kardinalitas}
+\section{Perbandingan dan Pohon Keputusan}
 
-Tabel~\ref{tab:comparison} menyandingkan tiga jenis kardinalitas pada delapan aspek.
+Tabel~\ref{tab:comparison} menyandingkan tiga jenis kardinalitas pada delapan aspek. Setelah tabel, Gambar~\ref{fig:decision} merangkum cara memilih kardinalitas dari aturan bisnis.
 
 \begin{table}[H]
 	\centering
 	\caption{Perbandingan tiga jenis kardinalitas.}
 	\label{tab:comparison}
-	\footnotesize
-	\begin{tabularx}{\textwidth}{l X X X}
+	\scriptsize
+	\setlength{\tabcolsep}{3pt}
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabularx}{\textwidth}{l >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X}
 		\toprule
 		Aspek & 1:1 & 1:N & N:M \\
 		\midrule
@@ -453,28 +468,49 @@ Tabel~\ref{tab:comparison} menyandingkan tiga jenis kardinalitas pada delapan as
 		Penempatan FK & salah satu sisi & sisi N & junction table \\
 		Constraint kunci & \texttt{UNIQUE} & tanpa \texttt{UNIQUE} & PK komposit \\
 		Kemunculan FK & paling banyak sekali & berkali-kali & berkali-kali di dua sisi \\
-		Bentuk tabel tambahan & tidak perlu & tidak perlu & wajib junction \\
-		Kesalahan lazim & lupa \texttt{UNIQUE} & FK di sisi yang salah & tidak buat junction \\
-		Insert kedua dengan FK sama & ditolak & diterima & lihat PK komposit \\
+		Tabel tambahan & tidak perlu & tidak perlu & wajib junction \\
+		Kesalahan lazim & lupa \texttt{UNIQUE} & FK di sisi salah & tidak buat junction \\
+		Insert kedua FK sama & ditolak & diterima & lihat PK komposit \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
 
 Dua paragraf penutup dari perbandingan ini. Pertama, perbedaan 1:1 dan 1:N terletak pada satu kata kunci saja, yaitu \texttt{UNIQUE}. Kedua, perbedaan 1:N dan N:M terletak pada keberadaan tabel ketiga. Keduanya adalah perbedaan struktural yang bisa langsung dibaca dari perintah \texttt{CREATE TABLE}, bukan dari jumlah penulisan dalam perintah.
 
+Gambar~\ref{fig:decision} menyusun ketiga temuan tersebut menjadi satu pohon keputusan yang dapat dipakai saat membaca soal ujian.
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[
+			node distance=0.8cm and 1cm,
+			box/.style={rectangle, draw=black, thick, minimum width=3cm, minimum height=0.8cm, align=center, font=\sffamily\small},
+			ans/.style={rectangle, draw=black, thick, minimum width=3.4cm, minimum height=0.8cm, align=center, font=\sffamily\scriptsize},
+			line/.style={draw, thick, -latex}
+		]
+		\node[box, fill=black!5, minimum width=6cm] (q) at (0, 3) {Pertanyaan: berapa banyak pasangan?};
+		\node[box, fill=white] (one) at (-3.5, 1.2) {1:1};
+		\node[box, fill=white] (many) at (0, 1.2) {1:N};
+		\node[box, fill=white] (nm) at (3.5, 1.2) {N:M};
+		\node[ans, fill=black!10] (a1) at (-3.5, -0.3) {FK + \texttt{UNIQUE}};
+		\node[ans, fill=black!10] (a2) at (0, -0.3) {FK di sisi N \\ tanpa \texttt{UNIQUE}};
+		\node[ans, fill=black!10] (a3) at (3.5, -0.3) {junction + \\ PK komposit};
+
+		\draw[line] (q) -- (one);
+		\draw[line] (q) -- (many);
+		\draw[line] (q) -- (nm);
+		\draw[line] (one) -- (a1);
+		\draw[line] (many) -- (a2);
+		\draw[line] (nm) -- (a3);
+	\end{tikzpicture}
+	\caption{Pohon keputusan memilih kardinalitas dan penegaknya.}
+	\label{fig:decision}
+\end{figure}
+
 \section{Studi Kasus: Membangun Skema dari Nol}
 
-Mari ikuti sembilan langkah membangun skema dosen-mahasiswa dari nol, dengan setiap keputusan dijelaskan.
+Bagian ini mengikuti delapan langkah membangun skema dosen-mahasiswa dari nol, dengan setiap keputusan dijelaskan. Kebutuhan bisnisnya: sebuah kampus membutuhkan skema untuk mencatat dosen, mahasiswa, dan bimbingan akademik. Satu dosen membimbing banyak mahasiswa, satu mahasiswa hanya dibimbing satu dosen. Di akhir, aturan berubah untuk menguji dua skenario lain: 1:1 dan N:M.
 
-\subsection{Langkah 1: Tentukan Kebutuhan}
-
-Sebuah kampus membutuhkan skema untuk mencatat dosen, mahasiswa, dan bimbingan akademik. Satu dosen membimbing banyak mahasiswa, satu mahasiswa hanya dibimbing satu dosen.
-
-\subsection{Langkah 2: Identifikasi Kardinalitas}
-
-Dari kebutuhan tersebut, relasi antara dosen dan mahasiswa adalah 1:N. Sisi 1 adalah dosen, sisi N adalah mahasiswa.
-
-\subsection{Langkah 3: Buat Tabel Dosen}
+\subsection{Langkah 1: Buat Tabel Dosen}
 
 \begin{lstlisting}[style=code]
 CREATE TABLE dosen (
@@ -487,7 +523,7 @@ CREATE TABLE dosen (
 Query OK, 0 rows affected
 \end{lstlisting}
 
-\subsection{Langkah 4: Buat Tabel Mahasiswa dengan Foreign Key di Sisi N}
+\subsection{Langkah 2: Buat Tabel Mahasiswa dengan Foreign Key di Sisi N}
 
 \begin{lstlisting}[style=code]
 CREATE TABLE mahasiswa (
@@ -499,9 +535,13 @@ CREATE TABLE mahasiswa (
 );
 \end{lstlisting}
 
+\begin{lstlisting}[style=out]
+Query OK, 0 rows affected
+\end{lstlisting}
+
 Foreign key ditaruh di tabel \texttt{mahasiswa} karena itu adalah sisi N. Tidak ada \texttt{UNIQUE} karena relasinya 1:N.
 
-\subsection{Langkah 5: Insert Data Uji}
+\subsection{Langkah 3: Insert Data Uji}
 
 \begin{lstlisting}[style=code]
 INSERT INTO dosen VALUES (1, 'Pak Andi');
@@ -511,7 +551,7 @@ INSERT INTO mahasiswa VALUES (2, 'Ani',  1);
 INSERT INTO mahasiswa VALUES (3, 'Cici', 1);
 \end{lstlisting}
 
-\subsection{Langkah 6: Verifikasi Relasi 1:N}
+\subsection{Langkah 4: Verifikasi bahwa Relasinya Benar-Benar 1:N}
 
 \begin{lstlisting}[style=code]
 SELECT * FROM mahasiswa WHERE id_dosen = 1;
@@ -528,11 +568,11 @@ SELECT * FROM mahasiswa WHERE id_dosen = 1;
 3 rows in set
 \end{lstlisting}
 
-Tiga baris dengan \texttt{id\_dosen} sama membuktikan bahwa relasinya 1:N.
+Tiga baris dengan \texttt{id\_dosen} sama membuktikan bahwa relasinya 1:N. Verifikasi ini penting karena kardinalitas bukan sekadar niat di kertas, tetapi harus tampak di data.
 
-\subsection{Langkah 7: Ubah Menjadi 1:1}
+\subsection{Langkah 5: Naikkan ke 1:1 dengan UNIQUE}
 
-Jika aturan kampus berubah menjadi "satu dosen hanya membimbing satu mahasiswa", tambahkan \texttt{UNIQUE}.
+Jika aturan kampus berubah menjadi ``satu dosen hanya membimbing satu mahasiswa'', tambahkan \texttt{UNIQUE}.
 
 \begin{lstlisting}[style=code]
 ALTER TABLE mahasiswa
@@ -545,11 +585,22 @@ Perintah ini akan gagal jika sudah ada lebih dari satu baris dengan \texttt{id\_
 ERROR 1062 (23000): Duplicate entry '1' for key 'id_dosen'
 \end{lstlisting}
 
-Ini membuktikan bahwa \texttt{UNIQUE} adalah penegak kardinalitas 1:1.
+Ini membuktikan bahwa \texttt{UNIQUE} adalah penegak kardinalitas 1:1. Tanpa pembersihan data terlebih dahulu, constraint tidak akan bisa ditambahkan.
 
-\subsection{Langkah 8: Ubah Menjadi N:M}
+\subsection{Langkah 6: Turunkan Kembali ke 1:N}
 
-Jika aturan berubah menjadi "banyak dosen membimbing banyak mahasiswa", tidak ada cara untuk menyelesaikannya dengan satu foreign key. Perlu junction table.
+Andaikan data uji sudah dibersihkan sehingga hanya ada satu baris per dosen. Constraint \texttt{UNIQUE} bisa dihapus untuk kembali ke 1:N.
+
+\begin{lstlisting}[style=code]
+ALTER TABLE mahasiswa
+    DROP INDEX id_dosen;
+\end{lstlisting}
+
+Setelah perintah ini, nilai \texttt{id\_dosen} yang sama boleh muncul berkali-kali lagi. Relasi kembali menjadi 1:N. Perhatikan bahwa index yang dipakai \texttt{UNIQUE} memang berdiri sendiri di atas foreign key, sehingga menghapusnya mengembalikan perilaku default.
+
+\subsection{Langkah 7: Naikkan ke N:M dengan Junction Table}
+
+Jika aturan berubah menjadi ``banyak dosen membimbing banyak mahasiswa'', tidak ada cara untuk menyelesaikannya dengan satu foreign key. Perlu junction table.
 
 \begin{lstlisting}[style=code]
 CREATE TABLE bimbingan (
@@ -563,12 +614,19 @@ CREATE TABLE bimbingan (
 );
 \end{lstlisting}
 
-\subsection{Langkah 9: Verifikasi Junction}
+\begin{lstlisting}[style=out]
+Query OK, 0 rows affected
+\end{lstlisting}
+
+Primary key komposit \texttt{(id\_dosen, id\_mahasiswa)} mencegah pasangan yang sama muncul dua kali.
+
+\subsection{Langkah 8: Verifikasi Junction dan Primary Key Komposit}
 
 \begin{lstlisting}[style=code]
 INSERT INTO bimbingan VALUES (1, 1);
 INSERT INTO bimbingan VALUES (1, 2);
 INSERT INTO bimbingan VALUES (2, 1);
+SELECT * FROM bimbingan;
 \end{lstlisting}
 
 \begin{lstlisting}[style=out]
@@ -582,70 +640,71 @@ INSERT INTO bimbingan VALUES (2, 1);
 3 rows in set
 \end{lstlisting}
 
-Dosen 1 membimbing mahasiswa 1 dan 2, dan mahasiswa 1 dibimbing dosen 1 dan 2. Ini adalah relasi N:M yang benar.
+Dosen 1 membimbing mahasiswa 1 dan 2, dan mahasiswa 1 dibimbing dosen 1 dan 2. Ini adalah relasi N:M yang benar. Coba insert baris keempat dengan pasangan yang sama, misalnya \texttt{(1, 1)}, dan MariaDB akan menolak dengan pesan \texttt{Duplicate entry} karena melanggar primary key komposit.
 
 \subsection{Timeline Studi Kasus}
 
-Gambar~\ref{fig:timeline} merangkum sembilan langkah dalam satu garis waktu.
+Gambar~\ref{fig:timeline} merangkum delapan langkah dalam satu garis waktu.
 
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[
-			ev/.style={rectangle, draw=black, thick, fill=black!5, minimum width=1.6cm, minimum height=0.7cm, align=center, font=\tiny},
+			ev/.style={rectangle, draw=black, thick, fill=black!5, minimum width=1.5cm, minimum height=0.7cm, align=center, font=\tiny},
 			line/.style={draw, thick}
 		]
 		\draw[line, -latex] (-6.5, 0) -- (6.5, 0);
 
-		\draw[thick] (-5.7, 0.1) -- (-5.7, -0.1);
-		\node[ev, above=0.2cm] at (-5.7, 0.2) {kebutuhan};
+		\draw[thick] (-5.6, 0.1) -- (-5.6, -0.1);
+		\node[ev, above=0.2cm] at (-5.6, 0.2) {CREATE dosen};
 
-		\draw[thick] (-4.3, 0.1) -- (-4.3, -0.1);
-		\node[ev, below=0.2cm] at (-4.3, -0.2) {1:N};
+		\draw[thick] (-4.0, 0.1) -- (-4.0, -0.1);
+		\node[ev, below=0.2cm] at (-4.0, -0.2) {CREATE mhs};
 
-		\draw[thick] (-2.9, 0.1) -- (-2.9, -0.1);
-		\node[ev, above=0.2cm] at (-2.9, 0.2) {CREATE dosen};
+		\draw[thick] (-2.4, 0.1) -- (-2.4, -0.1);
+		\node[ev, above=0.2cm] at (-2.4, 0.2) {INSERT};
 
-		\draw[thick] (-1.5, 0.1) -- (-1.5, -0.1);
-		\node[ev, below=0.2cm] at (-1.5, -0.2) {CREATE mahasiswa};
+		\draw[thick] (-0.8, 0.1) -- (-0.8, -0.1);
+		\node[ev, below=0.2cm] at (-0.8, -0.2) {verifikasi 1:N};
 
-		\draw[thick] (-0.1, 0.1) -- (-0.1, -0.1);
-		\node[ev, above=0.2cm] at (-0.1, 0.2) {INSERT};
+		\draw[thick] (0.8, 0.1) -- (0.8, -0.1);
+		\node[ev, above=0.2cm] at (0.8, 0.2) {ADD UNIQUE};
 
-		\draw[thick] (1.3, 0.1) -- (1.3, -0.1);
-		\node[ev, below=0.2cm] at (1.3, -0.2) {verifikasi};
+		\draw[thick] (2.4, 0.1) -- (2.4, -0.1);
+		\node[ev, below=0.2cm] at (2.4, -0.2) {DROP UNIQUE};
 
-		\draw[thick] (2.7, 0.1) -- (2.7, -0.1);
-		\node[ev, above=0.2cm] at (2.7, 0.2) {ADD UNIQUE};
+		\draw[thick] (4.0, 0.1) -- (4.0, -0.1);
+		\node[ev, above=0.2cm] at (4.0, 0.2) {junction};
 
-		\draw[thick] (4.1, 0.1) -- (4.1, -0.1);
-		\node[ev, below=0.2cm] at (4.1, -0.2) {junction};
-
-		\draw[thick] (5.5, 0.1) -- (5.5, -0.1);
-		\node[ev, above=0.2cm] at (5.5, 0.2) {verifikasi};
+		\draw[thick] (5.6, 0.1) -- (5.6, -0.1);
+		\node[ev, below=0.2cm] at (5.6, -0.2) {verifikasi N:M};
 	\end{tikzpicture}
-	\caption{Timeline sembilan langkah studi kasus.}
+	\caption{Timeline delapan langkah studi kasus.}
 	\label{fig:timeline}
 \end{figure}
 
 \section{Kesalahan Umum dan Cara Menghindarinya}
 
+Tabel~\ref{tab:mistakes} merangkum sepuluh kesalahan yang paling sering muncul, dampaknya, dan perbaikannya.
+
 \begin{table}[H]
 	\centering
 	\caption{Kesalahan umum pada kardinalitas dan atomik.}
 	\label{tab:mistakes}
-	\footnotesize
-	\begin{tabularx}{\textwidth}{l X X}
+	\scriptsize
+	\setlength{\tabcolsep}{3pt}
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{4.5cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X}
 		\toprule
 		Kesalahan & Akibat & Perbaikan \\
 		\midrule
 		daftar nama di satu sel & melanggar atomik & pecah jadi baris, pakai FK \\
-		foreign key di sisi yang salah pada 1:N & relasi jadi 1:1 atau rusak & taruh di sisi N \\
+		foreign key di sisi salah pada 1:N & relasi jadi 1:1 atau rusak & taruh di sisi N \\
 		lupa \texttt{UNIQUE} pada 1:1 & relasi jadi 1:N & tambah \texttt{UNIQUE} pada FK \\
 		tambah \texttt{UNIQUE} pada 1:N & relasi jadi 1:1 & hapus \texttt{UNIQUE} \\
 		N:M tanpa junction & tidak bisa diimplementasikan & buat junction table \\
 		junction tanpa PK komposit & duplikat pasangan & tambah \texttt{PRIMARY KEY (a,b)} \\
-		\texttt{id\_dosen} sebagai PK di mahasiswa & satu mahasiswa hanya satu, PK-nya salah & gunakan PK sendiri \\
-		\texttt{id\_mk} disimpan sebagai teks di mahasiswa & melanggar atomik & pakai junction table \\
+		\texttt{id\_dosen} sebagai PK di mahasiswa & satu mahasiswa hanya satu, PK salah & gunakan PK sendiri \\
+		\texttt{id\_mk} disimpan sebagai teks & melanggar atomik & pakai junction table \\
 		mengira \texttt{UNIQUE} sama dengan \texttt{PRIMARY KEY} & \texttt{UNIQUE} boleh NULL & PK tidak boleh NULL \\
 		\texttt{ON DELETE} tanpa aksi & FK orphan & pakai \texttt{ON DELETE CASCADE} atau \texttt{RESTRICT} \\
 		\bottomrule
@@ -656,12 +715,16 @@ Dua kesalahan yang paling sering muncul saat ujian adalah lupa \texttt{UNIQUE} p
 
 \section{Lembar Rujukan Cepat}
 
+Tabel~\ref{tab:cheat} berisi dua puluh operasi yang paling sering dipakai saat merancang atau memeriksa skema. Tabel ini ditujukan sebagai lembar contekan untuk ujian dan kerja.
+
 \begin{table}[H]
 	\centering
 	\caption{Rujukan cepat kardinalitas dan atomik.}
 	\label{tab:cheat}
-	\footnotesize
-	\begin{tabularx}{\textwidth}{l X}
+	\scriptsize
+	\setlength{\tabcolsep}{4pt}
+	\renewcommand{\arraystretch}{1.15}
+	\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X}
 		\toprule
 		Kebutuhan & Solusi \\
 		\midrule
@@ -675,8 +738,8 @@ Dua kesalahan yang paling sering muncul saat ujian adalah lupa \texttt{UNIQUE} p
 		relasi wajib 1:N & FK \texttt{NOT NULL} \\
 		relasi opsional 1:N & FK \texttt{NULL} \\
 		multi-nilai per baris & pecah ke tabel terpisah \\
-		aturan bisnis "hanya satu" & \texttt{UNIQUE} \\
-		aturan bisnis "boleh banyak" & tanpa \texttt{UNIQUE} \\
+		aturan bisnis ``hanya satu'' & \texttt{UNIQUE} \\
+		aturan bisnis ``boleh banyak'' & tanpa \texttt{UNIQUE} \\
 		verifikasi 1:N & cek apakah FK berulang di data uji \\
 		verifikasi 1:1 & coba insert kedua dengan FK sama \\
 		hapus anak saat induk dihapus & \texttt{ON DELETE CASCADE} \\
@@ -691,9 +754,7 @@ Dua kesalahan yang paling sering muncul saat ujian adalah lupa \texttt{UNIQUE} p
 
 \section{Kesimpulan}
 
-Atomik dan kardinalitas adalah dua konsep yang berbeda. Atomik berbicara tentang isi satu sel, sedangkan kardinalitas berbicara tentang aturan hubungan antar tabel. Pelanggaran atomik sering kali adalah gejala dari kesalahpahaman kardinalitas, seperti ketika seseorang mencoba membuat relasi 1:N dengan menaruh daftar nama di satu sel.
-
-Intuisi bahwa 1:1 berarti nilai foreign key hanya boleh muncul sekali, dan 1:N berarti nilai foreign key boleh muncul berkali-kali, sebenarnya sudah benar. Yang perlu ditambahkan adalah mekanisme penegaknya: \texttt{UNIQUE} untuk 1:1, ketiadaan \texttt{UNIQUE} untuk 1:N, dan primary key komposit untuk N:M. Ketiganya adalah perbedaan struktural yang bisa dibaca langsung dari perintah \texttt{CREATE TABLE}, bukan dari jumlah penulisan foreign key dalam perintah tersebut.
+Atomik dan kardinalitas adalah dua konsep yang berbeda. Atomik berbicara tentang isi satu sel, sedangkan kardinalitas berbicara tentang aturan hubungan antar tabel. Pelanggaran atomik sering kali adalah gejala dari kesalahpahaman kardinalitas, seperti ketika seseorang mencoba membuat relasi 1:N dengan menaruh daftar nama di satu sel. Intuisi bahwa 1:1 berarti nilai foreign key hanya boleh muncul sekali, dan 1:N berarti boleh muncul berkali-kali, sebenarnya sudah benar. Yang perlu ditambahkan adalah mekanisme penegaknya: \texttt{UNIQUE} untuk 1:1, ketiadaan \texttt{UNIQUE} untuk 1:N, dan primary key komposit untuk N:M.
 
 Tiga prinsip penutup:
 
@@ -703,7 +764,7 @@ Tiga prinsip penutup:
 	\item N:M butuh tabel ketiga. Tidak ada jalan pintas. Junction table dengan primary key komposit adalah satu-satunya solusi yang benar, dan solusi ini sekaligus mencegah duplikat pasangan tanpa perlu trigger tambahan.
 \end{enumerate}
 
-Dengan kerangka mental ini, pertanyaan ujian berbentuk "tentukan kardinalitas" atau "konversi ERD menjadi tabel" dapat dijawab dengan alasan yang bisa dipertanggungjawabkan, bukan dengan hafalan.
+Dengan kerangka mental ini, pertanyaan ujian berbentuk ``tentukan kardinalitas'' atau ``konversi ERD menjadi tabel'' dapat dijawab dengan alasan yang bisa dipertanggungjawabkan, bukan dengan hafalan.
 
 \newpage
 \section*{Referensi}
@@ -711,10 +772,10 @@ Dengan kerangka mental ini, pertanyaan ujian berbentuk "tentukan kardinalitas" a
 
 \begin{thebibliography}{99}
 
-	\bibitem{silberschatz}
-	Silberschatz, A., Korth, H. F., \& Sudarshan, S. (2019).
-	\textit{Database System Concepts} (7th ed.).
-	McGraw-Hill Education.
+	\bibitem{codd}
+	Codd, E. F. (1970).
+	A Relational Model of Data for Large Shared Data Banks.
+	\textit{Communications of the ACM}, 13(6), 377--387.
 
 	\bibitem{date}
 	Date, C. J. (2003).
@@ -731,26 +792,28 @@ Dengan kerangka mental ini, pertanyaan ujian berbentuk "tentukan kardinalitas" a
 	\textit{Designing Data-Intensive Applications}.
 	O'Reilly Media.
 
-	\bibitem{codd}
-	Codd, E. F. (1970).
-	A Relational Model of Data for Large Shared Data Banks.
-	\textit{Communications of the ACM}, 13(6), 377--387.
-
 	\bibitem{mariadb-ddl}
 	MariaDB Foundation. (2026).
-	\textit{SQL Statements --- CREATE TABLE, ALTER TABLE, DROP TABLE}.
+	\textit{SQL Statements --- CREATE TABLE, ALTER TABLE,
+	DROP TABLE}.
 	MariaDB Knowledge Base.
 	\texttt{https://mariadb.com/kb/en/sql-statements/}
 
 	\bibitem{mysql-ddl}
 	Oracle Corporation. (2026).
-	\textit{MySQL 8.0 Reference Manual --- Data Definition Statements}.
+	\textit{MySQL 8.0 Reference Manual --- Data Definition
+	Statements}.
 	\texttt{https://dev.mysql.com/doc/refman/8.0/en/sql-data-definition-statements.html}
 
 	\bibitem{postgresql}
 	The PostgreSQL Global Development Group. (2026).
 	\textit{SQL Commands --- CREATE TABLE, ALTER TABLE}.
 	\texttt{https://www.postgresql.org/docs/current/sql-commands.html}
+
+	\bibitem{silberschatz}
+	Silberschatz, A., Korth, H. F., \& Sudarshan, S. (2019).
+	\textit{Database System Concepts} (7th ed.).
+	McGraw-Hill Education.
 
 \end{thebibliography}
 
