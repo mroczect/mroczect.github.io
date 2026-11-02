@@ -1,37 +1,24 @@
 /*
  * Personal Documentation — stylesheet for tex4ht output.
  *
- * Design constraints:
- *   - Body text must be readable at every width.
- *   - Tables must wrap at word boundaries, never at every character.
- *   - Print output must survive B&W and not waste ink.
- *   - No rule uses !important unless it is documented.
+ * Aesthetic: single academic page on a gray desk. Serif body,
+ * sans headings, booktabs tables, monospace code. No color
+ * except grayscale. Print-safe.
  */
 
-/* ==========================================================================
-   Root tokens
-   ========================================================================== */
-
 :root {
-	--text: #1a1a1a;
-	--text-muted: #555;
-	--bg: #fff;
+	--text: #000;
+	--text-muted: #333;
+	--page-bg: #555;
+	--paper: #fff;
 	--border: #d0d0d0;
-	--border-strong: #1a1a1a;
-	--code-bg: #f6f6f6;
-	--code-border: #e5e5e5;
-	--link: #1a4480;
-	--link-visited: #4b2f75;
-	--measure: 44rem;
-	--serif:
-		"Palatino Linotype", "Book Antiqua", Palatino, Georgia,
-		"Times New Roman", serif;
-	--sans:
-		"Helvetica Neue", Helvetica, Arial, -apple-system, BlinkMacSystemFont,
-		"Segoe UI", sans-serif;
-	--mono:
-		"SFMono-Regular", Consolas, "Liberation Mono", Menlo,
-		"DejaVu Sans Mono", monospace;
+	--border-strong: #000;
+	--code-bg: #f8f8f8;
+	--link: #000;
+
+	--serif: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+	--sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	--mono: "Courier New", "SFMono-Regular", Consolas, Menlo, monospace;
 }
 
 /* ==========================================================================
@@ -44,24 +31,31 @@
 	box-sizing: border-box;
 }
 
+/* The gray desk. */
 html {
 	font-size: 16px;
+	background: var(--page-bg);
+	padding: 2rem 1rem;
 	text-size-adjust: 100%;
 }
 
+/* The paper. */
 body {
 	font-family: var(--serif);
-	font-size: 1rem;
-	line-height: 1.6;
+	font-size: 11pt;
+	line-height: 1.4;
 	color: var(--text);
-	background: var(--bg);
-	max-width: var(--measure);
+	background: var(--paper);
+	width: 100%;
+	max-width: 21cm;
+	min-height: calc(100vh - 4rem);
 	margin: 0 auto;
-	padding: 3.5rem 1.5rem 4rem;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+	padding: 2.54cm;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 	hyphens: auto;
 	overflow-wrap: break-word;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 /* ==========================================================================
@@ -80,44 +74,41 @@ h5.likesubsubsectionHead,
 h6 {
 	font-family: var(--sans);
 	font-weight: 700;
-	color: #000;
-	line-height: 1.25;
-	margin: 2rem 0 0.75rem;
+	color: var(--text);
+	line-height: 1.2;
+	margin: 1.5em 0 0.5em;
 	hyphens: none;
 	scroll-margin-top: 1.5rem;
 }
 
 h1,
 h1.titleHead {
-	font-size: 1.7rem;
+	font-size: 20pt;
 	text-align: center;
-	margin: 0 0 0.5rem;
+	margin: 0 0 0.4em;
 	letter-spacing: -0.01em;
 }
 
 h3,
 h3.likesectionHead {
-	font-size: 1.15rem;
-	border-bottom: 1px solid var(--border);
-	padding-bottom: 0.35rem;
-	margin-top: 2.5rem;
+	font-size: 13pt;
+	margin-top: 1.75em;
 }
 
 h4,
 h4.likesubsectionHead {
-	font-size: 1rem;
-	margin-top: 1.75rem;
+	font-size: 11pt;
+	margin-top: 1.25em;
 }
 
 h5,
 h5.likesubsubsectionHead {
-	font-size: 0.9rem;
-	color: var(--text-muted);
-	margin-top: 1.5rem;
+	font-size: 10pt;
+	margin-top: 1em;
 }
 
 p {
-	margin: 0 0 0.9rem;
+	margin: 0 0 0.8em;
 	text-align: justify;
 	text-justify: inter-word;
 }
@@ -125,35 +116,25 @@ p {
 a {
 	color: var(--link);
 	text-decoration: none;
-	border-bottom: 1px solid transparent;
-	transition: border-color 0.15s ease;
+	border-bottom: 1px dotted var(--text-muted);
 }
 
 a:hover {
-	border-bottom-color: var(--link);
-}
-
-a:visited {
-	color: var(--link-visited);
+	border-bottom-style: solid;
 }
 
 ul,
 ol {
-	margin: 0 0 1rem;
-	padding-left: 1.5rem;
+	margin: 0 0 1em;
+	padding-left: 1.5em;
 }
 
 li {
-	margin-bottom: 0.35rem;
-}
-
-li > ul,
-li > ol {
-	margin: 0.35rem 0 0;
+	margin-bottom: 0.3em;
 }
 
 small {
-	font-size: 0.875em;
+	font-size: 0.92em;
 }
 
 /* ==========================================================================
@@ -162,17 +143,21 @@ small {
 
 div.maketitle {
 	text-align: center;
-	margin: 0 0 3rem;
-	padding-bottom: 2rem;
+	margin: 0 0 2em;
+	padding-bottom: 1.5em;
 	border-bottom: 1px solid var(--border);
+}
+
+div.maketitle > br {
+	display: none;
 }
 
 div.author,
 div.date {
 	font-family: var(--sans);
-	font-size: 0.9rem;
+	font-size: 11pt;
 	color: var(--text-muted);
-	margin-top: 0.35rem;
+	margin-top: 0.3em;
 	line-height: 1.5;
 }
 
@@ -185,16 +170,16 @@ div.date {
    ========================================================================== */
 
 div.tableofcontents {
-	margin: 0 0 3rem;
-	padding: 1rem 0;
-	font-size: 0.95rem;
+	margin: 0 0 2em;
+	padding: 1em 0;
+	font-size: 10pt;
 	border-top: 1px solid var(--border);
 	border-bottom: 1px solid var(--border);
 }
 
 div.tableofcontents span.sectionToc {
 	display: block;
-	padding: 0.15rem 0;
+	padding: 0.1em 0;
 }
 
 div.tableofcontents a {
@@ -203,35 +188,28 @@ div.tableofcontents a {
 }
 
 div.tableofcontents a:hover {
-	color: var(--link);
+	color: var(--text-muted);
 }
 
 /* ==========================================================================
-   Tables
+   Tables — booktabs style
    ========================================================================== */
 
 /*
- * CRITICAL FIX #1
- *
- * The old rule combined word-break: break-word with overflow-wrap: anywhere.
- * Both of those properties make the browser compute a cell's intrinsic
- * minimum width as one character. The browser then shrinks columns to that
- * minimum, and every word wraps onto its own line — the "BAD / signature"
- * pattern visible in the old build.
- *
- * New rule uses overflow-wrap: break-word, which lets long unbreakable
- * strings (URLs, hashes, long filenames) break only when they cannot fit,
- * without changing the intrinsic width calculation for normal words.
+ * overflow-wrap: break-word (NOT anywhere) lets long unbreakable
+ * strings break only when they exceed the cell. Using "anywhere"
+ * here would collapse min-content width to one character and force
+ * every word onto its own line.
  */
 
 table.tabular {
 	width: 100%;
-	margin: 1.5rem 0;
+	margin: 1.5em 0;
 	border-collapse: collapse;
-	border-top: 2px solid var(--border-strong);
-	border-bottom: 2px solid var(--border-strong);
-	font-size: 0.85rem;
-	line-height: 1.4;
+	border-top: 1.5px solid var(--border-strong);
+	border-bottom: 1.5px solid var(--border-strong);
+	font-size: 10pt;
+	line-height: 1.3;
 	table-layout: auto;
 }
 
@@ -248,7 +226,7 @@ table.tabular tr:first-child {
 }
 
 table.tabular td {
-	padding: 0.5rem 0.6rem;
+	padding: 0.4em 0.6em;
 	text-align: left;
 	vertical-align: top;
 	white-space: normal;
@@ -264,33 +242,12 @@ table.tabular td > p {
 table.tabular tr:first-child > td {
 	font-family: var(--sans);
 	font-weight: 700;
-	font-size: 0.8rem;
-	padding-bottom: 0.5rem;
+	font-size: 9.5pt;
+	padding-bottom: 0.5em;
 }
-
-/*
- * CRITICAL FIX #2
- *
- * generate_verification.sh wraps paper names in \texttt{\scriptsize ...},
- * which tex4ht emits as <span class="ectt-0800">. The span is 20% smaller
- * than the surrounding table, so paper names look shrunken next to their
- * own headers. Normalize the smallest texttt size back to the table base.
- * The other texttt sizes (0900, 1000, 1095) keep their relative hierarchy.
- */
 
 table.tabular td span.ectt-0800 {
 	font-size: 1em;
-}
-
-/* On narrow screens, shrink tables rather than wrapping every word. */
-@media (max-width: 640px) {
-	table.tabular {
-		font-size: 0.72rem;
-	}
-
-	table.tabular td {
-		padding: 0.35rem 0.4rem;
-	}
 }
 
 /* ==========================================================================
@@ -307,11 +264,10 @@ span.ectt-0800 {
 }
 
 code {
-	font-size: 0.875em;
+	font-size: 0.92em;
 	background: var(--code-bg);
-	color: var(--text);
-	padding: 0.1em 0.35em;
-	border-radius: 3px;
+	padding: 0.1em 0.3em;
+	border-radius: 2px;
 	overflow-wrap: break-word;
 	word-break: normal;
 }
@@ -319,15 +275,17 @@ code {
 pre,
 pre.lstlisting {
 	font-family: var(--mono);
-	font-size: 0.82rem;
-	line-height: 1.5;
-	background: var(--code-bg);
-	border: 1px solid var(--code-border);
-	padding: 0.9rem 1rem;
-	margin: 1rem 0 1.5rem;
+	font-size: 9pt;
+	line-height: 1.35;
+	background: var(--paper);
+	border: 1px solid var(--border-strong);
+	padding: 0.6em 0.8em;
+	margin: 1em 0 1.25em;
 	overflow-x: auto;
-	border-radius: 3px;
 	font-variant-ligatures: none;
+	white-space: pre;
+	overflow-wrap: normal;
+	word-break: normal;
 }
 
 pre code,
@@ -347,7 +305,7 @@ pre.lstlisting span {
 
 figure.float,
 figure.figure {
-	margin: 1.75rem 0;
+	margin: 1.5em 0;
 	text-align: center;
 }
 
@@ -359,11 +317,11 @@ figure svg {
 
 figcaption.caption {
 	font-family: var(--sans);
-	font-size: 0.85rem;
+	font-size: 10pt;
 	color: var(--text-muted);
-	margin-top: 0.6rem;
+	margin-top: 0.5em;
 	text-align: center;
-	line-height: 1.45;
+	line-height: 1.35;
 	hyphens: none;
 }
 
@@ -377,9 +335,9 @@ figcaption.caption span.id {
    ========================================================================== */
 
 blockquote {
-	margin: 1.5rem 0;
-	padding-left: 1.25rem;
-	border-left: 3px solid var(--border);
+	margin: 1.25em 0;
+	padding-left: 1.25em;
+	border-left: 2px solid var(--border);
 	color: var(--text-muted);
 	font-style: italic;
 }
@@ -387,50 +345,68 @@ blockquote {
 hr {
 	border: none;
 	border-top: 1px solid var(--border);
-	margin: 2rem 0;
+	margin: 1.5em 0;
 }
 
 /* ==========================================================================
-   Responsive
+   Responsive — below 800px, drop the desk and flatten the paper
    ========================================================================== */
 
-@media (max-width: 640px) {
-	body {
-		padding: 2rem 1rem;
-		font-size: 0.95rem;
-	}
-
-	h1,
-	h1.titleHead {
-		font-size: 1.35rem;
-	}
-
-	h3,
-	h3.likesectionHead {
-		font-size: 1.05rem;
-	}
-
-	pre,
-	pre.lstlisting {
-		font-size: 0.75rem;
-	}
-}
-
-/* ==========================================================================
-   Print
-   ========================================================================== */
-
-@media print {
+@media (max-width: 800px) {
 	html {
-		font-size: 11pt;
+		padding: 0;
+		background: var(--paper);
 	}
 
 	body {
 		max-width: none;
+		min-height: auto;
+		padding: 1.5rem 1rem;
+		box-shadow: none;
+	}
+
+	h1,
+	h1.titleHead {
+		font-size: 18pt;
+	}
+
+	h3,
+	h3.likesectionHead {
+		font-size: 12pt;
+	}
+
+	table.tabular {
+		font-size: 9pt;
+	}
+
+	table.tabular td {
+		padding: 0.3em 0.4em;
+	}
+
+	pre,
+	pre.lstlisting {
+		font-size: 8.5pt;
+	}
+}
+
+/* ==========================================================================
+   Print — no desk, no shadow, paper margins come from @page
+   ========================================================================== */
+
+@media print {
+	html {
+		background: #fff;
 		padding: 0;
+	}
+
+	body {
+		max-width: none;
+		min-height: auto;
+		padding: 0;
+		box-shadow: none;
 		color: #000;
 		background: #fff;
-		hyphens: auto;
+		font-size: 11pt;
 	}
 
 	a {
