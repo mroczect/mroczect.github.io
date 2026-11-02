@@ -55,6 +55,7 @@ trap 'rm -f "${TMP}"' EXIT
 # --- LaTeX table header ------------------------------------------------------
 {
     printf '%s\n' '\section*{Paper Verification}'
+    printf '%s\n' '\addcontentsline{toc}{section}{Paper Verification}'
     printf '\n'
     printf '%s\n' 'Each paper ships as three sibling files: the PDF,'
     printf '%s\n' 'a detached GnuPG signature (\texttt{.asc}), and a'
