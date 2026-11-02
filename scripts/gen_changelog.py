@@ -19,33 +19,21 @@ from collections import defaultdict
 from datetime import date, datetime
 from pathlib import Path
 
+# ==============================================================================
+# Repository identity used for commit and PR hyperlinks.
+#
+# Hardcoded because this repository does not use Zola. If the repository
+# moves or the branch is renamed, change these two lines.
+# ==============================================================================
+GH_REPO = "mroczect/mroczect.github.io"
+GH_BRANCH = "main"
+
 
 def get_repo_root() -> Path:
     out = subprocess.check_output(
         ["git", "rev-parse", "--show-toplevel"], text=True
     ).strip()
     return Path(out)
-
-
-def read_config(repo_root: Path) -> tuple[str, str]:
-    cfg = repo_root / "zola.toml"
-    gh_repo = "mroczect/lectures"
-    gh_branch = "master"
-
-    if not cfg.exists():
-        return gh_repo, gh_branch
-
-    text = cfg.read_text()
-    for line in text.splitlines():
-        m = re.match(r'\s*github_repo\s*=\s*"([^"]+)"', line)
-        if m:
-            gh_repo = m.group(1)
-            continue
-        m = re.match(r'\s*github_branch\s*=\s*"([^"]+)"', line)
-        if m:
-            gh_branch = m.group(1)
-
-    return gh_repo, gh_branch
 
 
 TYPES = {
@@ -283,7 +271,6 @@ def main() -> int:
     args = parser.parse_args()
 
     repo_root = get_repo_root()
-    gh_repo, gh_branch = read_config(repo_root)
 
     output = (
         Path(args.output) if args.output else repo_root / "content" / "changelog.tex"
@@ -295,7 +282,7 @@ def main() -> int:
         print("No commits found.", file=sys.stderr)
         return 0
 
-    tex = build_latex(commits, gh_repo, gh_branch)
+    tex = build_latex(commits, GH_REPO, GH_BRANCH)
     output.write_text(tex, encoding="utf-8")
     print(f"Wrote {output} ({len(commits)} commits)")
 
