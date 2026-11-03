@@ -42,12 +42,17 @@
  *     h5.likesubsubsectionHead   \subsubsection*
  *     div.tableofcontents        \tableofcontents block
  *     span.sectionToc            one TOC entry
- *     table.tabular              tabular, tabularx, booktabs tables
- *     figure.float               float-wrapped table or figure
- *     figure.figure              figure environment
+ *     table.tabular              \begin{tabular}
+ *     table.tabularx             \begin{tabularx}
+ *     figure.float               \begin{table}[H] wrapper
+ *     figure[class*="float"]     any wrapper class containing "float"
+ *     figure.figure              \begin{figure} wrapper
  *     figcaption.caption         \caption{...}; span.id holds "Table 1:"
- *     pre.lstlisting             lstlisting block
+ *     pre.lstlisting             \begin{lstlisting}
+ *     div.listing                lstlisting with caption (wrapper)
+ *     span.lstinline             \lstinline{...} (inline)
  *     span.ectt-XXXX             \texttt{...}; XXXX is font size * 1000
+ *     p.noindent, p.indent       \noindent, indented paragraph
  *
  * COMPILATION NOTE — INLINE STYLES WIN
  *   tex4ht writes tables, figures, and pre blocks with inline
@@ -62,9 +67,10 @@
  *      underline style, not color, to distinguish them.
  *   2. Tables use horizontal rules only. No vertical borders, no
  *      zebra striping, no cell background colors.
- *   3. table.tabular must use overflow-wrap: break-word, NOT
- *      overflow-wrap: anywhere and NOT word-break: break-word.
- *      See the long warning in the Tables section.
+ *   3. table.tabular and table.tabularx must use overflow-wrap:
+ *      break-word, NOT overflow-wrap: anywhere and NOT
+ *      word-break: break-word. See the long warning in the Tables
+ *      section.
  *   4. pre.lstlisting uses white-space: pre. Block code must not wrap.
  *      Overflow is handled by horizontal scrolling.
  *   5. All major design values are declared as :root custom
@@ -74,6 +80,9 @@
  *      disappears and the paper becomes a flat full-width sheet.
  *   7. Print output removes the desk, shadow, and gray background.
  *      Page margins come from @page, not body padding.
+ *   8. Every interactive element remains keyboard-accessible.
+ *      :focus-visible outlines are never removed without an equivalent
+ *      replacement.
  *
  * CHANGE POLICY
  *   - Edit styles/style.css, never dist/main.css.
@@ -82,6 +91,7 @@
  *   - Do not add word-break: break-word or overflow-wrap: anywhere
  *     to table cells.
  *   - Do not make block code wrap.
+ *   - Do not use `outline: none` without a `:focus-visible` replacement.
  *   - If HTML and LaTeX PDF diverge, remember that the LaTeX PDF is
  *     controlled by main.tex and paper*.tex, not by this file.
  *
@@ -89,7 +99,7 @@
  *   --text          -> body, headings, a, caption span.id
  *                   -> primary foreground text color.
  *   --text-muted    -> author, date, caption, blockquote, link border
- *                   -> secondary/receding text color.
+ *                   -> secondary/receding text color (print darker).
  *   --page-bg       -> html
  *                   -> desk color behind the paper on wide screens.
  *   --paper         -> body, pre, responsive html
@@ -103,11 +113,13 @@
  *                   -> slightly recessed inline code background.
  *   --link          -> a
  *                   -> link foreground; same as text by design.
+ *   --focus-ring    -> :focus-visible outline color
+ *                   -> keyboard-focus indicator (grayscale only).
  *   --serif         -> body
  *                   -> body serif stack.
  *   --sans          -> headings, author, date, table header, caption
  *                   -> heading/UI sans-serif stack.
- *   --mono          -> code, span.ectt-*, pre
+ *   --mono          -> code, [class*="ectt-"], pre, lstinline
  *                   -> monospace code stack.
  *
  * MAINTENANCE CHECKLIST
@@ -118,9 +130,9 @@
  *   [ ] Does the 800px breakpoint still remove the desk?
  *   [ ] Does print mode still remove shadows and background?
  *   [ ] Are tex4ht-specific class names preserved?
+ *   [ ] Is :focus-visible visible on every interactive element?
+ *   [ ] Does `prefers-reduced-motion: reduce` disable smooth scroll?
  *
- * This documentation is intentionally embedded in CSS comments.
- * No CSS rule in this file is changed by this documentation pass.
  * ============================================================================
  */
 
@@ -128,17 +140,6 @@
  * ============================================================================
  * SECTION 1 — DESIGN TOKENS
  * ============================================================================
- *
- * Every color, font stack, and major design value is declared here as a
- * CSS custom property. Rules below reference these variables rather
- * than repeating literal values.
- *
- * Why this matters:
- *   1. Changing --page-bg changes the desk everywhere in one edit.
- *   2. A grep for a literal color finds only this block, so reading
- *      the tokens tells you the complete design palette.
- *   3. Grayscale safety is centralized. --link is black by design;
- *      links are distinguished by dotted underline, not by hue.
  */
 
 :root {
@@ -146,8 +147,10 @@
 	--text: #000;
 
 	/* Secondary text: author block, date, captions, blockquotes,
-	   and the dotted underline on links. */
-	--text-muted: #333;
+	   and the dotted underline on links. #555 sits comfortably
+	   between --text and --border, so muted text visibly recedes
+	   while remaining WCAG AAA (7.5:1 contrast) at 10–11 pt. */
+	--text-muted: #555;
 
 	/* The desk behind the paper. Visible only on wide screens. */
 	--page-bg: #555;
@@ -162,39 +165,37 @@
 	/* Structural borders: table top/bottom rules and code frame. */
 	--border-strong: #000;
 
-	/* Background behind inline <code>. Kept distinct from paper so
-	   inline code reads as slightly recessed. */
+	/* Background behind inline <code>. */
 	--code-bg: #f8f8f8;
 
 	/* Link color. Same as text so that only the underline
 	   distinguishes links from body copy. */
 	--link: #000;
 
+	/* Focus ring color. Grayscale only, per invariant 1. */
+	--focus-ring: #555;
+
 	/* Body serif stack. Palatino first, then Book Antiqua on
-	   Windows, Palatino Linotype, Georgia, and generic serif.
-	   This matches the Palatino-based typography used in the papers. */
+	   Windows, Palatino Linotype, Georgia, and generic serif. */
 	--serif: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
 
-	/* Heading sans stack. Helvetica first, then Arial, then generic
-	   sans-serif. This matches the Helvetica-based headings used in
-	   the papers. */
+	/* Heading sans stack. Helvetica first, then Arial, then
+	   generic sans-serif. */
 	--sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
 
-	/* Code stack. Courier New is universal. The SFMono-Regular,
-	   Consolas, and Menlo entries improve rendering on macOS and
-	   Windows. */
+	/* Code stack. Courier New is universal. SFMono-Regular,
+	   Consolas, and Menlo improve rendering on macOS and Windows. */
 	--mono: "Courier New", "SFMono-Regular", Consolas, Menlo, monospace;
+
+	/* The shade used for selection highlight. Very light gray so
+	   that selected text remains fully readable. */
+	--selection-bg: #e5e5e5;
 }
 
 /*
  * ============================================================================
  * SECTION 2 — RESET
  * ============================================================================
- *
- * Universal box-sizing reset. Padding and border are included in the
- * declared width. Without this, an element with width:100% and padding
- * would overflow its parent horizontally. This is the single most
- * important rule for predictable layout.
  */
 
 *,
@@ -209,94 +210,73 @@
  * ============================================================================
  *
  * The visual metaphor is one sheet of A4 paper resting on a darker desk.
- * Two elements cooperate:
  *
  *   html — the desk. Gray background, padded so the sheet floats.
  *   body — the sheet. White, sized to A4 width, with a soft shadow.
  *
- * On screens narrower than 800px the metaphor is dropped. See the
- * Responsive section. A 21cm sheet cannot fit on a phone, and the desk
- * color would waste horizontal space.
+ * On screens narrower than 800px the metaphor is dropped.
+ *
+ * `100dvh` is used alongside `100vh` because mobile browsers shrink
+ * 100vh when the URL bar is visible, producing a sheet that ends
+ * mid-scroll. `100dvh` tracks the current viewport correctly. Older
+ * browsers ignore the second declaration and fall back to 100vh.
  */
 
-/* The gray desk. */
 html {
-	/* Root font size. Only matters for rem units. Body text is set
-	   in pt below, so this is mostly a fallback. */
 	font-size: 16px;
-
-	/* The desk color. */
 	background: var(--page-bg);
-
-	/* Breathing room around the sheet: 2rem top/bottom and 1rem
-	   left/right, so the sheet never touches the viewport edge. */
 	padding: 2rem 1rem;
-
-	/* Prevent iOS Safari from inflating text when the device rotates
-	   to landscape. */
 	text-size-adjust: 100%;
+	scroll-behavior: smooth;
+	color-scheme: light only;
 }
 
-/* The paper sheet. */
 body {
-	/* Body typography. 11pt matches the LaTeX document class and
-	   keeps line counts roughly comparable between HTML and PDF. */
 	font-family: var(--serif);
 	font-size: 11pt;
-
-	/* Line height tuned for justified serif paragraphs at 11pt.
-	   The papers use \setstretch{1.15}, roughly equivalent to 1.4. */
 	line-height: 1.4;
-
 	color: var(--text);
 	background: var(--paper);
 
-	/* Sheet geometry. 21cm is A4 width. max-width caps the sheet on
-	   wide screens. width:100% lets it fill narrow screens up to the
-	   cap. The difference between the two lets the sheet shrink at
-	   the 800px breakpoint without leaving gaps. */
 	width: 100%;
 	max-width: 21cm;
 	min-height: calc(100vh - 4rem);
+	min-height: calc(100dvh - 4rem);
 
-	/* Center the sheet horizontally on the desk. The 4rem subtracted
-	   from 100vh matches the top and bottom padding on html, so the
-	   sheet can fill the visible height exactly. */
 	margin: 0 auto;
-
-	/* 2.54cm is exactly one inch, matching margin=1in in the LaTeX
-	   preamble. This is why HTML and PDF paragraphs break at similar
-	   places. */
 	padding: 2.54cm;
 
-	/* Soft shadow lifting the sheet off the desk. The 20px blur reads
-	   as ambient occlusion rather than a hard line. 30% opacity keeps
-	   it subtle. */
 	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 
-	/* Enable hyphenation in justified paragraphs. Without this, long
-	   technical terms produce rivers of whitespace. */
 	hyphens: auto;
-
-	/* Allow long URLs and hashes to break rather than overflow their
-	   container. Specific rules below tighten this behavior. */
 	overflow-wrap: break-word;
 
-	/* Crisper text rendering on macOS and Linux. */
+	/* Typographic quality. Explicit declarations override the
+	   browser default, which varies widely across engines.
+	   `optimizeLegibility` enables kerning and standard ligatures
+	   on systems that support it. */
+	font-kerning: normal;
+	font-variant-ligatures: common-ligatures;
+	font-feature-settings: "kern", "liga", "onum", "pnum";
+	text-rendering: optimizeLegibility;
+
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+}
+
+/*
+ * Selection highlight. Browsers default to a blue selection color,
+ * which violates invariant 1. This matches the grayscale palette.
+ */
+::selection {
+	background: var(--selection-bg);
+	color: var(--text);
 }
 
 /*
  * ============================================================================
  * SECTION 4 — TYPOGRAPHY: HEADINGS, PARAGRAPHS, LINKS, LISTS
  * ============================================================================
- *
- * All heading levels share the same family, weight, and vertical
- * rhythm. Only size and top margin differ. The tex4ht-specific class
- * names are included so that headings emitted by tex4ht match the same
- * rules as bare HTML headings. Without them, tex4ht headings would
- * fall through to browser defaults.
  */
 
 h1,
@@ -312,67 +292,31 @@ h6 {
 	font-family: var(--sans);
 	font-weight: 700;
 	color: var(--text);
-
-	/* Tighter line height on headings than body. Headlines rarely
-	   wrap, but when they do, 1.2 keeps multi-line titles from
-	   looking detached. */
 	line-height: 1.2;
-
-	/* Asymmetric vertical rhythm: more space above a heading than
-	   below. This visually groups a heading with the paragraph that
-	   follows it rather than the one that precedes it. */
 	margin: 1.5em 0 0.5em;
-
-	/* Hyphenation inside a heading produces ugly breaks on short
-	   words. Disable it and let the heading wrap whole. */
 	hyphens: none;
-
-	/* When a TOC entry scrolls to this heading, leave room above so
-	   the heading does not jam against the viewport edge. */
 	scroll-margin-top: 1.5rem;
 }
 
-/*
- * h1 is the paper title only. It is centered, 20pt, with slightly
- * reduced tracking. The negative letter-spacing tightens long titles,
- * mimicking display-size tightening.
- */
 h1,
 h1.titleHead {
 	font-size: 20pt;
 	text-align: center;
 	margin: 0 0 0.4em;
-	letter-spacing: -0.01em;
 }
 
-/*
- * h3 corresponds to \section* in LaTeX. These are top-level sections.
- * 13pt keeps them visibly larger than body text without competing with
- * the h1 title. No bottom border is used; the papers rely on size and
- * whitespace to separate sections.
- */
 h3,
 h3.likesectionHead {
 	font-size: 13pt;
 	margin-top: 1.75em;
 }
 
-/*
- * h4 corresponds to \subsection*. Same size as body text but bold and
- * sans-serif, so it reads as subordinate to h3. The top margin is
- * reduced relative to h3 because subsections nest under sections.
- */
 h4,
 h4.likesubsectionHead {
 	font-size: 11pt;
 	margin-top: 1.25em;
 }
 
-/*
- * h5 corresponds to \subsubsection*. Used rarely. At 10pt it is
- * smaller than body text, but bold sans-serif weight and family
- * preserve hierarchy.
- */
 h5,
 h5.likesubsubsectionHead {
 	font-size: 10pt;
@@ -380,10 +324,9 @@ h5.likesubsubsectionHead {
 }
 
 /*
- * Justified body paragraphs. text-justify: inter-word tells the browser
- * to adjust inter-word spacing rather than inter-character spacing,
- * matching LaTeX's default. The 0.8em bottom margin mirrors
- * \parskip=0.8em in the LaTeX preamble.
+ * Body paragraphs. `text-justify: inter-word` is deprecated in
+ * modern CSS but still recognized by Firefox, Chrome, Safari, and
+ * Edge — kept for consistency with LaTeX's inter-word justification.
  */
 p {
 	margin: 0 0 0.8em;
@@ -392,27 +335,48 @@ p {
 }
 
 /*
- * Links. The dotted underline is the only visual differentiator because
- * --link is black. On hover the underline solidifies rather than
- * changing color. This works in grayscale and in print preview.
- *
- * The color transition is omitted because border-bottom-style is the
- * property that changes; animating it would cause layout jitter.
+ * tex4ht wraps some paragraphs in `.noindent` (from `\noindent`) and
+ * `.indent` (from indented paragraphs). Both classes inherit `p`
+ * margin; `.noindent` should have no left indent and no extra top
+ * margin, `.indent` should add LaTeX-like first-line indent.
+ */
+p.noindent {
+	text-indent: 0;
+	margin-top: 0;
+}
+
+p.indent {
+	text-indent: 1.5em;
+	margin-top: 0;
+}
+
+/*
+ * Links. The dotted underline is the only visual differentiator
+ * because --link is black. On hover the underline solidifies. On
+ * keyboard focus the outline makes the target unambiguous. This
+ * works in grayscale and in print preview.
  */
 a {
 	color: var(--link);
 	text-decoration: none;
 	border-bottom: 1px dotted var(--text-muted);
+	border-radius: 1px;
 }
 
 a:hover {
 	border-bottom-style: solid;
 }
 
+a:focus-visible {
+	outline: 2px dotted var(--focus-ring);
+	outline-offset: 3px;
+	border-bottom-style: solid;
+}
+
 /*
- * List containers. Left padding gives room for bullets or numbers so
- * markers do not overlap surrounding text. 1.5em is enough for
- * two-digit ordered markers at 11pt.
+ * Lists. 1.5em of left padding is enough for two-digit ordered
+ * markers at 11 pt. `li:last-child` gets no bottom margin so a
+ * list at the end of a paragraph does not add stray whitespace.
  */
 ul,
 ol {
@@ -420,31 +384,97 @@ ol {
 	padding-left: 1.5em;
 }
 
-/*
- * List items. Slightly tighter than paragraph spacing because bullet
- * points are usually one line each. An airy gap per item would make
- * long lists feel disconnected.
- */
 li {
 	margin-bottom: 0.3em;
 }
 
+li:last-child {
+	margin-bottom: 0;
+}
+
 /*
- * <small> is emitted by tex4ht for \small{...}. 0.92em at 11pt base is
- * about 10.1pt, matching how \small renders in the papers.
+ * `\small{...}` becomes <small>. 0.92em at 11pt base is about
+ * 10.1 pt, matching how \small renders in the papers.
  */
 small {
 	font-size: 0.92em;
 }
 
 /*
+ * Superscripts and subscripts from LaTeX. Without explicit
+ * line-height, they stretch the line box and cause visible rivers
+ * between justified lines. `vertical-align` with explicit
+ * line-height keeps the line box stable.
+ */
+sup,
+sub {
+	font-size: 0.75em;
+	line-height: 0;
+	position: relative;
+	vertical-align: baseline;
+}
+
+sup {
+	top: -0.5em;
+}
+
+sub {
+	bottom: -0.25em;
+}
+
+/*
+ * Abbreviations. Dotted underline on the abbreviation, tooltip on
+ * hover if the browser shows the `title` attribute.
+ */
+abbr[title] {
+	border-bottom: 1px dotted var(--text-muted);
+	cursor: help;
+	text-decoration: none;
+}
+
+/*
+ * Definition lists — occasionally emitted by tex4ht for glossary-
+ * like content. `dt` is bold, `dd` is indented and shrunk slightly.
+ */
+dl {
+	margin: 0 0 1em;
+}
+
+dt {
+	font-weight: 700;
+	margin-bottom: 0.2em;
+}
+
+dd {
+	margin: 0 0 0.6em 1.5em;
+}
+
+/*
+ * `\textsf{\textbf{kbd}}` renders keyboard keys. If a future paper
+ * emits <kbd>, this provides a boxed appearance.
+ */
+kbd {
+	font-family: var(--mono);
+	font-size: 0.9em;
+	padding: 0.1em 0.3em;
+	border: 1px solid var(--border);
+	border-radius: 2px;
+	background: var(--code-bg);
+}
+
+/*
+ * <mark> highlights text. Grayscale-safe yellow substitute.
+ */
+mark {
+	background: var(--selection-bg);
+	color: var(--text);
+	padding: 0 0.15em;
+}
+
+/*
  * ============================================================================
  * SECTION 5 — TITLE BLOCK
  * ============================================================================
- *
- * tex4ht wraps everything between \begin{document} and
- * \tableofcontents in <div class="maketitle">. Its children are
- * h1.titleHead, div.author, div.date, and sometimes a stray <br>.
  */
 
 div.maketitle {
@@ -454,20 +484,10 @@ div.maketitle {
 	border-bottom: 1px solid var(--border);
 }
 
-/*
- * tex4ht emits a literal <br> after the title block. At line-height 1.4
- * that would produce a visible blank line between the title and the
- * following content. Hide the br without touching the HTML.
- */
 div.maketitle > br {
 	display: none;
 }
 
-/*
- * Author name and date. Both use sans at 11pt in --text-muted so they
- * recede relative to the title. The .3em top margin is small because
- * these lines are tightly coupled to the title above them.
- */
 div.author,
 div.date {
 	font-family: var(--sans);
@@ -477,10 +497,6 @@ div.date {
 	line-height: 1.5;
 }
 
-/*
- * The date is italic to visually separate it from the author line,
- * since both otherwise render identically.
- */
 div.date {
 	font-style: italic;
 }
@@ -489,11 +505,6 @@ div.date {
  * ============================================================================
  * SECTION 6 — TABLE OF CONTENTS
  * ============================================================================
- *
- * tex4ht wraps \tableofcontents output in div.tableofcontents. Each
- * entry is a span.sectionToc containing an <a>. Entries are separated
- * by literal <br> tags. span.sectionToc must be display:block so it
- * behaves like a line even before the br applies its own line break.
  */
 
 div.tableofcontents {
@@ -509,17 +520,18 @@ div.tableofcontents span.sectionToc {
 	padding: 0.1em 0;
 }
 
-/*
- * TOC links match body color so the list reads as a unit rather than
- * as a cluster of underlined links. Hover shifts to --text-muted to
- * signal interactivity without color.
- */
 div.tableofcontents a {
 	color: var(--text);
 	border-bottom: none;
 }
 
 div.tableofcontents a:hover {
+	color: var(--text-muted);
+}
+
+div.tableofcontents a:focus-visible {
+	outline: 2px dotted var(--focus-ring);
+	outline-offset: 2px;
 	color: var(--text-muted);
 }
 
@@ -548,75 +560,44 @@ div.tableofcontents a:hover {
  *   `overflow-wrap: break-word` allows long unbreakable strings such as
  *   URLs, SHA-256 hashes, and filenames to break when they would
  *   overflow the cell. It does NOT change the intrinsic minimum width
- *   for normal words. Columns size to fit content normally; only
- *   exceptional strings get split.
+ *   for normal words.
  *
  *   Do NOT reintroduce:
  *     word-break: break-word;
  *     overflow-wrap: anywhere;
- *
- *   If a column still refuses to wrap at the desired width, shrink
- *   font-size rather than forcing character-level breaking.
  */
 
-table.tabular {
+table.tabular,
+table.tabularx {
 	width: 100%;
 	margin: 1.5em 0;
 	border-collapse: collapse;
-
-	/* Booktabs top rule. 1.5px is thicker than the header divider
-	   below, matching the visual weight of \toprule. */
 	border-top: 1.5px solid var(--border-strong);
 	border-bottom: 1.5px solid var(--border-strong);
-
 	font-size: 10pt;
-
-	/* Slightly tighter than body line-height because table cells
-	   benefit from denser rows. Reading across a row is easier when
-	   adjacent lines within a cell do not drift apart. */
 	line-height: 1.3;
-
-	/* auto means columns size to content, subject to intrinsic width
-	   rules. Do not change to fixed. Fixed requires explicit column
-	   widths that tex4ht does not emit. */
 	table-layout: auto;
 }
 
-/*
- * Strip any vertical borders that the browser or tex4ht may introduce.
- * The booktabs aesthetic is horizontal-only. This compound selector
- * targets the table, rows, and cells so no default border slips through
- * at any level.
- */
 table.tabular,
+table.tabularx,
 table.tabular tr,
 table.tabular td,
-table.tabular th {
+table.tabular th,
+table.tabularx tr,
+table.tabularx td,
+table.tabularx th {
 	border-left: none;
 	border-right: none;
 }
 
-/*
- * Booktabs midrule: a thinner rule under the header row only. Using
- * tr:first-child rather than thead th keeps this working even when
- * tex4ht does not wrap the header in a thead element.
- */
-table.tabular tr:first-child {
+table.tabular tr:first-child,
+table.tabularx tr:first-child {
 	border-bottom: 1px solid var(--border-strong);
 }
 
-/*
- * Cell padding and wrapping behavior. The 0.4em vertical padding
- * separates rows without making tall cells breathe too much. 0.6em
- * horizontal padding gives text room off the column border.
- *
- * vertical-align: top is important for booktabs tables because cells
- * of different content heights should align at the top of their row,
- * not at the baseline or center.
- *
- * The wrapping rule is critical. See the long warning above.
- */
-table.tabular td {
+table.tabular td,
+table.tabularx td {
 	padding: 0.4em 0.6em;
 	text-align: left;
 	vertical-align: top;
@@ -626,22 +607,13 @@ table.tabular td {
 	hyphens: auto;
 }
 
-/*
- * tex4ht wraps cell content in <p class="noindent">, whose default
- * paragraph margin would add unwanted space inside every cell.
- * Zeroing it here flattens the cell to just the text.
- */
-table.tabular td > p {
+table.tabular td > p,
+table.tabularx td > p {
 	margin: 0;
 }
 
-/*
- * Header row. Sans-serif, bold, slightly smaller than body content so
- * a header like "Paper" does not overpower the paper names below it.
- * The reduced font-size relative to cells (9.5pt vs 10pt) is a common
- * booktabs typographic choice and reads as deliberate hierarchy.
- */
-table.tabular tr:first-child > td {
+table.tabular tr:first-child > td,
+table.tabularx tr:first-child > td {
 	font-family: var(--sans);
 	font-weight: 700;
 	font-size: 9.5pt;
@@ -649,20 +621,34 @@ table.tabular tr:first-child > td {
 }
 
 /*
- * generate_verification.sh once wrapped paper names in
- * \texttt{\scriptsize ...}, which tex4ht emits as
- * <span class="ectt-0800">. At 80% of the surrounding 10pt table base,
- * paper names rendered noticeably smaller than their own header. The
- * script was later fixed to emit \texttt{...} without \scriptsize, but
- * this rule remains as a safety net for leftover \scriptsize
- * occurrences: it forces the smallest texttt size back to the table
- * base.
+ * Inline code inside a table cell must not fight the cell's own
+ * font size. tex4ht emits \texttt{...} inside tables as
+ * <span class="ectt-XXXX">. The XXXX encodes a font size that was
+ * chosen relative to the surrounding prose, which is usually 11pt,
+ * not the 10pt table base. Reset to `inherit` so every code span
+ * matches its cell.
  *
- * The other texttt sizes (0900, 1000, 1095) are intentionally left
- * alone because they carry meaningful relative hierarchy in prose.
+ * Also apply to plain <code> in case tex4ht ever emits it directly
+ * (currently it does not, but this is cheap insurance).
  */
-table.tabular td span.ectt-0800 {
-	font-size: 1em;
+table.tabular td code,
+table.tabular td [class*="ectt-"],
+table.tabularx td code,
+table.tabularx td [class*="ectt-"] {
+	font-size: inherit;
+}
+
+/*
+ * On phones, tables that are too wide for the viewport must scroll
+ * horizontally rather than overflow the page. `figure[class*="float"]`
+ * catches both `figure.float` (from \begin{table}) and any future
+ * variant tex4ht might emit. The caption scrolls with the table,
+ * which is acceptable on mobile where screen width is scarce.
+ */
+@media (max-width: 800px) {
+	figure[class*="float"] {
+		overflow-x: auto;
+	}
 }
 
 /*
@@ -672,37 +658,25 @@ table.tabular td span.ectt-0800 {
  *
  * Two categories of code markup appear in the HTML:
  *
- *   <code>            inline code, usually from \texttt{...} outside
- *                     a listing. It gets a light background.
+ *   <code>, span[class*="ectt-"]   inline code from \texttt{...}
+ *   <pre class="lstlisting">       block code from lstlisting
+ *   <span class="lstinline">       inline code from \lstinline{...}
+ *   <div class="listing">          lstlisting with a caption
  *
- *   <pre class="lstlisting">
- *                     block code from lstlisting environments. It gets
- *                     a full border and preserves whitespace.
- *
- * Both use the monospace stack and disable font ligatures. Without
- * font-variant-ligatures: none, some browsers render "--" as an
- * en-dash and "->" as an arrow, corrupting command syntax. LaTeX has
- * its own ligature problem inside \texttt that must be solved in the
- * .tex source. This CSS rule only prevents the browser from introducing
- * a second layer of the same bug.
+ * All use the monospace stack and disable font ligatures. Without
+ * font-variant-ligatures: none, browsers render "--" as an en-dash
+ * and "->" as an arrow, corrupting command syntax.
  */
 
 code,
-span.ectt-1095,
-span.ectt-1000,
-span.ectt-0900,
-span.ectt-0800 {
+span[class*="ectt-"],
+span.lstinline {
 	font-family: var(--mono);
 	font-variant-ligatures: none;
 }
 
-/*
- * Inline code. The light background makes it read as a distinct run of
- * text. Long inline code such as URLs and filenames may break rather
- * than overflow the paragraph. break-word is used, not anywhere, for
- * the same reason as tables.
- */
-code {
+code,
+span.lstinline {
 	font-size: 0.92em;
 	background: var(--code-bg);
 	padding: 0.1em 0.3em;
@@ -712,20 +686,42 @@ code {
 }
 
 /*
+ * Code inside a heading should shrink to the heading's scale, not
+ * the body's. Without this, a \texttt{} in an h1 at 20pt would
+ * inherit 0.92em (18.4pt), which is fine, but a \texttt{} in an h5
+ * at 10pt would be 9.2pt — smaller than body code, creating an
+ * unintentional inverse hierarchy.
+ *
+ * Setting font-size to inherit makes inline code always match the
+ * surrounding text's size.
+ */
+h1 code,
+h1 [class*="ectt-"],
+h2 code,
+h2 [class*="ectt-"],
+h3 code,
+h3 [class*="ectt-"],
+h4 code,
+h4 [class*="ectt-"],
+h5 code,
+h5 [class*="ectt-"] {
+	font-size: 0.85em;
+}
+
+/*
  * Block code. The white background, not --code-bg, makes block code
- * read as an isolated artifact rather than a tinted callout. The full
- * black border matches frame=single on the listings style in
- * main.tex.
+ * read as an isolated artifact. The full black border matches
+ * frame=single on the listings style in main.tex.
  *
- * Horizontal scroll on overflow. Long lines such as SQL with many
- * columns or shell pipelines should scroll, not wrap. Wrapping would
- * corrupt their visual structure.
+ * `white-space: pre` and `overflow-wrap: normal` ensure block code
+ * never wraps. The scrollbar handles overflow.
  *
- * white-space: pre and overflow-wrap: normal ensure block code never
- * wraps. The scrollbar handles overflow.
+ * `tab-size: 4` makes indentation consistent across browsers;
+ * tab-size default varies (2 on macOS, 8 on Linux).
  */
 pre,
-pre.lstlisting {
+pre.lstlisting,
+div.listing {
 	font-family: var(--mono);
 	font-size: 9pt;
 	line-height: 1.35;
@@ -738,17 +734,42 @@ pre.lstlisting {
 	white-space: pre;
 	overflow-wrap: normal;
 	word-break: normal;
+	tab-size: 4;
+	-moz-tab-size: 4;
 }
 
 /*
- * Nested elements inside a pre block. tex4ht wraps tokens in their own
- * <span>. Those spans must inherit the parent's monospace font and
- * background, not restyle themselves. Without this reset, the inline
- * code background would appear behind every token.
+ * A div.listing wraps the pre and puts the caption above. The
+ * caption is styled like a figure caption (below).
+ */
+div.listing > pre.lstlisting {
+	margin: 0;
+}
+
+/*
+ * If a future tex4ht version emits `div.listing > div.lstcaption`,
+ * style it like a figure caption.
+ */
+div.listing .lstcaption {
+	font-family: var(--sans);
+	font-size: 10pt;
+	color: var(--text-muted);
+	margin-bottom: 0.3em;
+	text-align: left;
+	line-height: 1.35;
+}
+
+/*
+ * Nested elements inside a pre block. tex4ht wraps tokens in their
+ * own <span>. Those spans must inherit the parent's monospace font
+ * and background.
  */
 pre code,
+pre [class*="ectt-"],
 pre.lstlisting code,
-pre.lstlisting span {
+pre.lstlisting span,
+div.listing code,
+div.listing span {
 	background: transparent;
 	padding: 0;
 	border: none;
@@ -758,37 +779,51 @@ pre.lstlisting span {
 }
 
 /*
+ * Subtle scrollbar styling for code blocks. Uses system colors so
+ * it remains grayscale; the browser will fall back to the default
+ * scrollbar if unsupported.
+ */
+pre {
+	scrollbar-width: thin;
+	scrollbar-color: var(--border-strong) var(--paper);
+}
+
+pre::-webkit-scrollbar {
+	height: 8px;
+}
+
+pre::-webkit-scrollbar-track {
+	background: var(--paper);
+}
+
+pre::-webkit-scrollbar-thumb {
+	background: var(--border);
+	border-radius: 4px;
+}
+
+pre::-webkit-scrollbar-thumb:hover {
+	background: var(--border-strong);
+}
+
+/*
  * ============================================================================
  * SECTION 9 — FIGURES
  * ============================================================================
- *
- * tex4ht emits <figure class="float"> for tables produced inside
- * \begin{table} and <figure class="figure"> for those produced inside
- * \begin{figure}. Both should be centered with a caption below.
  */
 
 figure.float,
-figure.figure {
+figure.figure,
+figure[class*="float"] {
 	margin: 1.5em 0;
 	text-align: center;
 }
 
-/*
- * Embedded diagrams such as SVG output from TikZ or PNG rasterizations
- * must never exceed the paper's text width. height: auto preserves the
- * aspect ratio when max-width kicks in.
- */
 figure img,
 figure svg {
 	max-width: 100%;
 	height: auto;
 }
 
-/*
- * Caption text. Sans-serif at 10pt in --text-muted so it recedes
- * relative to body. Centered because the figure above it is centered;
- * an asymmetric caption would read as a layout error.
- */
 figcaption.caption {
 	font-family: var(--sans);
 	font-size: 10pt;
@@ -799,14 +834,10 @@ figcaption.caption {
 	hyphens: none;
 }
 
-/*
- * The "Table 1:" or "Figure 1:" prefix is bold and black, standing out
- * from the caption body. This is the one place where a caption uses two
- * weights, mirroring the LaTeX \caption output.
- */
 figcaption.caption span.id {
 	font-weight: 700;
 	color: var(--text);
+	margin-right: 0.3em;
 }
 
 /*
@@ -815,11 +846,6 @@ figcaption.caption span.id {
  * ============================================================================
  */
 
-/*
- * Blockquotes have a thin left border and italic text. This is a
- * typographic convention for quoted passages and for the quote
- * environment emitted by tex4ht.
- */
 blockquote {
 	margin: 1.25em 0;
 	padding-left: 1.25em;
@@ -828,39 +854,37 @@ blockquote {
 	font-style: italic;
 }
 
-/*
- * \hrule in LaTeX becomes <hr> in HTML. Match the weight of the
- * subtler borders (--border, not --border-strong) so a horizontal rule
- * reads as a divider rather than a section break.
- */
 hr {
 	border: none;
 	border-top: 1px solid var(--border);
 	margin: 1.5em 0;
+	clear: both;
+}
+
+/*
+ * When an anchor navigation lands on a section (or any element with
+ * an id), give that element a brief visual cue. The highlight uses
+ * the same grayscale as the selection.
+ */
+:target {
+	background-color: var(--selection-bg);
+	scroll-margin-top: 1.5rem;
+}
+
+/*
+ * Remove the trailing bottom margin from the last child of body so
+ * a long document does not leave an unexpected gap after the final
+ * section. Matches the "no trailing whitespace" convention of the
+ * LaTeX output.
+ */
+body > *:last-child {
+	margin-bottom: 0;
 }
 
 /*
  * ============================================================================
  * SECTION 11 — RESPONSIVE: 800PX BREAKPOINT
  * ============================================================================
- *
- * Below 800px the viewport is narrower than the A4 sheet. Two things
- * must change:
- *
- *   1. The desk disappears. A gray background around a sheet that
- *      already fills the screen wastes space and reads as padding.
- *   2. The sheet's fixed padding and shadow are dropped. 2.54cm of
- *      padding on a 360px phone leaves almost no text column.
- *
- * Typography shrinks proportionally:
- *   h1:          20pt -> 18pt
- *   h3:          13pt -> 12pt
- *   tables:      10pt -> 9pt
- *   code blocks: 9pt  -> 8.5pt
- *
- * Body stays at 11pt because 11pt is still comfortable on phone
- * screens and shrinking it further would trigger zoom on some mobile
- * browsers.
  */
 
 @media (max-width: 800px) {
@@ -886,16 +910,19 @@ hr {
 		font-size: 12pt;
 	}
 
-	table.tabular {
+	table.tabular,
+	table.tabularx {
 		font-size: 9pt;
 	}
 
-	table.tabular td {
+	table.tabular td,
+	table.tabularx td {
 		padding: 0.3em 0.4em;
 	}
 
 	pre,
-	pre.lstlisting {
+	pre.lstlisting,
+	div.listing {
 		font-size: 8.5pt;
 	}
 }
@@ -906,30 +933,38 @@ hr {
  * ============================================================================
  *
  * When the user chooses Print or Print to PDF from the browser, the
- * desk, sheet shadow, and gray background must all disappear. The page
- * becomes an ordinary white sheet whose margins are set by @page, not
- * by body padding.
+ * desk, sheet shadow, and gray background must all disappear.
  *
  * break-after: avoid on headings keeps a heading from ending a page
  * with its content starting on the next one.
  *
- * break-inside: avoid on tables, figures, and pre blocks does the same
- * for those units. A table split across a page boundary is unreadable,
- * and a code block split mid-line is unusable.
+ * break-inside: avoid on tables, figures, and pre blocks does the
+ * same for those units. A table split across a page boundary is
+ * unreadable, and a code block split mid-line is unusable.
  *
- * @page margin: 2cm gives the printed page a reasonable margin that is
- * not tied to HTML body padding. Print output remains correct even if
- * the screen layout uses different padding.
+ * `widows: 3` and `orphans: 3` prevent single-line fragments at
+ * page breaks — a common typographic quality rule that browsers
+ * respect in print mode.
  *
- * Links print as plain black text. Some print engines add the URL after
- * the anchor text. That behavior is controlled by the print dialog,
- * not by CSS, so nothing more can be done here.
+ * @page `size: A4` forces A4 on printers that would otherwise
+ * default to Letter (US). The `margin: 2cm` gives a reasonable
+ * physical margin not tied to body padding.
  */
 
 @media print {
+	:root {
+		/* Muted text slightly darker in print, where the screen's
+		   #555 can fade under halftone rendering. #444 preserves
+		   visual hierarchy without sacrificing legibility. */
+		--text-muted: #444;
+
+		/* Deselect any smooth-scroll animation in print flow. */
+	}
+
 	html {
 		background: #fff;
 		padding: 0;
+		scroll-behavior: auto;
 	}
 
 	body {
@@ -954,39 +989,76 @@ hr {
 	h5,
 	h6 {
 		break-after: avoid;
+		page-break-after: avoid;
+	}
+
+	p {
+		widows: 3;
+		orphans: 3;
 	}
 
 	table,
 	figure,
-	pre {
+	pre,
+	div.listing {
 		break-inside: avoid;
+		page-break-inside: avoid;
 	}
 
-	/*
-	 * TOC borders look cluttered in print because they were meant as
-	 * screen dividers. Drop them in print.
-	 */
 	div.tableofcontents {
 		border: none;
 	}
 
 	/*
-	 * Code blocks keep a frame, but in a lighter gray so the border
-	 * does not dominate the printed page. Background stays white to
-	 * save toner.
+	 * Code blocks keep a frame but in a lighter gray so the border
+	 * does not dominate the printed page. Background stays white
+	 * to save toner.
 	 */
 	pre,
-	pre.lstlisting {
+	pre.lstlisting,
+	div.listing {
 		border: 1px solid #999;
 		background: #fff;
 	}
 
 	/*
-	 * Physical page margins. 2cm is the print-shop default and leaves
-	 * room for binding without wasting paper.
+	 * Physical page definition. `size: A4` is critical for printers
+	 * that default to Letter. `margin: 2cm` is the print-shop
+	 * default — leaves room for binding without wasting paper.
 	 */
 	@page {
+		size: A4;
 		margin: 2cm;
+	}
+}
+
+/*
+ * ============================================================================
+ * SECTION 13 — REDUCED MOTION
+ * ============================================================================
+ *
+ * `scroll-behavior: smooth` on `html` (Section 3) animates anchor
+ * navigation. Users who have set `prefers-reduced-motion: reduce` in
+ * their OS accessibility settings have explicitly asked for that
+ * animation to stop. This media query disables it globally.
+ *
+ * The standard reset pattern disables animations and transitions on
+ * every element. The values are not zero (0.01ms) because some
+ * browsers ignore the shorthand when duration is 0; 0.01ms is
+ * effectively instant but still parsed.
+ */
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
 	}
 }
 
