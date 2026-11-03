@@ -1,178 +1,267 @@
-\documentclass[9pt,a4paper]{extarticle}
+\documentclass[8pt,a4paper]{extarticle}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{mathpazo} % Font yang nyaman dibaca
-\usepackage[margin=1.5cm]{geometry} % Margin lega
+\usepackage{mathpazo}
+\usepackage[margin=0.45in,top=0.35in,bottom=0.35in]{geometry}
 \usepackage{amsmath,amssymb,amsfonts}
-\usepackage{multicol}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{tabularx}
 \usepackage{enumitem}
+\usepackage{multicol}
+\usepackage{listings}
+\usepackage{setspace}
 \usepackage{titlesec}
-\usepackage{array}
-\usepackage{xcolor} % Untuk warna
-\usepackage[most]{tcolorbox} % Untuk kotak cantik dan anti-pecah antar kolom
 
-% --- PENGATURAN SPASI ---
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{4pt} % Jarak antar paragraf lebih lega
-\linespread{1.1} % Spasi baris dilonggarkan
-\setlist[itemize]{noitemsep, topsep=2pt, leftmargin=1.3em, label=\textbullet}
-\setlist[enumerate]{noitemsep, topsep=2pt, leftmargin=1.5em}
+\setlength{\parskip}{1.5pt}
+\setstretch{1.0}
+\setlist[itemize]{noitemsep,topsep=0pt,leftmargin=0.9em,label=$\cdot$}
+\setlist[enumerate]{noitemsep,topsep=0pt,leftmargin=1em}
 
-% --- PENGATURAN JUDUL ---
-\titleformat{\section}
-  {\normalfont\large\bfseries\color{blue!70!black}}{\thesection}{0.5em}{}
-  [\vspace{-4pt}\color{blue!70!black}\rule{\linewidth}{0.8pt}\vspace{4pt}]
-\titleformat{\subsection}
-  {\normalfont\normalsize\bfseries\color{black!80}}{\thesubsection}{0.5em}{}
+\titleformat{\section}{\normalfont\small\bfseries}{\thesection}{0.3em}{}[\vspace{-3pt}\rule{\linewidth}{0.3pt}\vspace{1pt}]
 
-% --- KOTAK RUMUS (Pakai tcolorbox biar halus di mata) ---
-\newtcolorbox{rumusbox}{
-    colback=blue!5!white,
-    colframe=blue!30!white,
-    arc=2mm,
-    boxrule=0.5pt,
-    left=3pt, right=3pt, top=3pt, bottom=3pt,
-    fontupper=\small,
-    breakable % Biar kotak bisa pindah halaman
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    frame=none,
+    columns=fullflexible,
+    keepspaces=true,
+    showstringspaces=false,
+    aboveskip=1pt,
+    belowskip=1pt,
+    xleftmargin=0pt,
 }
+
+\newcommand{\h}[1]{\textbf{#1}}
+\newcommand{\src}[1]{\textit{(#1)}}
 
 \begin{document}
 
 \begin{center}
-	\textbf{\Large CHEATSHEET ATS MATEMATIKA DISKRIT} \\
-	\vspace{2pt}
-	\small Pertemuan 1--7 | Open Book | Nama: ................ | NIM: ................
-\end{center}
-\vspace{-4mm}
-\noindent\rule{\linewidth}{1pt}
-\vspace{2mm}
-
-\begin{multicols}{2}
-
-% ==========================================
-\section*{1. TEORI HIMPUNAN}
-Himpunan adalah kumpulan objek berbeda yang terdefinisi jelas (seperti Array / Tabel Database).
-\begin{itemize}
-    \item \textbf{Kardinalitas (\(|A|\)):} Jumlah elemen unik. \texttt{Contoh: } $A=\{2,3,5,7\}$, maka $|A|=4$.
-    \item \textbf{Subset (\(A \subseteq B\)):} Semua anggota A ada di B.
-    \item \textbf{Power Set (\(P(A)\)):} Himpunan yang isinya semua subset dari A. Rumus jumlahnya: \(2^{|A|}\).
-    \item \textbf{Himpunan Kosong (\(\varnothing\)):} Himpunan tanpa elemen, \(|\varnothing|=0\).
-\end{itemize}
-
-\textbf{Operasi Himpunan:}
-\begin{itemize}
-    \item \textbf{Irisan (\(\cap\)):} `INNER JOIN` (DAN).
-    \item \textbf{Gabungan (\(\cup\)):} `UNION` (ATAU).
-    \item \textbf{Selisih (\(-\)):} `EXCEPT` (A yang bukan B).
-    \item \textbf{Beda Simetris (\(\oplus\)):} Elemen di salah satu, tapi tidak keduanya.
-    \item \textbf{Kartesian (\(\times\)):} Pasangan berurutan \((a,b)\). Jumlahnya $|A| \times |B|$.
-\end{itemize}
-
-\begin{rumusbox}
-\textbf{\textcolor{blue!70!black}{Prinsip Inklusi-Eksklusi (Wajib Hafal!)}} \\
-Menghitung gabungan tanpa menghitung ganda. \\
-\textbf{2 Himpunan:} \\
-\(|A \cup B| = |A| + |B| - |A \cap B|\) \\
-\textbf{3 Himpunan:} \\
-\(|A \cup B \cup C| = |A|+|B|+|C| - |A \cap B| - |A \cap C| - |B \cap C| + |A \cap B \cap C|\)
-\end{rumusbox}
-
-\textbf{Himpunan Fuzzy:} Berbeda dengan himpunan tegas (Crisp: 0 atau 1), Fuzzy punya derajat keanggotaan \(\mu \in [0,1]\). Contoh: Usia 40 tahun \(\mu=0.5\) (setengah muda, setengah tua).
-
-% ==========================================
-\section*{2. MATRIKS}
-Susunan angka dalam baris dan kolom. Ordo = ukuran (Baris \(\times\) Kolom).
-\begin{itemize}
-    \item \textbf{Penjumlahan/Pengurangan:} Ordo (ukuran) harus sama persis.
-    \item \textbf{Perkalian Skalar (\(k \cdot A\)):} Semua angka di dalam matriks dikali \(k\).
-    \item \textbf{Perkalian Matriks (\(A \times B\)):} Syarat mutlak: \textbf{Kolom A = Baris B}. (Baris dikali Kolom).
-    \item \textbf{Transpose (\(A^T\)):} Tukar posisi baris dan kolom.
-\end{itemize}
-
-\begin{rumusbox}
-\textbf{\textcolor{blue!70!black}{Determinan \& Invers (Matriks Persegi)}} \\
-\textbf{Det 2x2:} \(\begin{vmatrix} a & b \\ c & d \end{vmatrix} = ad - bc\) \\
-\textbf{Invers 2x2:} \(A^{-1} = \frac{1}{ad-bc} \begin{pmatrix} d & -b \\ -c & a \end{pmatrix}\) \\
-\textbf{Sifat Invers:} \((AB)^{-1} = B^{-1} A^{-1}\) (urutan dibalik!). \\
-\textbf{Syarat Invers:} Determinan \(\neq 0\). \\
-\textbf{Persamaan:} Jika \(AX = B\), maka \(X = A^{-1} B\).
-\end{rumusbox}
-
-% ==========================================
-\section*{3. RELASI}
-Aturan yang memasangkan anggota himpunan A ke himpunan B (Subset dari perkalian kartesian). Bisa direpresentasikan dengan Diagram Panah, Tabel, atau Matriks Biner (isi 1 jika terhubung, 0 jika tidak).
-
-\begin{rumusbox}
-\textbf{\textcolor{blue!70!black}{4 Sifat Relasi (Cek pakai Matriks)}} \\
-\begin{itemize}
-    \item \textbf{Refleksif:} Semua elemen menunjuk dirinya sendiri. (Diagonal matriks isinya 1 semua).
-    \item \textbf{Simetris:} Jika A \(\to\) B, maka B \(\to\) A. (Matriks Biner = Transposenya).
-    \item \textbf{Tolak-Setangkup:} Jika A \(\to\) B dan B \(\to\) A, maka A dan B adalah orang yang sama.
-    \item \textbf{Transitif:} Jika A \(\to\) B, dan B \(\to\) C, maka harus ada A \(\to\) C.
-\end{itemize}
-\end{rumusbox}
-
-\textbf{Invers Relasi (\(R^{-1}\)):} Membalik arah panah \((a,b)\) jadi \((b,a)\). \\
-\textbf{Komposisi (\(S \circ R\)):} Jalankan R dulu, baru S. Dibaca dari \textbf{Kanan ke Kiri}.
-
-% ==========================================
-\section*{4. FUNGSI}
-Relasi "Satu-Satu". Artinya, \textbf{setiap input di Domain hanya boleh punya SATU output} di Kodomain. (Kalau 1 input punya 2 output, itu bukan fungsi).
-
-\begin{rumusbox}
-\textbf{\textcolor{blue!70!black}{3 Sifat Fungsi (Penting untuk Invers):}}
-\begin{itemize}
-    \item \textbf{Injektif (One-to-One):} Output tidak ada yang kembar.
-    \item \textbf{Surjektif (On-to):} Semua target di Kodomain kebagian pasangan.
-    \item \textbf{Bijektif:} Keduanya terpenuhi. \textbf{Hanya fungsi Bijektif yang punya Invers (\(f^{-1}\))}.
-\end{itemize}
-\end{rumusbox}
-
-\textbf{Fungsi Khusus:}
-\begin{itemize}
-    \item \textbf{Lantai \(\lfloor x \rfloor\):} Bulatkan ke bawah. \(\lfloor 3.7 \rfloor = 3\).
-    \item \textbf{Langit \(\lceil x \rceil\):} Bulatkan ke atas. \(\lceil 3.2 \rceil = 4\).
-    \item \textbf{Modulo \(a \bmod n\):} Sisa pembagian. \(17 \bmod 5 = 2\).
-    \item \textbf{Rekursif:} Fungsi memanggil dirinya sendiri. Harus punya \textbf{Basis} (kondisi berhenti) dan \textbf{Rekurens} (rumusnya).
-\end{itemize}
-
-% ==========================================
-\section*{5. LOGIKA MATEMATIKA}
-Fondasi komputer. Komputer hanya mengerti Benar (1) dan Salah (0).
-
-\textbf{5 Operator Wajib:}
-\begin{itemize}
-    \item \textbf{Negasi (\(\neg\)):} Kebalikan. (Kode: \texttt{!A})
-    \item \textbf{Konjungsi (\(\wedge\)):} DAN. Benar jika keduanya Benar. (Kode: \texttt{\&\&})
-    \item \textbf{Disjungsi (\(\vee\)):} ATAU. Salah jika keduanya Salah. (Kode: \texttt{||})
-    \item \textbf{Implikasi (\(\to\)):} JIKA-MAKA. Hanya Salah jika (Benar \(\to\) Salah). (Kode: \texttt{!A || B})
-    \item \textbf{Biimplikasi (\(\leftrightarrow\)):} JIKA DAN HANYA JIKA. Benar jika nilai A dan B sama. (Kode: \texttt{A == B})
-\end{itemize}
-
-\begin{rumusbox}
-\textbf{\textcolor{blue!70!black}{Hukum Ekivalensi (Penyederhanaan):}}
-\begin{itemize}
-    \item \textbf{De Morgan:} \(\neg(A \wedge B) \equiv \neg A \vee \neg B\) \\
-    \textit{Tukar DAN/ATAU, lalu negasi semuanya.}
-    \item \textbf{Implikasi:} \(A \to B \equiv \neg A \vee B\).
-    \item \textbf{Distributif:} \(A \wedge (B \vee C) \equiv (A \wedge B) \vee (A \wedge C)\).
-\end{itemize}
-\end{rumusbox}
-
-\subsection*{Tipe Ekspresi \& Inferensi}
-\begin{itemize}
-    \item \textbf{Tautologi:} Selalu Benar (semua baris tabel B).
-    \item \textbf{Kontradiksi:} Selalu Salah (semua baris tabel S).
-    \item \textbf{Kontingensi:} Campuran B dan S.
-    \item \textbf{Modus Ponens:} \(A \to B\) (benar), \(A\) (benar) \(\implies\) Kesimpulan: \(B\).
-    \item \textbf{Modus Tollens:} \(A \to B\) (benar), \(\neg B\) (benar) \(\implies\) Kesimpulan: \(\neg A\).
-\end{itemize}
-
-\vspace{3mm}
-\begin{center}
-    \textit{*Fokus baca kotak warna biru saat ujian. Semoga sukses ATS-nya!*}
+	{\large\bfseries Matematika Diskrit P1--P7 \;--\; Cheat Sheet}\\
+	{\scriptsize TRPL Politeknik Negeri Batam \quad Nama: \rule{3.5cm}{0.3pt} \quad NIM: \rule{2cm}{0.3pt}}
 \end{center}
 
-\end{multicols}
+\vspace{-6pt}
+\begin{multicols*}{2}
+
+	\section*{Quick Reference}
+
+	\h{Himpunan.} $|A|$ kardinalitas; $|P(A)|{=}2^{|A|}$; $|A\times B|{=}|A|\cdot|B|$; $|A\cup B|{=}|A|{+}|B|{-}|A\cap B|$; $|A\cup B\cup C|{=}|A|{+}|B|{+}|C|{-}|A\cap B|{-}|A\cap C|{-}|B\cap C|{+}|A\cap B\cap C|$; $\mu_A\in[0,1]$.
+
+	\h{Matriks.} $\det\!\begin{psmallmatrix}a&b\\c&d\end{psmallmatrix}{=}ad{-}bc$; $\begin{psmallmatrix}a&b\\c&d\end{psmallmatrix}^{-1}{=}\frac{1}{ad{-}bc}\begin{psmallmatrix}d&{-}b\\{-}c&a\end{psmallmatrix}$; $\det_{3\times3}{=}a(ei{-}fh){-}b(di{-}fg){+}c(dh{-}eg)$; $AX{=}B\Rightarrow X{=}A^{-1}B$.
+
+	\h{Relasi.} $R\subseteq A\times B$; $R^{-1}{=}\{(b,a)\mid(a,b)\in R\}$; $S\circ R{=}\{(a,c)\mid\exists b:(a,b)\in R\wedge(b,c)\in S\}$.
+
+	\h{Fungsi.} Injektif $f(a_1){=}f(a_2)\Rightarrow a_1{=}a_2$; Surjektif $\forall b,\exists a:f(a){=}b$; Bijektif $\Rightarrow f^{-1}$ ada; $(g\circ f)(x){=}g(f(x))$.
+
+	\h{Logika.} $\neg(A\wedge B){\equiv}\neg A\vee\neg B$; $\neg(A\vee B){\equiv}\neg A\wedge\neg B$; $A\to B{\equiv}\neg A\vee B$; $A\leftrightarrow B{\equiv}(A\to B)\wedge(B\to A)$.
+
+	\section*{1. Himpunan}
+
+	\h{Definisi.} Kumpulan objek berbeda terdefinisi jelas. $\{1,2,3\}$. Tidak boleh duplikat. $[1,2,2,3]{=}\{1,2,3\}$. \src{Rosen Bab 1, Munir Bab 1}
+
+	\h{Notasi.} $x\in A$; $x\notin A$; $|A|$; $\varnothing$; $A\subseteq B$; $A{=}B$; $A{\sim}B$ ekiv.
+
+	\h{Prog.} JS \texttt{Set}, SQL \texttt{DISTINCT}:
+	\begin{lstlisting}
+let s = new Set([1,2,2,3]);  // {1,2,3}
+s.has(2);  // true;  s.size;  // 3
+SELECT DISTINCT id FROM log;
+\end{lstlisting}
+
+	\h{4 Cara nyatakan.} Enumerasi $\{101,102\}$; simbol baku $\mathbb{N,Z,Q,R,C}$; notasi pembentuk $\{x\mid 100\le x\le 115\}$; Venn.
+
+	\h{Power set.} $P(A)$ semua subset. $|P(A)|{=}2^{|A|}$. Contoh $A{=}\{a,b\}$: $P{=}\{\varnothing,\{a\},\{b\},\{a,b\}\}$.
+
+	\h{6 Operasi.} $A{=}\{1,2,3,4\}$, $B{=}\{3,4,5,6\}$: irisan $A\cap B{=}\{3,4\}$; gabungan $A\cup B{=}\{1,..,6\}$; selisih $A{-}B{=}\{1,2\}$; komplemen $\overline{A}{=}U{-}A$; beda simetris $A\oplus B{=}\{1,2,5,6\}$; kartesian $|A\times B|{=}|A|\cdot|B|$.
+
+	\h{SQL analog.} $\cap$=INNER JOIN; $\cup$=UNION; ${-}$=EXCEPT; $\times$=CROSS JOIN. $A\times B\neq B\times A$.
+
+	\begin{lstlisting}
+const A=new Set([1,2,3,4]), B=new Set([3,4,5,6]);
+const i=[...A].filter(x=>B.has(x));   // [3,4]
+const g=new Set([...A,...B]);
+const s=[...A].filter(x=>!B.has(x));  // [1,2]
+\end{lstlisting}
+
+	\h{Inklusi-Eksklusi.} $|A\cup B|{=}|A|{+}|B|{-}|A\cap B|$. Tiga: tanda $+{-}+$.
+
+	Contoh: 10 kopi, 8 teh, 3 keduanya $\to15$. 120 mhs: 60 MTK, 50 Fis, 40 Kim, 25 MTK$\cap$Fis, 20 MTK$\cap$Kim, 15 Fis$\cap$Kim, 10 ketiga $\to100$.
+
+	\h{Fuzzy.} $\mu\in[0,1]$. Usia 40: $\mu_\text{MUDA}{=}0{,}25$, $\mu_\text{PAROBAYA}{=}0{,}5$. Rekomendasi (0,7), spam (0,75), kualitas kode.
+
+	\section*{2. Matriks}
+
+	\h{Definisi.} Ordo $m\times n$, elemen $a_{ij}$. Jenis: persegi, vektor, nol, identitas $I_n$ (diag 1), transpos $A^T$. \src{Anton-Rorres Bab 1, Strang Bab 1}
+
+	\h{Prog.} Array 2D \texttt{M[i][j]}, numpy.
+
+	\h{Operasi.} Tambah/kurang: ordo sama. Skalar $c_{ij}{=}ka_{ij}$. \h{Kali matriks}: syarat kolom A=baris B, $c_{ij}{=}\sum_k a_{ik}b_{kj}$.
+
+	Contoh $A{=}\begin{psmallmatrix}1&2&3\\4&5&6\end{psmallmatrix}$, $B{=}\begin{psmallmatrix}7&8\\9&10\\11&12\end{psmallmatrix}$: $c_{11}{=}58$, $c_{12}{=}64$, $c_{21}{=}139$, $c_{22}{=}154$. $AB{=}\begin{psmallmatrix}58&64\\139&154\end{psmallmatrix}$. $AB\neq BA$.
+
+	\begin{lstlisting}
+function mul(A,B){let C=[];
+ for(let i=0;i<A.length;i++){C[i]=[];
+  for(let j=0;j<B[0].length;j++){let s=0;
+   for(let k=0;k<B.length;k++)s+=A[i][k]*B[k][j];
+   C[i][j]=s;}}return C;}
+\end{lstlisting}
+
+	\h{Det 2x2.} $ad{-}bc$. Contoh $\begin{psmallmatrix}4&6\\3&8\end{psmallmatrix}\to14$.
+
+	\h{Det 3x3 (Sarrus).} $a(ei{-}fh){-}b(di{-}fg){+}c(dh{-}eg)$. Contoh $\begin{psmallmatrix}2&3&1\\1&2&1\\3&1&2\end{psmallmatrix}\to4$.
+
+	\h{Sifat.} $\det{=}0$ singular (tak ada invers).
+
+	\h{Invers 2x2.} $\frac{1}{ad{-}bc}\begin{psmallmatrix}d&{-}b\\{-}c&a\end{psmallmatrix}$. Contoh $\begin{psmallmatrix}4&7\\2&6\end{psmallmatrix}\to\frac{1}{10}\begin{psmallmatrix}6&{-}7\\{-}2&4\end{psmallmatrix}$.
+
+	\h{Invers 3x3.} $\frac{1}{\det}\text{adj}$. Langkah: minor, kofaktor $({-}1)^{i{+}j}$, adjugate transpose, bagi det.
+
+	\h{Kesalahan.} $A^{-1}\neq1/A$.
+
+	\h{SPL.} $AX{=}B\Rightarrow X{=}A^{-1}B$. Contoh $3x{+}2y{=}10,5x{+}4y{=}20$: $X{=}\begin{psmallmatrix}0\\5\end{psmallmatrix}$. Contoh 2 $2x{+}y{=}8,x{+}3y{=}9$: $X{=}\begin{psmallmatrix}3\\2\end{psmallmatrix}$.
+
+	\begin{lstlisting}
+X = np.linalg.solve(A, B)
+\end{lstlisting}
+
+	\section*{3. Relasi}
+
+	\h{Definisi.} $R\subseteq A\times B$, $A\times B{=}\{(a,b)\mid a\in A,b\in B\}$. \src{Rosen Bab 9, Munir Bab 4}
+
+	\h{3 Representasi.} Diagram panah, tabel, matriks biner.
+
+	\h{4 Sifat.}
+	- \h{Refleksif:} $(a,a)\in R$. Matriks: diag 1.
+	- \h{Simetris:} $(a,b)\Rightarrow(b,a)$. Matriks: $M{=}M^T$.
+	- \h{Antisimetris:} $(a,b),(b,a)\Rightarrow a{=}b$. Matriks: luar diag tidak ada pasangan.
+	- \h{Transitif:} $(a,b),(b,c)\Rightarrow(a,c)$. Rantai punya jalan pintas.
+
+	Contoh $R{=}\{(1,1),(2,2),(2,3),(3,2),(4,2),(4,4)\}$: Ref ya, Sim tidak, Antisim tidak, Trans tidak.
+
+	\h{Prog.} Tabel relasional:
+	\begin{lstlisting}
+CREATE TABLE krs(mahasiswa VARCHAR(10),
+ matakuliah VARCHAR(10));
+\end{lstlisting}
+
+	\h{Invers.} $R^{-1}{=}\{(b,a)\mid(a,b)\in R\}$. Matriks = $M^T$. Invers relasi selalu ada.
+
+	\h{Komposisi.} $S\circ R$ baca "$S$ setelah $R$". $(a,c)\in S\circ R$ jika $\exists b:(a,b)\in R,(b,c)\in S$.
+
+	Contoh $R{=}\{(1,2),(2,3),(3,4)\},S{=}\{(2,a),(3,b),(4,c)\}\to\{(1,a),(2,b),(3,c)\}$.
+
+	\begin{lstlisting}
+SELECT r.mahasiswa, s.dosen FROM krs r
+JOIN dosen s ON r.matakuliah=s.matakuliah;
+\end{lstlisting}
+
+	\section*{4. Fungsi}
+
+	\h{Definisi.} Setiap input tepat 1 output. Domain, kodomain, range. \src{Rosen Bab 2, Munir Bab 5}
+
+	\h{3 Sifat.}
+	- \h{Injektif:} $f(a_1){=}f(a_2)\Rightarrow a_1{=}a_2$. Syarat $|A|\le|B|$.
+	- \h{Surjektif:} $\forall b,\exists a:f(a){=}b$. Syarat $|A|\ge|B|$.
+	- \h{Bijektif:} keduanya. Hanya ini punya invers.
+
+	Contoh $f{=}\{(1,a),(2,b),(3,c),(4,c)\}$: Inj tidak, Sur ya.
+
+	\h{Invers.} Syarat bijektif. Langkah: $y{=}f(x)$, cari $x$, tukar, uji.
+
+	Contoh $f{=}2x{+}3\to f^{-1}{=}(x{-}3)/2$. Uji $f(5){=}13,f^{-1}(13){=}5$.
+
+	\h{Tidak punya.} $f{=}x^2$: $f(3){=}f({-}3)$. Batasi $x\ge0$, $f^{-1}{=}\sqrt{x}$.
+
+	\h{Kesalahan.} $f^{-1}\neq1/f$.
+
+	\h{Komposisi.} $(g\circ f)(x){=}g(f(x))$. Tidak komutatif. Contoh $f{=}3x{+}1,g{=}x^2$: $(g\circ f)(2){=}49$, $(f\circ g)(2){=}13$.
+
+	\h{Khusus.} $\lfloor3{,}7\rfloor{=}3$; $\lceil3{,}2\rceil{=}4$; $17\bmod5{=}2$; ${-}7\bmod3{=}2$ Py, ${-}1$ JS; $0!{=}1,5!{=}120$.
+
+	\h{Rekursif.} Basis + rekurens:
+	\begin{lstlisting}
+function fakt(n){
+ if(n===0)return 1;    // basis
+ return n*fakt(n-1);   // rekurens
+}
+\end{lstlisting}
+	Tanpa basis $\to$ stack overflow.
+
+	\section*{5. Logika}
+
+	\h{Proposisi.} B/S tidak keduanya. Bukan: pertanyaan, perintah, variabel bebas. \src{Rosen Bab 1, O'Regan Bab 10}
+
+	\h{5 Operator.} $\neg,\wedge,\vee,\to,\leftrightarrow$.
+
+	$\begin{smallmatrix}A&B&\neg A&A\wedge B&A\vee B\\B&B&S&B&B\\B&S&S&S&B\\S&B&B&S&B\\S&S&B&S&S\end{smallmatrix}$
+	$\begin{smallmatrix}A&B&A\to B&A\leftrightarrow B\\B&B&B&B\\B&S&S&S\\S&B&B&S\\S&S&B&B\end{smallmatrix}$
+
+	\h{Implikasi.} Salah hanya jika A B, B S. A salah $\to$ implikasi B (vacuous).
+
+	\h{JS analog.} $\neg$:\texttt{!A}; $\wedge$:\texttt{A\&\&B}; $\vee$:\texttt{A||B}; $\to$:\texttt{!A||B}; $\leftrightarrow$:\texttt{A===B}.
+
+	\h{Klasifikasi.} Tautologi selalu B ($A\vee\neg A$). Kontradiksi selalu S ($A\wedge\neg A$). Kontingensi campuran.
+
+	\h{Hukum.}
+	- Komut, Asos, Distrib
+	- Ident $A\wedge B{\equiv}A$
+	- Idem $A\wedge A{\equiv}A$
+	- Dominasi $A\vee B{\equiv}B$
+	- Neg ganda $\neg\neg A{\equiv}A$
+	- Excl middle $A\vee\neg A{\equiv}B$
+	- \h{De Morgan} $\neg(A\wedge B){\equiv}\neg A\vee\neg B$; $\neg(A\vee B){\equiv}\neg A\wedge\neg B$
+	- \h{Implikasi} $A\to B{\equiv}\neg A\vee B$
+
+	\h{JS De Morgan.} \texttt{!(a\&\&b)}{\equiv}\texttt{!a||!b}; \texttt{!(a||b)}{\equiv}\texttt{!a\&\&!b}.
+
+	\h{Inferensi.} Ponens $A\to B,A\Rightarrow B$. Tollens $A\to B,\neg B\Rightarrow\neg A$. Silogisme $A\to B,B\to C\Rightarrow A\to C$.
+
+	Contoh: hujan$\to$basah, tidak basah $\Rightarrow$ tidak hujan.
+
+	\h{Sederhana 1.} $\neg(\neg A\vee B)\vee(A\wedge B)\equiv(A\wedge\neg B)\vee(A\wedge B)\equiv A\wedge(\neg B\vee B)\equiv A$.
+
+	\h{Sederhana 2.} $\neg(A\wedge\neg B)\wedge(A\vee B)\equiv(\neg A\vee B)\wedge(A\vee B)\equiv(\neg A\wedge A)\vee B\equiv B$.
+
+	\h{Studi kasus.} $(L\wedge A\wedge O)\wedge\neg B$. 16 baris, hanya 1 B.
+	\begin{lstlisting}
+if(isLogin && isAdmin && otpValid && !blocked)
+  showDashboard();
+\end{lstlisting}
+
+	\section*{6. Soal Campuran}
+
+	\h{S1.} $A{=}\{1,2,3,4,5\},B{=}\{4,5,6,7\},U{=}\{1..10\}$. $\cap{=}\{4,5\},\cup{=}\{1..7\},{=}\{1,2,3\},\bar{A}{=}\{6..10\},|P(A)|{=}32$.
+
+	\h{S2.} Pramuka 30, Basket 25, kdg 15: $\cup{=}40$, tidak $50{-}40{=}10$.
+
+	\h{S3.} $A{=}\begin{psmallmatrix}2&3\\1&4\end{psmallmatrix},B{=}\begin{psmallmatrix}1&0\\2&5\end{psmallmatrix}$. $AB{=}\begin{psmallmatrix}8&15\\9&20\end{psmallmatrix},\det{=}5,A^{-1}{=}\begin{psmallmatrix}0{,}8&{-}0{,}6\\{-}0{,}2&0{,}4\end{psmallmatrix}$.
+
+	\h{S4.} $2x{+}y{=}8,x{+}3y{=}9$: $x{=}3,y{=}2$.
+
+	\h{S5.} $R{=}\{(1,1),(2,2),(3,3),(1,2),(2,1)\}$: Ref ya, Sim ya, Antisim tidak, Trans ya.
+
+	\h{S6.} $R{=}\{(1,2),(2,3),(3,4)\},S{=}\{(2,a),(3,b),(4,c)\}\to\{(1,a),(2,b),(3,c)\}$.
+
+	\h{S7.} $f{=}3x{-}2\to f^{-1}{=}(x{+}2)/3$.
+
+	\h{S8.} $f{=}x{+}2,g{=}x^2$: $(g\circ f)(3){=}25,(f\circ g)(3){=}11$.
+
+	\h{S9.} $\neg(A\wedge\neg B)\wedge(A\vee B){\equiv}B$.
+
+	\h{S10.} Fuzzy: $0{,}9>0{,}7>0{,}5\to A>C>B$.
+
+	\section*{7. Kesalahan + Tips}
+
+	\h{Kesalahan.} Larik mentah$\to$Set/DISTINCT; lupa irisan$\to$kurangi $|A\cap B|$; $A\times B{=}B\times A$? tidak; beda ordo$\to$cek dulu; kali per elemen$\to$baris$\times$kolom; invers tanpa cek det; tidak setangkup$\neq$antisimetris; invers relasi pakai $M^{-1}$? balik pasangan; $S\circ R$ kiri$\to$kanan? baca dari kanan; $f^{-1}{=}1/f$? tidak; rekursi tanpa basis$\to$overflow; tabel kurang$\to$$2^n$ baris; lupa negasi blokir; De Morgan salah$\to$$\wedge\leftrightarrow\vee$.
+
+			\h{Tips.} "total"$\to$inklusi; "hanya"$\to$selisih. Matriks: ordo$\to$det$\to$invers. $AB\neq BA$. Relasi: matriks biner, 4 sifat terpisah. Fungsi: bijektif dulu. Logika: De Morgan+impl untuk sederhana; tabel untuk validitas. Waktu: hitung dulu, bukti belakangan. Macet: tulis diketahui+rumus+langkah.
+
+	\h{Rujukan.} Rosen 2019; Munir 2012; Epp 2010; Anton-Rorres 2014; Strang 2016; O'Regan 2023; Silberschatz 2019.
+
+\end{multicols*}
 \end{document}
