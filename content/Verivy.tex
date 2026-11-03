@@ -23,8 +23,10 @@ side in Figure~\ref{fig:two-proofs}.
 			Catches: forgery, post-signing tampering
 		};
 	\end{tikzpicture}
-	\caption{Two independent proofs of integrity. Both must pass
-		before a paper is treated as authentic.}
+	\caption{Two independent proofs of integrity, side by side.
+		Left: SHA-256 establishes that the file is intact.
+		Right: GnuPG establishes that the file is from the author.
+		Both must pass before a paper is treated as authentic.}
 	\label{fig:two-proofs}
 \end{figure}
 
@@ -36,8 +38,10 @@ separate three states that would otherwise be indistinguishable:
 corrupted in transit, deliberately altered after signing, and
 genuine.
 
-The whole procedure takes under a minute. It requires GnuPG, three
-commands, and a fingerprint that matches the value published below.
+The whole procedure takes under a minute for an experienced user
+and a few minutes on first try. It requires GnuPG, three essential
+commands per paper, and a fingerprint that matches the value
+published at the end of Step~1.
 
 \subsection*{The Three Sibling Files}
 
@@ -95,11 +99,15 @@ newer:
 gpg --version
 \end{lstlisting}
 
+The first line of output names the version. Anything from
+\texttt{gpg (GnuPG) 2.2.0} upward works.
+
 \subsection*{Step 1: Import the Author's Public Key}
 
 Every signature in this repository is made with a single RSA key
 belonging to the author. The public half of that key ships as
-\texttt{public.asc} in the repository root.
+\texttt{public.asc} in the root of this repository, next to this
+document.
 
 \begin{lstlisting}[style=code]
 gpg --import public.asc
@@ -114,12 +122,20 @@ gpg: Total number processed: 1
 gpg:               imported: 1
 \end{lstlisting}
 
+The key ID \texttt{B0B3DDCEB6CEF796} is the last sixteen
+hexadecimal characters of the full fingerprint. The email address
+on the key (\texttt{mroczect@proton.me}) is the author's preferred
+address and differs from the institutional address printed on the
+title page; both belong to the same person.
+
 \textbf{Importing the key is not the same as trusting it.} A public
 key file can be replaced by anyone with write access to the source
 it was downloaded from. Before trusting any signature from this
 key, verify its fingerprint against an independent channel.
 
-\subsubsection*{Verify the fingerprint}
+\smallskip
+\noindent\textbf{Verify the fingerprint.}
+\par\smallskip
 
 \begin{lstlisting}[style=code]
 gpg --fingerprint mroczect@proton.me
@@ -135,17 +151,24 @@ uid           [unknown] Muhammad Riduwan Khafidi <mroczect@proton.me>
 
 The forty-character hexadecimal string on the second line is the
 key fingerprint. Compare it, group by group, against the value
-below, which is also published on the author's GitHub profile at
-\texttt{github.com/mroczect}.
+below. The spaces in both strings are cosmetic; only the
+hexadecimal characters matter.
 
-\medskip
-\noindent\texttt{3D0E 79F1 565A C46E 9EEB 3F49 B0B3 DDCE B6CE F796}
-\medskip
+\par\smallskip
+\noindent{\small\texttt{3D0E 79F1 565A C46E 9EEB 3F49 B0B3 DDCE B6CE F796}}
+\par\smallskip
 
-If the fingerprints match, the key is trustworthy and every
-signature it verifies is authentic. If they differ, stop: the key
-in \texttt{public.asc} has been replaced and no further
-verification should be performed.
+This fingerprint is also published on the author's institutional
+profile page and on the paper's printed cover. Any of these
+channels works as an independent source, provided the channel
+itself is not under the author's sole control. If two or more
+independent sources agree on the same forty-character value, the
+fingerprint is trustworthy.
+
+If the fingerprints match, the key is trustworthy for the purpose
+of verifying signatures attributed to this author. If they differ,
+stop: the key in \texttt{public.asc} has been replaced and no
+further verification should be performed.
 
 The trust line reads \texttt{[unknown]}, which is expected for a
 freshly imported key. It means GnuPG has recorded the key but has
@@ -155,19 +178,18 @@ disappears on subsequent verifications:
 
 \begin{lstlisting}[style=code]
 gpg --edit-key mroczect@proton.me trust
-# choose 5 (ultimate), then quit
+# choose 5 (ultimate), then save
 \end{lstlisting}
 
 The trust level is a local annotation, not a cryptographic claim.
-Verification works identically whether you set it or not.
+The cryptographic verification result is identical whether you set
+it or not; only the printed warning changes.
 
 \subsection*{Step 2: Download the Three Files}
 
 For each paper you want to verify, download all three sibling files
 into the same directory. File names must match exactly, including
 the \texttt{.pdf}, \texttt{.asc}, and \texttt{.sha256} suffixes.
-The PDF, Sig, and SHA columns of the verification table link to the
-three files respectively.
 
 \subsection*{Step 3: Verify the SHA-256 Checksum}
 
@@ -182,7 +204,11 @@ sha256sum -c NAME.pdf.sha256
 # macOS
 shasum -a 256 -c NAME.pdf.sha256
 
-# Windows, PowerShell
+# Windows, PowerShell (native)
+(Get-FileHash NAME.pdf -Algorithm SHA256).Hash.ToLower() -eq \
+  (Get-Content NAME.pdf.sha256 | ForEach-Object { ($_ -split ' ')[0] })
+
+# Windows, cmd (manual comparison)
 certutil -hashfile NAME.pdf SHA256
 # then compare the output with the line in NAME.pdf.sha256
 \end{lstlisting}
@@ -203,11 +229,10 @@ NAME.pdf: FAILED
 sha256sum: WARNING: 1 computed checksum did NOT match
 \end{lstlisting}
 
-On Windows, PowerShell does not compare automatically.
-\texttt{certutil} prints the computed checksum, and you must
-compare it manually with the single line inside
-\texttt{NAME.pdf.sha256}. Both strings are sixty-four hexadecimal
-characters.
+On Windows, the PowerShell one-liner above compares the two values
+automatically and prints \texttt{True} or \texttt{False}.
+\texttt{certutil} requires manual comparison; both strings are
+sixty-four hexadecimal characters.
 
 A \texttt{FAILED} result means the file is unusable. Do not open
 the PDF. Delete it, download again, and repeat this step. If the
@@ -242,8 +267,9 @@ The first line gives the signature creation date, in the signer's
 local timezone. This date is covered by the signature and cannot
 be forged without invalidating the entire signature.
 
-The second line gives the key fingerprint, which must match the
-value verified in Step 1.
+The second line gives the key fingerprint without spaces, which
+must match the spaced fingerprint verified in Step~1. Only the
+hexadecimal characters matter.
 
 The third line reads \texttt{Good signature from} followed by the
 signer's name and email. This is the cryptographic confirmation
@@ -251,13 +277,13 @@ that the PDF matches the signed content byte for byte.
 
 The warning about the uncertified key is expected. It disappears
 only after you have declared your trust with the command shown at
-the end of Step 1. The warning does not mean the signature is
+the end of Step~1. The warning does not mean the signature is
 invalid; it means you have not yet told GnuPG that you trust the
 key itself. If you have verified the fingerprint manually, the
 warning can be ignored.
 
 The final line repeats the fingerprint so you do not need to
-scroll up to Step 1 to compare.
+scroll up to Step~1 to compare.
 
 \subsection*{Step 5: Read the Signature Timestamp}
 
@@ -289,11 +315,13 @@ On macOS, replace the last line with:
 date -r "$ts"
 \end{lstlisting}
 
-The date printed here should match the date shown on the
-verification table. If they differ, the PDF was re-signed after
-the table was generated and the table is out of date. Verify
-against the fingerprint from Step 1 and treat the table date as a
-guide.
+If the date you obtain here differs from the date printed by
+\texttt{gpg --verify} in Step~4, trust the \texttt{gpg --verify}
+output. The signature carries the timestamp; the displayed date is
+derived directly from it. A mismatch between this date and any
+external document (such as a printed cover) may simply mean the
+document was updated after the signature was made, but the
+signature itself remains authoritative for the version it signed.
 
 \subsection*{Troubleshooting}
 
@@ -312,40 +340,53 @@ guide.
 		\texttt{Good signature ... [expired]}         & The key that made the signature has passed its expiration date                      & Check the fingerprint per Step 1. Contact the author for an updated key if needed      \\
 		\texttt{Good signature ... [revoked]}         & The key has been revoked by its owner; signature must not be trusted                & Contact the author through a channel other than email. Do not use the file             \\
 		\texttt{sha256sum: FAILED}                    & The computed checksum differs from the recorded one                                 & Re-download. If the failure persists, the file on the server has been altered          \\
-		\texttt{gpg: no valid OpenPGP data found}     & The \texttt{.asc} file is corrupt, empty, or not an armored signature               & Re-download. Confirm the file begins with \verb|-----BEGIN PGP SIGNATURE-----|       \\
+		\texttt{gpg: no valid OpenPGP data found}     & The \texttt{.asc} file is corrupt, empty, or not an armored signature               & Re-download. Confirm the file begins with the line shown in the note below             \\
 		\texttt{gpg: CRC error}                       & The armored signature was truncated or corrupted in transit                         & Re-download \texttt{NAME.pdf.asc}                                                      \\
 		\texttt{No such file or directory}            & The three files are in different directories, or a filename has a typo              & Move all three files into the same directory. Confirm exact filenames with \texttt{ls} \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
 
-The most important line is the first. \texttt{BAD signature} means
-the PDF on your disk is not the PDF the author signed. Whether the
-difference came from a network attack or a corrupted write, the
-file cannot be trusted.
+\par\smallskip
+\noindent The first line of a valid armored signature is
+	{\small\texttt{\detokenize{-----BEGIN PGP SIGNATURE-----}}}.
+\par\smallskip
+
+The most important line in the failure table is the first.
+\texttt{BAD signature} means the PDF on your disk is not the PDF
+the author signed. Whether the difference came from a network
+attack or a corrupted write, the file cannot be trusted.
 
 The second most important line is \texttt{[unknown]}. Most readers
 see this on their first verification and assume the check failed.
 It did not. The signature is valid; the warning is a separate
 question about whether you personally have decided the key belongs
-to the author. Step 1 is how you answer that question.
+to the author. Step~1 is how you answer that question.
 
 \subsection*{Batch Verification}
 
-To verify every paper in the repository at once, loop over all
-\texttt{.pdf.asc} files in the \texttt{paper/} directory.
+To verify every paper in a directory at once, assuming the papers
+live in \texttt{paper/} and that every paper has its matching
+\texttt{.asc} and \texttt{.sha256} siblings:
 
 \begin{lstlisting}[style=code]
-for sig in paper/*.pdf.asc; do
-    pdf="${sig%.asc}"
-    echo "checking $pdf"
-    gpg --verify "$sig" "$pdf" 2>&1 | grep -E 'Good|BAD'
+for asc in paper/*.pdf.asc; do
+    pdf="${asc%.asc}"
+    sha="${pdf}.sha256"
+    echo "== $(basename "$pdf") =="
+    sha256sum -c "$sha" 2>&1 | grep -E 'OK|FAILED'
+    gpg --verify "$asc" "$pdf" 2>&1 \
+        | grep -E 'Good|BAD|Can.t|no valid|CRC'
 done
 \end{lstlisting}
 
-The grep filter keeps only the two lines that matter: the one that
-reports a good signature and the one that reports a bad signature.
-For a single paper, use the full command from Step 4.
+The \texttt{sha256sum} check runs first. If it fails, delete the
+file and re-download before running the signature check. The
+\texttt{grep} filters keep only the lines that matter: success
+(\texttt{OK}, \texttt{Good signature}) and every failure mode that
+warrants attention (\texttt{FAILED}, \texttt{BAD}, \texttt{Can't
+	check}, \texttt{no valid}, \texttt{CRC}). For a single paper, use
+the full command from Step~4.
 
 \subsection*{Quick Reference}
 
@@ -356,24 +397,25 @@ For a single paper, use the full command from Step 4.
 	\footnotesize
 	\begin{tabularx}{\textwidth}{l X}
 		\toprule
-		Purpose                           & Command                                                 \\
+		Purpose                           & Command                                                   \\
 		\midrule
-		Install GnuPG on Debian or Ubuntu & \texttt{sudo apt install gnupg}                         \\
-		Install GnuPG on macOS            & \texttt{brew install gnupg}                             \\
+		Install GnuPG on Debian or Ubuntu & \texttt{sudo apt install gnupg}                           \\
+		Install GnuPG on macOS            & \texttt{brew install gnupg}                               \\
 		Import the author's public key    & \texttt{gpg -{}-import public.asc}                        \\
 		Print the key fingerprint         & \texttt{gpg -{}-fingerprint mroczect@proton.me}           \\
 		Mark the key as trusted           & \texttt{gpg -{}-edit-key mroczect@proton.me trust}        \\
-		Verify SHA-256 on Linux           & \texttt{sha256sum -c NAME.pdf.sha256}                   \\
-		Verify SHA-256 on macOS           & \texttt{shasum -a 256 -c NAME.pdf.sha256}               \\
+		Verify SHA-256 on Linux           & \texttt{sha256sum -c NAME.pdf.sha256}                     \\
+		Verify SHA-256 on macOS           & \texttt{shasum -a 256 -c NAME.pdf.sha256}                 \\
+		Verify SHA-256 on PowerShell      & \texttt{(Get-FileHash NAME.pdf -Algorithm SHA256).Hash}   \\
 		Verify the GnuPG signature        & \texttt{gpg -{}-verify NAME.pdf.asc NAME.pdf}             \\
 		Read the signature creation date  & \texttt{gpg -{}-list-packets NAME.pdf.asc | grep created} \\
-		Verify every paper in one pass    & loop shown in the Batch Verification section            \\
+		Verify every paper in one pass    & loop shown in the Batch Verification section              \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
 
 The whole procedure fits in a single sentence: import the key,
 verify its fingerprint against an independent source, then run
-\texttt{gpg -{}-verify} on each paper. Everything else in this guide
-exists to explain why each of those three steps matters and what
-can go wrong at each one.
+\texttt{gpg -{}-verify} on each paper. Everything else in this
+guide exists to explain why each of those three steps matters and
+what can go wrong at each one.
