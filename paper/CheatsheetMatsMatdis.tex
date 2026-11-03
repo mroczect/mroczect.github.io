@@ -1,0 +1,178 @@
+\documentclass[9pt,a4paper]{extarticle}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo} % Font yang nyaman dibaca
+\usepackage[margin=1.5cm]{geometry} % Margin lega
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{array}
+\usepackage{xcolor} % Untuk warna
+\usepackage[most]{tcolorbox} % Untuk kotak cantik dan anti-pecah antar kolom
+
+% --- PENGATURAN SPASI ---
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt} % Jarak antar paragraf lebih lega
+\linespread{1.1} % Spasi baris dilonggarkan
+\setlist[itemize]{noitemsep, topsep=2pt, leftmargin=1.3em, label=\textbullet}
+\setlist[enumerate]{noitemsep, topsep=2pt, leftmargin=1.5em}
+
+% --- PENGATURAN JUDUL ---
+\titleformat{\section}
+  {\normalfont\large\bfseries\color{blue!70!black}}{\thesection}{0.5em}{}
+  [\vspace{-4pt}\color{blue!70!black}\rule{\linewidth}{0.8pt}\vspace{4pt}]
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries\color{black!80}}{\thesubsection}{0.5em}{}
+
+% --- KOTAK RUMUS (Pakai tcolorbox biar halus di mata) ---
+\newtcolorbox{rumusbox}{
+    colback=blue!5!white,
+    colframe=blue!30!white,
+    arc=2mm,
+    boxrule=0.5pt,
+    left=3pt, right=3pt, top=3pt, bottom=3pt,
+    fontupper=\small,
+    breakable % Biar kotak bisa pindah halaman
+}
+
+\begin{document}
+
+\begin{center}
+	\textbf{\Large CHEATSHEET ATS MATEMATIKA DISKRIT} \\
+	\vspace{2pt}
+	\small Pertemuan 1--7 | Open Book | Nama: ................ | NIM: ................
+\end{center}
+\vspace{-4mm}
+\noindent\rule{\linewidth}{1pt}
+\vspace{2mm}
+
+\begin{multicols}{2}
+
+% ==========================================
+\section*{1. TEORI HIMPUNAN}
+Himpunan adalah kumpulan objek berbeda yang terdefinisi jelas (seperti Array / Tabel Database).
+\begin{itemize}
+    \item \textbf{Kardinalitas (\(|A|\)):} Jumlah elemen unik. \texttt{Contoh: } $A=\{2,3,5,7\}$, maka $|A|=4$.
+    \item \textbf{Subset (\(A \subseteq B\)):} Semua anggota A ada di B.
+    \item \textbf{Power Set (\(P(A)\)):} Himpunan yang isinya semua subset dari A. Rumus jumlahnya: \(2^{|A|}\).
+    \item \textbf{Himpunan Kosong (\(\varnothing\)):} Himpunan tanpa elemen, \(|\varnothing|=0\).
+\end{itemize}
+
+\textbf{Operasi Himpunan:}
+\begin{itemize}
+    \item \textbf{Irisan (\(\cap\)):} `INNER JOIN` (DAN).
+    \item \textbf{Gabungan (\(\cup\)):} `UNION` (ATAU).
+    \item \textbf{Selisih (\(-\)):} `EXCEPT` (A yang bukan B).
+    \item \textbf{Beda Simetris (\(\oplus\)):} Elemen di salah satu, tapi tidak keduanya.
+    \item \textbf{Kartesian (\(\times\)):} Pasangan berurutan \((a,b)\). Jumlahnya $|A| \times |B|$.
+\end{itemize}
+
+\begin{rumusbox}
+\textbf{\textcolor{blue!70!black}{Prinsip Inklusi-Eksklusi (Wajib Hafal!)}} \\
+Menghitung gabungan tanpa menghitung ganda. \\
+\textbf{2 Himpunan:} \\
+\(|A \cup B| = |A| + |B| - |A \cap B|\) \\
+\textbf{3 Himpunan:} \\
+\(|A \cup B \cup C| = |A|+|B|+|C| - |A \cap B| - |A \cap C| - |B \cap C| + |A \cap B \cap C|\)
+\end{rumusbox}
+
+\textbf{Himpunan Fuzzy:} Berbeda dengan himpunan tegas (Crisp: 0 atau 1), Fuzzy punya derajat keanggotaan \(\mu \in [0,1]\). Contoh: Usia 40 tahun \(\mu=0.5\) (setengah muda, setengah tua).
+
+% ==========================================
+\section*{2. MATRIKS}
+Susunan angka dalam baris dan kolom. Ordo = ukuran (Baris \(\times\) Kolom).
+\begin{itemize}
+    \item \textbf{Penjumlahan/Pengurangan:} Ordo (ukuran) harus sama persis.
+    \item \textbf{Perkalian Skalar (\(k \cdot A\)):} Semua angka di dalam matriks dikali \(k\).
+    \item \textbf{Perkalian Matriks (\(A \times B\)):} Syarat mutlak: \textbf{Kolom A = Baris B}. (Baris dikali Kolom).
+    \item \textbf{Transpose (\(A^T\)):} Tukar posisi baris dan kolom.
+\end{itemize}
+
+\begin{rumusbox}
+\textbf{\textcolor{blue!70!black}{Determinan \& Invers (Matriks Persegi)}} \\
+\textbf{Det 2x2:} \(\begin{vmatrix} a & b \\ c & d \end{vmatrix} = ad - bc\) \\
+\textbf{Invers 2x2:} \(A^{-1} = \frac{1}{ad-bc} \begin{pmatrix} d & -b \\ -c & a \end{pmatrix}\) \\
+\textbf{Sifat Invers:} \((AB)^{-1} = B^{-1} A^{-1}\) (urutan dibalik!). \\
+\textbf{Syarat Invers:} Determinan \(\neq 0\). \\
+\textbf{Persamaan:} Jika \(AX = B\), maka \(X = A^{-1} B\).
+\end{rumusbox}
+
+% ==========================================
+\section*{3. RELASI}
+Aturan yang memasangkan anggota himpunan A ke himpunan B (Subset dari perkalian kartesian). Bisa direpresentasikan dengan Diagram Panah, Tabel, atau Matriks Biner (isi 1 jika terhubung, 0 jika tidak).
+
+\begin{rumusbox}
+\textbf{\textcolor{blue!70!black}{4 Sifat Relasi (Cek pakai Matriks)}} \\
+\begin{itemize}
+    \item \textbf{Refleksif:} Semua elemen menunjuk dirinya sendiri. (Diagonal matriks isinya 1 semua).
+    \item \textbf{Simetris:} Jika A \(\to\) B, maka B \(\to\) A. (Matriks Biner = Transposenya).
+    \item \textbf{Tolak-Setangkup:} Jika A \(\to\) B dan B \(\to\) A, maka A dan B adalah orang yang sama.
+    \item \textbf{Transitif:} Jika A \(\to\) B, dan B \(\to\) C, maka harus ada A \(\to\) C.
+\end{itemize}
+\end{rumusbox}
+
+\textbf{Invers Relasi (\(R^{-1}\)):} Membalik arah panah \((a,b)\) jadi \((b,a)\). \\
+\textbf{Komposisi (\(S \circ R\)):} Jalankan R dulu, baru S. Dibaca dari \textbf{Kanan ke Kiri}.
+
+% ==========================================
+\section*{4. FUNGSI}
+Relasi "Satu-Satu". Artinya, \textbf{setiap input di Domain hanya boleh punya SATU output} di Kodomain. (Kalau 1 input punya 2 output, itu bukan fungsi).
+
+\begin{rumusbox}
+\textbf{\textcolor{blue!70!black}{3 Sifat Fungsi (Penting untuk Invers):}}
+\begin{itemize}
+    \item \textbf{Injektif (One-to-One):} Output tidak ada yang kembar.
+    \item \textbf{Surjektif (On-to):} Semua target di Kodomain kebagian pasangan.
+    \item \textbf{Bijektif:} Keduanya terpenuhi. \textbf{Hanya fungsi Bijektif yang punya Invers (\(f^{-1}\))}.
+\end{itemize}
+\end{rumusbox}
+
+\textbf{Fungsi Khusus:}
+\begin{itemize}
+    \item \textbf{Lantai \(\lfloor x \rfloor\):} Bulatkan ke bawah. \(\lfloor 3.7 \rfloor = 3\).
+    \item \textbf{Langit \(\lceil x \rceil\):} Bulatkan ke atas. \(\lceil 3.2 \rceil = 4\).
+    \item \textbf{Modulo \(a \bmod n\):} Sisa pembagian. \(17 \bmod 5 = 2\).
+    \item \textbf{Rekursif:} Fungsi memanggil dirinya sendiri. Harus punya \textbf{Basis} (kondisi berhenti) dan \textbf{Rekurens} (rumusnya).
+\end{itemize}
+
+% ==========================================
+\section*{5. LOGIKA MATEMATIKA}
+Fondasi komputer. Komputer hanya mengerti Benar (1) dan Salah (0).
+
+\textbf{5 Operator Wajib:}
+\begin{itemize}
+    \item \textbf{Negasi (\(\neg\)):} Kebalikan. (Kode: \texttt{!A})
+    \item \textbf{Konjungsi (\(\wedge\)):} DAN. Benar jika keduanya Benar. (Kode: \texttt{\&\&})
+    \item \textbf{Disjungsi (\(\vee\)):} ATAU. Salah jika keduanya Salah. (Kode: \texttt{||})
+    \item \textbf{Implikasi (\(\to\)):} JIKA-MAKA. Hanya Salah jika (Benar \(\to\) Salah). (Kode: \texttt{!A || B})
+    \item \textbf{Biimplikasi (\(\leftrightarrow\)):} JIKA DAN HANYA JIKA. Benar jika nilai A dan B sama. (Kode: \texttt{A == B})
+\end{itemize}
+
+\begin{rumusbox}
+\textbf{\textcolor{blue!70!black}{Hukum Ekivalensi (Penyederhanaan):}}
+\begin{itemize}
+    \item \textbf{De Morgan:} \(\neg(A \wedge B) \equiv \neg A \vee \neg B\) \\
+    \textit{Tukar DAN/ATAU, lalu negasi semuanya.}
+    \item \textbf{Implikasi:} \(A \to B \equiv \neg A \vee B\).
+    \item \textbf{Distributif:} \(A \wedge (B \vee C) \equiv (A \wedge B) \vee (A \wedge C)\).
+\end{itemize}
+\end{rumusbox}
+
+\subsection*{Tipe Ekspresi \& Inferensi}
+\begin{itemize}
+    \item \textbf{Tautologi:} Selalu Benar (semua baris tabel B).
+    \item \textbf{Kontradiksi:} Selalu Salah (semua baris tabel S).
+    \item \textbf{Kontingensi:} Campuran B dan S.
+    \item \textbf{Modus Ponens:} \(A \to B\) (benar), \(A\) (benar) \(\implies\) Kesimpulan: \(B\).
+    \item \textbf{Modus Tollens:} \(A \to B\) (benar), \(\neg B\) (benar) \(\implies\) Kesimpulan: \(\neg A\).
+\end{itemize}
+
+\vspace{3mm}
+\begin{center}
+    \textit{*Fokus baca kotak warna biru saat ujian. Semoga sukses ATS-nya!*}
+\end{center}
+
+\end{multicols}
+\end{document}
