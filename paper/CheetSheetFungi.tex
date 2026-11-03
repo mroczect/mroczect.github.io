@@ -1,0 +1,161 @@
+\documentclass[9pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\usepackage[scaled=0.92]{helvet}
+\usepackage[margin=0.5in,top=0.4in,bottom=0.4in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{setspace}
+
+\setstretch{1.0}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.15em}
+\setlength{\columnsep}{0.4cm}
+\setlength{\columnseprule}{0.3pt}
+\setlength{\emergencystretch}{2em}
+
+\setlist[itemize]{leftmargin=1em,noitemsep,topsep=0.5pt,parsep=0pt,itemsep=0.5pt}
+\setlist[enumerate]{leftmargin=1.1em,noitemsep,topsep=0.5pt,parsep=0pt,itemsep=0.5pt}
+\renewcommand{\arraystretch}{1.1}
+
+\newcommand{\mysect}[1]{\par\vspace{4pt}\noindent{\small\bfseries\sffamily #1}\par\vspace{-3pt}\noindent\rule{\linewidth}{0.4pt}\par\vspace{2pt}\noindent\ignorespaces}
+\newcommand{\h}[1]{\textbf{#1}}
+
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{center}
+	{\large\bfseries\sffamily Cheat Sheet: Fungsi}\\[1pt]
+	{\scriptsize Matematika Diskrit \textbullet\ TRPL Politeknik Negeri Batam}
+\end{center}
+\vspace{-8pt}
+
+\begin{multicols}{2}
+
+	\mysect{1. Definisi Fungsi}
+	$f: A\to B$: setiap $a\in A$ dipasangkan dengan \h{tepat satu} $b\in B$. Notasi $f(a)=b$.
+	\begin{itemize}
+		\item \h{Domain} $A$: daerah asal.
+		\item \h{Kodomain} $B$: tempat hasil boleh berada.
+		\item \h{Range}: hasil yang benar-benar muncul. $\mathrm{ran}(f)\subseteq B$.
+	\end{itemize}
+
+	\mysect{2. Cek Fungsi: 3 Pertanyaan}
+	\begin{enumerate}
+		\item Apa saja masukannya?
+		\item Tiap masukan punya berapa hasil? Lebih dari satu $\Rightarrow$ bukan fungsi.
+		\item Ada masukan tanpa hasil? $\Rightarrow$ fungsi parsial.
+	\end{enumerate}
+	Kasus kampus: $M3\to MTK$, $M3\to RPL$ \textbf{bukan} fungsi (dua hasil). Jika M3 belum punya dosen wali, relasinya parsial.
+
+	\mysect{3. Sifat Fungsi}
+	{\footnotesize
+		\begin{tabular}{@{}l l@{}}
+			\toprule
+			Sifat     & Arti                                       \\
+			\midrule
+			Injektif  & $a_1\neq a_2\Rightarrow f(a_1)\neq f(a_2)$ \\
+			Surjektif & $\forall b\in B,\exists a\in A:f(a)=b$     \\
+			Bijektif  & Injektif \emph{dan} surjektif              \\
+			\bottomrule
+		\end{tabular}}
+
+	Cek cepat: injektif butuh $|A|\le |B|$; surjektif butuh $|A|\ge |B|$. Syarat perlu, belum cukup.
+
+	\mysect{4. Invers Fungsi}
+	$f(a)=b\Rightarrow f^{-1}(b)=a$. \h{Syarat:} $f$ bijektif.\\
+	\h{Contoh:} $f(x)=2x+3\Rightarrow f^{-1}(x)=(x-3)/2$.\\
+	\h{Langkah:} (1) cek bijektif, (2) $y=f(x)$, (3) cari $x$, (4) tukar $y\to x$, (5) uji satu angka.\\
+	\h{Peringatan:} $f(x)=x^2$ tanpa batas domain tidak punya invers ($9\to 3$ atau $-3$?). Batasi $x\ge 0$.
+
+	\mysect{5. Komposisi Fungsi}
+	$(g\circ f)(x)=g(f(x))$: $f$ dulu, hasilnya masuk ke $g$.\\
+	\h{Syarat:} $\mathrm{ran}(f)\subseteq\mathrm{dom}(g)$.\\
+	\h{Contoh:} $f(x)=3x+1$, $g(x)=x^2$. $g\circ f(2)=g(7)=49$; $f\circ g(2)=f(4)=13$. Urutan penting.\\
+	\h{Domain:} $f(x)=x-5$, $g(x)=\sqrt{x}\Rightarrow g\circ f(x)=\sqrt{x-5}$, hanya $x\ge 5$.
+
+	\mysect{6. Fungsi Khusus}
+	{\footnotesize
+		\begin{tabular}{@{}l l l@{}}
+			\toprule
+			Fungsi                    & Arti                     & Contoh                                               \\
+			\midrule
+			Lantai $\lfloor x\rfloor$ & bulat ke bawah           & $\lfloor 3{,}7\rfloor=3$, $\lfloor -1{,}2\rfloor=-2$ \\
+			Langit $\lceil x\rceil$   & bulat ke atas            & $\lceil 3{,}2\rceil=4$                               \\
+			Modulo $a\bmod n$         & sisa bagi                & $17\bmod 5=2$                                        \\
+			Faktorial $n!$            & $n(n-1)\cdots 1$, $0!=1$ & $5!=120$                                             \\
+			\bottomrule
+		\end{tabular}}
+
+	Hubungan: $a=n\cdot q+r$, $q=\lfloor a/n\rfloor$, $r=a\bmod n$.\\
+	Jumlah halaman $=\lceil total/10\rceil$: $47\to 5$, $100\to 10$, $101\to 11$.\\
+	\h{Hati-hati:} $-7\bmod 3=2$ (matematika), tapi $-1$ di C/Java.
+
+	\mysect{7. Fungsi Rekursif}
+	Panggil diri sendiri. \h{Dua bagian:} basis (berhenti) + rekurens (memecah). Tanpa basis $\Rightarrow$ loop tak berhenti.\\
+	\h{Faktorial:} $n!=n\cdot (n-1)!$, $0!=1$. Pseudocode: $fakt(n)=1$ jika $n=0$; $fakt(n)=n\cdot fakt(n-1)$ jika $n>0$.\\
+	\h{Deret:} $S(n)=n+S(n-1)$, $S(0)=0$.\\
+	\h{Fibonacci:} $F(n)=F(n-1)+F(n-2)$, $F(0)=0$, $F(1)=1$: $0,1,1,2,3,5,8,\dots$\\
+	Eksponensial $\Rightarrow$ pakai loop atau memoization.
+
+	\mysect{8. Studi Kasus: Sandi Geser}
+	A$=0$, $\dots$, Z$=25$. Rumus $g(x)=(x+3)\bmod 26$.\\
+	Bijektif $\Rightarrow$ invers $g^{-1}(x)=(x-3)\bmod 26=(x+23)\bmod 26$.\\
+	\h{Contoh:} RPL $=(17,15,11)\to(20,18,14)=$ USO. Balik: USO $\to$ RPL.\\
+	Komposisi: $(g\circ g)(x)=(x+6)\bmod 26$.
+
+	\mysect{9. Kasus Uji}
+	{\footnotesize
+		\begin{tabular}{@{}l l l@{}}
+			\toprule
+			Jenis       & Masukan    & Hasil \\
+			\midrule
+			Normal      & $(47,10)$  & 5     \\
+			Batas habis & $(100,10)$ & 10    \\
+			Batas lebih & $(101,10)$ & 11    \\
+			Batas nol   & $(0,10)$   & 0     \\
+			Luar domain & $(50,0)$   & galat \\
+			\bottomrule
+		\end{tabular}}
+
+	\mysect{10. Kesalahan Umum}
+	{\footnotesize
+		\begin{tabular}{@{}l l@{}}
+			\toprule
+			Salah                 & Benar                           \\
+			\midrule
+			Semua relasi = fungsi & Fungsi: 1 masukan $\to$ 1 hasil \\
+			Range $=$ kodomain    & Range $\subseteq$ kodomain      \\
+			$f^{-1}(x)=1/f(x)$    & $f^{-1}$ membalik pasangan      \\
+			$g\circ f=f\circ g$   & Urutan penting, $f$ dulu        \\
+			Rekursi tanpa basis   & Tidak akan berhenti             \\
+			\bottomrule
+		\end{tabular}}
+
+	\mysect{11. Lembar Rujukan Cepat}
+	{\footnotesize
+		\begin{tabular}{@{}l l@{}}
+			\toprule
+			Butuh           & Rumus                                      \\
+			\midrule
+			Cek fungsi      & tiap $a$: tepat 1 hasil                    \\
+			Injektif        & $a_1\neq a_2\Rightarrow f(a_1)\neq f(a_2)$ \\
+			Surjektif       & $\mathrm{ran}(f)=B$                        \\
+			Bijektif        & injektif + surjektif                       \\
+			Invers          & $y=f(x)$, tukar, cari $x$                  \\
+			Komposisi       & $g(f(x))$, $f$ dulu                        \\
+			Lantai / Langit & $\lfloor x\rfloor$ / $\lceil x\rceil$      \\
+			Modulo          & $a\bmod n = a-n\lfloor a/n\rfloor$         \\
+			Rekursi         & basis + rekurens                           \\
+			\bottomrule
+		\end{tabular}}
+
+\end{multicols}
+
+\end{document}
