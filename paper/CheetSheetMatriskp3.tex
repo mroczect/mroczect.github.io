@@ -1,0 +1,187 @@
+\documentclass[9pt,a4paper]{extarticle}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\usepackage[scaled=0.92]{helvet}
+\usepackage[margin=0.4in,top=0.3in,bottom=0.3in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{setspace}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setstretch{1.05}
+\setlength{\columnsep}{0.45cm}
+\setlength{\columnseprule}{0.2pt}
+\setlength{\emergencystretch}{3em}
+\setlist[itemize]{leftmargin=1.2em, noitemsep, topsep=2pt, parsep=1pt, itemsep=1pt}
+\setlist[enumerate]{leftmargin=1.2em, noitemsep, topsep=2pt, parsep=1pt, itemsep=1pt}
+
+\newcommand{\h}[1]{\textbf{#1}}
+\newcommand{\secs}[1]{\par\vspace{6pt}\noindent{\normalsize\bfseries\sffamily #1}\par\vspace{-2pt}\noindent\rule{\linewidth}{0.4pt}\par\vspace{4pt}}
+
+\sloppy
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{center}
+	{\Large\bfseries\sffamily Matriks \& Operasi Matriks}\\[4pt]
+	{\small Matematika Diskrit \textbullet\ TRPL Politeknik Negeri Batam}
+\end{center}
+\vspace{-6pt}
+
+\begin{multicols*}{2}
+
+	\secs{1. Definisi \& Anatomi}
+	\h{Matriks} adalah susunan bilangan persegi panjang dalam baris dan kolom.
+	\h{Ordo} $m \times n$ berarti $m$ baris dan $n$ kolom.
+	\h{Elemen} $a_{ij}$ berada di baris $i$ dan kolom $j$.
+
+	Contoh matriks $2 \times 3$:
+	\[
+		A_{2\times3} = \begin{pmatrix} a_{11} & a_{12} & a_{13} \\ a_{21} & a_{22} & a_{23} \end{pmatrix}
+	\]
+	$a_{23}$ berarti elemen di baris 2, kolom 3.
+
+	\vspace{2pt}
+	\h{Di Pemrograman:}
+	\begin{itemize}
+		\item Skalar: \texttt{int x = 85;}
+		\item Vektor: \texttt{int[] a = \{80, 85, 90\};}
+		\item Matriks: \texttt{int[][] M = \{\{80,75\},\{70,85\}\};}
+	\end{itemize}
+	Analogi: lemari arsip dengan laci beralamat $(i, j)$.
+
+	\secs{2. Jenis Matriks}
+	\begin{itemize}
+		\item \h{Persegi}: jumlah baris $=$ kolom ($m=n$). Contoh: $\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$.
+		\item \h{Vektor Kolom}: hanya 1 kolom ($n=1$).
+		\item \h{Vektor Baris}: hanya 1 baris ($m=1$).
+		\item \h{Matriks Nol}: semua elemennya 0.
+		\item \h{Identitas} $I_n$: diagonal 1, lainnya 0. Sifat: $AI = IA = A$.
+		\item \h{Transpos} $A^T$: tukar baris dan kolom. $(A^T)_{ij} = a_{ji}$.
+	\end{itemize}
+
+	\secs{3. Kesamaan Matriks}
+	Dua matriks $A$ dan $B$ dikatakan sama ($A=B$) jika:
+	\begin{enumerate}
+		\item Ordo keduanya sama.
+		\item Semua elemen yang seletak bernilai sama.
+	\end{enumerate}
+	Contoh: $\begin{pmatrix} x & 4 \\ 7 & y \end{pmatrix} = \begin{pmatrix} 3 & 4 \\ 7 & 9 \end{pmatrix} \implies x=3, y=9$.
+
+	\secs{4. Penjumlahan \& Pengurangan}
+	\h{Syarat}: Ordo harus sama.
+	\h{Aturan}: Jumlahkan/kurangkan elemen yang seletak ($c_{ij} = a_{ij} \pm b_{ij}$).
+
+	Contoh:
+	\[
+		\begin{pmatrix} 3 & 8 \\ 4 & 6 \end{pmatrix} + \begin{pmatrix} 4 & 0 \\ 1 & -9 \end{pmatrix} = \begin{pmatrix} 7 & 8 \\ 5 & -3 \end{pmatrix}
+	\]
+
+	\secs{5. Perkalian Skalar}
+	Kalikan setiap elemen dengan konstanta $k$.
+	\[
+		kA = \begin{pmatrix} k \cdot a_{11} & k \cdot a_{12} \\ k \cdot a_{21} & k \cdot a_{22} \end{pmatrix}
+	\]
+	Contoh: $3 \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix} = \begin{pmatrix} 3 & 6 \\ 9 & 12 \end{pmatrix}$.
+	\textit{Jangan} tertukar dengan pangkat matriks ($A^2 = AA$).
+
+	\secs{6. Perkalian Matriks}
+	\h{Syarat}: Jumlah kolom $A$ = jumlah baris $B$.
+	Jika $A_{m \times n}$ dan $B_{n \times p}$, hasilnya $C_{m \times p}$.
+
+	\h{Aturan}: Baris $\times$ Kolom. $c_{ij} = \sum_k a_{ik} b_{kj}$.
+
+	Contoh:
+	\[
+		A = \begin{pmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{pmatrix}, \quad B = \begin{pmatrix} 7 & 8 \\ 9 & 10 \\ 11 & 12 \end{pmatrix}
+	\]
+	$c_{11} = 1(7) + 2(9) + 3(11) = 58$ \\
+	$c_{12} = 1(8) + 2(10) + 3(12) = 64$ \\
+	$c_{21} = 4(7) + 5(9) + 6(11) = 139$ \\
+	$c_{22} = 4(8) + 5(10) + 6(12) = 154$ \\
+	Hasil: $AB = \begin{pmatrix} 58 & 64 \\ 139 & 154 \end{pmatrix}$.
+	\h{Sifat}: $AB \neq BA$ (tidak komutatif).
+
+	\secs{7. Determinan}
+	\h{Sifat}: Jika $\det(A) = 0$, matriks singular (tidak punya invers). Jika $\det(A) \neq 0$, matriks invertible.
+
+	\h{Matriks $2\times2$}:
+	\[
+		\det \begin{pmatrix} a & b \\ c & d \end{pmatrix} = ad - bc
+	\]
+	Contoh: $\det \begin{pmatrix} 4 & 6 \\ 3 & 8 \end{pmatrix} = 4(8) - 6(3) = 14$.
+
+	\h{Matriks $3\times3$ (Sarrus)}:
+	\[
+		\det = a(ei-fh) - b(di-fg) + c(dh-eg)
+	\]
+	Salin 2 kolom kiri ke kanan, jumlahkan 3 diagonal penuh, kurangi 3 diagonal putus.
+
+	\h{Matriks $4\times4+$}: Ekspansi kofaktor baris pertama.
+
+	\secs{8. Invers Matriks}
+	\h{Syarat}: $\det(A) \neq 0$. Sifat: $A^{-1}A = AA^{-1} = I$.
+
+	\h{Matriks $2\times2$}:
+	\[
+		A^{-1} = \frac{1}{ad-bc} \begin{pmatrix} d & -b \\ -c & a \end{pmatrix}
+	\]
+	Contoh: $\begin{pmatrix} 4 & 7 \\ 2 & 6 \end{pmatrix}^{-1} = \frac{1}{10} \begin{pmatrix} 6 & -7 \\ -2 & 4 \end{pmatrix}$.
+
+	\h{Matriks $3\times3$ (5 Langkah)}:
+	\begin{enumerate}
+		\item Hitung determinan ($\neq 0$).
+		\item Hitung minor $M_{ij}$.
+		\item Hitung kofaktor $C_{ij} = (-1)^{i+j} M_{ij}$.
+		\item Bentuk adjugate (transpose kofaktor).
+		\item $A^{-1} = \frac{1}{\det(A)} \operatorname{adj}(A)$.
+	\end{enumerate}
+
+	\secs{9. Sistem Persamaan Linear}
+	Bentuk $AX = B$. Jika $A$ punya invers:
+	\[
+		X = A^{-1}B
+	\]
+
+	Contoh: $2x+y=8$ dan $x+3y=9$.
+	\[
+		A = \begin{pmatrix} 2 & 1 \\ 1 & 3 \end{pmatrix}, \quad \det(A)=5
+	\]
+	\[
+		X = \frac{1}{5} \begin{pmatrix} 3 & -1 \\ -1 & 2 \end{pmatrix} \begin{pmatrix} 8 \\ 9 \end{pmatrix} = \begin{pmatrix} 3 \\ 2 \end{pmatrix}
+	\]
+
+	\secs{10. Studi Kasus}
+	\h{Nilai Akademik:}
+	$M = \begin{pmatrix} 80 & 75 & 85 \\ 70 & 85 & 80 \\ 90 & 80 & 75 \end{pmatrix}$, bobot $W = \begin{pmatrix} 0.4 \\ 0.3 \\ 0.3 \end{pmatrix}$.\\
+	Nilai akhir $N = MW = \begin{pmatrix} 80.0 \\ 77.5 \\ 82.5 \end{pmatrix}$.
+
+	\h{Image Brightness:}
+	$A + B = \begin{pmatrix} 120 & 140 \\ 100 & 170 \end{pmatrix}$.
+	Sama dengan perulangan \texttt{C[i][j] = A[i][j] + B[i][j]}.
+
+	\secs{11. Kesalahan Umum}
+	\begin{itemize}
+		\item Menjumlahkan matriks beda ordo.
+		\item Perkalian seletak (harus baris $\times$ kolom).
+		\item Lupa cek syarat perkalian.
+		\item Invers tanpa cek determinan.
+		\item Transpos ($A^T$) dikira invers ($A^{-1}$).
+	\end{itemize}
+
+	\secs{12. Tips Ujian}
+	\begin{itemize}
+		\item Tulis ordo di samping matriks.
+		\item Cek syarat sebelum operasi.
+		\item Hitung determinan dulu sebelum invers.
+		\item Verifikasi hasil ($A \cdot A^{-1} = I$).
+	\end{itemize}
+
+\end{multicols*}
+\end{document}
