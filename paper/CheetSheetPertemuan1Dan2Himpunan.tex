@@ -1,0 +1,179 @@
+\documentclass[9pt,a4paper]{extarticle}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\usepackage[scaled=0.92]{helvet}
+\usepackage[margin=0.45in,top=0.35in,bottom=0.35in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{multicol}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{xcolor}
+\usepackage{listings}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.2em}
+\setstretch{1.0}
+\setlength{\columnsep}{0.4cm}
+\setlength{\columnseprule}{0.2pt}
+\setlength{\emergencystretch}{3em}
+\setlist[itemize]{leftmargin=0.9em, noitemsep, topsep=1pt, parsep=0pt, itemsep=0.3pt}
+\setlist[enumerate]{leftmargin=1.1em, noitemsep, topsep=1pt, parsep=0pt, itemsep=0.3pt}
+
+\titleformat{\section}{\normalfont\small\bfseries\sffamily}{}{0em}{}[\vspace{-3pt}\rule{\linewidth}{0.3pt}]
+\titlespacing*{\section}{0pt}{3pt}{1pt}
+
+\lstset{
+	basicstyle=\ttfamily\scriptsize,
+	breaklines=true,
+	frame=none,
+	columns=fullflexible,
+	keepspaces=true,
+	showstringspaces=false,
+	aboveskip=1pt,
+	belowskip=1pt,
+	xleftmargin=0pt
+}
+
+\newcommand{\h}[1]{\textbf{#1}}
+\newcommand{\src}[1]{\textit{(#1)}}
+\sloppy
+\pagestyle{empty}
+
+\begin{document}
+
+\vspace{-4pt}
+\begin{multicols*}{2}
+
+	\section*{1. Apa Itu Matematika Diskrit?}
+
+	\h{Definisi.} Cabang matematika yang mengkaji objek \textbf{diskrit}, yaitu objek yang terdiri dari sejumlah berhingga elemen berbeda atau tidak bersambung. Contoh: bilangan bulat $\mathbb{Z}$. Lawannya \textbf{kontinu}, seperti bilangan riil $\mathbb{R}$.
+
+	\h{Kenapa penting?} Komputer menyimpan dan memanipulasi informasi dalam bentuk diskrit: bit 0/1, baris tabel, karakter, alamat memori. Matdis = fondasi ilmu komputer.
+
+	\h{Aplikasi di RPL.} Representasi database relasional, enkripsi, gerbang logika, lintasan terpendek GPS, perutean paket, analisis efisiensi algoritma \src{Rosen 2019, Munir 2012}.
+
+	\section*{2. Himpunan: Definisi dan Ciri}
+
+	\h{Definisi.} Himpunan (\textit{set}) = kumpulan objek berbeda yang terdefinisi jelas. Notasi kurung kurawal $\{\,\}$. Objek di dalamnya disebut elemen/anggota.
+
+	\h{3 ciri wajib.}
+	\begin{enumerate}
+		\item \h{Berbeda}: tidak boleh duplikat. $[1,2,2,3]=\{1,2,3\}$.
+		\item \h{Terdefinisi jelas}: ada aturan yang menentukan $x$ termasuk atau tidak.
+		\item \h{Objek}: elemen bisa angka, nama, baris tabel, dsb.
+	\end{enumerate}
+
+	\h{Analogi JavaScript.} Larik \texttt{[1,2,2,3]} punya 4 posisi. Kalau diubah ke \texttt{Set} \texttt{new Set([1,2,2,3])}, hasilnya \texttt{\{1,2,3\}} dengan \texttt{size~=~3}. Itu dia himpunan: duplikat otomatis dihapus.
+
+	\section*{3. Notasi Dasar}
+
+	\begin{itemize}
+		\item $x\in A$: x adalah elemen A
+		\item $x\notin A$: x bukan elemen A
+		\item $|A|$: kardinalitas (jumlah elemen)
+		\item $\varnothing$ atau $\{\}$: himpunan kosong
+		\item $A\subseteq B$: A subset B
+		\item $A=B$: himpunan sama
+		\item $A\sim B$: himpunan ekivalen
+	\end{itemize}
+
+	\section*{4. Empat Cara Penyajian}
+
+	\h{(1) Enumerasi.} Daftar semua elemen.
+	$$H=\{\text{GET, POST, PUT, DELETE}\}.$$
+	JS: \texttt{const H = ["GET","POST","PUT","DELETE"];}
+
+	\h{(2) Simbol baku.} Simbol tetap: $\mathbb{N}=\{1,2,3,\dots\}$; $\mathbb{Z}=\{\dots,-1,0,1,\dots\}$; $\mathbb{Q}$ rasional; $\mathbb{R}$ riil; $\mathbb{C}$ kompleks.
+
+	\h{(3) Notasi pembentuk.} $\{x\mid \text{syarat}\}$. Tanda $\mid$ dibaca "dimana"; koma = "dan".
+	$$P=\{x\mid x \text{ port jaringan}, x<1024\}.$$
+	JS: \texttt{const P = port.filter(x => x < 1024);}
+
+	\h{(4) Diagram Venn.} Gambar daerah bertanda. Untuk hubungan antar himpunan.
+
+	\section*{5. Kardinalitas: Hitung Unik}
+
+	\h{Definisi.} Banyaknya elemen berbeda dalam himpunan berhingga. Notasi $|A|$. Contoh: $A=\{x\mid x \text{ prima}<20\}$, maka $|A|=8$ karena $\{2,3,5,7,11,13,17,19\}$.
+
+	\h{Contoh langkah demi langkah.} Log = \texttt{[USR01, USR05, USR02, USR01, USR03, USR05, USR01]}.
+
+	Analogi panitia dengan papan tulis. Baca satu per satu:
+	\begin{enumerate}
+		\item Kosong: \{\}.
+		\item USR01 belum ada $\to$ tulis. Papan = \{USR01\}.
+		\item USR05 belum ada $\to$ tulis. Papan = \{USR01, USR05\}.
+		\item USR02 belum ada $\to$ tulis. Papan = \{USR01, USR05, USR02\}.
+		\item USR01 sudah ada $\to$ lewati.
+		\item USR03 belum ada $\to$ tulis. Papan tambah USR03 (4 elemen).
+		\item USR05 sudah ada $\to$ lewati.
+		\item USR01 sudah ada $\to$ lewati.
+	\end{enumerate}
+	Hasil: $|U|=4$, bukan 7. Empat kemunculan berulang dihapus.
+
+	\h{Padanan JavaScript.}
+	\begin{lstlisting}
+			const log = ["USR01","USR05","USR02",
+			"USR01","USR03","USR05","USR01"];
+			const U = new Set(log);   // {USR01,USR05,USR02,USR03}
+			U.size;                   // 4
+			log.length;               // 7 (salah kalau dipakai)
+		\end{lstlisting}
+
+	\h{Kenapa penting.} (1) Hindari duplikasi. (2) Hemat penyimpanan. (3) Query lebih cepat. Rasio $4/7\approx0{,}57$: hanya 57\% log benar-benar informasi baru. Kalau 1 juta log/jam, unik hanya 570 ribu.
+
+	\h{Kalau salah.} Pakai \texttt{log.length} = 7, padahal unik = 4. Dashboard 300 ribu kunjungan dianggap 300 ribu pengunjung, padahal unik 100 ribu. Server ter-overprovision 3x lipat.
+
+	\section*{6. Himpunan Khusus}
+
+	\h{Himpunan kosong.} $\varnothing$ atau $\{\}$, $|\varnothing|=0$. Contoh: $\{x\mid x \text{ prima genap}, x>2\}=\varnothing$.
+
+	\h{Subset.} $A\subseteq B$ jika setiap elemen A juga elemen B; B disebut superset A. Contoh: $\{1,2\}\subseteq\{1,2,3\}$. Sifat: $\varnothing\subseteq A$ selalu benar; $A\subseteq A$ selalu benar.
+
+	\h{Power set.} $P(A)$ atau $2^A$: semua subset A, termasuk $\varnothing$ dan A.
+	$$A=\{a,b\}\Rightarrow P(A)=\{\varnothing,\{a\},\{b\},\{a,b\}\}.$$
+	Rumus: $|P(A)|=2^{|A|}$. Untuk $|A|=2$, $|P(A)|=4$. Untuk $|A|=3$, $|P(A)|=8$.
+
+	\h{Padanan JS.} Untuk $A=[1,2]$, semua subset adalah: \texttt{[]}, \texttt{[1]}, \texttt{[2]}, \texttt{[1,2]} = 4 = $2^2$. Ini yang dipakai untuk \textit{combinatorial test}: 3 saklar fitur = 8 kombinasi uji (on/off tiap saklar).
+
+	\h{Aplikasi RBAC.} Hierarki Mahasiswa $\subseteq$ Dosen $\subseteq$ Admin. Jika Mahasiswa bukan subset Dosen, berarti ada hak akses yang bocor. Subset menjamin tidak ada akses di luar hierarki \src{Epp 2010}.
+
+	\section*{7. Sama vs Ekivalen}
+
+	\h{Himpunan sama ($=$).} $A=B$ jika dan hanya jika $A\subseteq B$ dan $B\subseteq A$. Elemen identik, urutan tidak penting. Contoh: $\{0,1\}=\{x\mid x(x-1)=0\}$ karena akar 0 dan 1.
+
+	\h{Himpunan ekivalen ($\sim$).} $A\sim B$ jika $|A|=|B|$. Kardinalitas sama, elemen boleh beda. Contoh: $\{1,3,5,7\}\sim\{a,b,c,d\}$.
+
+	\h{Beda kunci.} Sama = isi identik. Ekivalen = jumlah sama. $\{1,2,3\}=\{3,2,1\}$ (urutan tidak penting), tapi $\{1,2,3\}\ne\{1,2\}$; $\{1,2,3\}\sim\{a,b,c\}$.
+
+	\section*{8. Contoh Soal + Pembahasan}
+
+	\h{Soal 1.} $A=\{101,102,105,108,112\}$ (produk terlaris). $B=\{x\mid 100\le x\le 115, x \text{ habis dibagi } 3\}$. Tentukan (a) B enumerasi; (b) A notasi pembentuk; (c) $|A\cup B|$.
+
+	\h{(a)} Bilangan 100--115 habis dibagi 3: $102,105,108,111,114$. Jadi $B=\{102,105,108,111,114\}$.
+
+	\h{(b)} $A=\{x\mid x \text{ kategori terlaris}, 100\le x\le 115\}$.
+
+	\h{(c)} $A\cup B=\{101,102,105,108,111,112,114\}$. $|A\cup B|=7$.
+
+	\h{Soal 2.} Power set dari $\{1,2,3\}$.\\
+	$P(A)=\{\varnothing,\{1\},\{2\},\{3\},\{1,2\},\{1,3\},\{2,3\},\{1,2,3\}\}$, $|P(A)|=2^3=8$.
+
+	\h{Soal 3.} Log = \texttt{[Ani, Budi, Ani, Cici, Budi]}. Himpunan unik dan kardinalitas.\\
+	$U=\{\text{Ani, Budi, Cici}\}$, $|U|=3$, bukan 5.
+
+	\section*{9. Kesalahan Umum}
+
+	\begin{itemize}
+		\item Menghitung \texttt{log.length} padahal butuh \texttt{new~Set(log).size}.
+		\item Mengira $A\subseteq B$ sama dengan $A\in B$ (relasi vs keanggotaan).
+		\item Lupa $\varnothing\subseteq A$ selalu benar.
+		\item Mengira $|P(A)|=n$ padahal $2^n$.
+		\item Mencampur "sama" (isi identik) dengan "ekivalen" (kardinalitas sama).
+		\item Notasi pembentuk tanpa aturan jelas.
+	\end{itemize}
+
+\end{multicols*}
+\end{document}
